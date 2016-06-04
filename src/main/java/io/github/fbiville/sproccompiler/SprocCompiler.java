@@ -23,12 +23,8 @@ import static javax.tools.Diagnostic.Kind.ERROR;
 public class SprocCompiler extends AbstractProcessor {
 
     private static final Class<? extends Annotation> sprocType = Procedure.class;
-    private final ElementVisitor<Stream<CompilationError>, Void> parameterVisitor;
+    private ElementVisitor<Stream<CompilationError>, Void> parameterVisitor;
     private Messager messager;
-
-    public SprocCompiler() {
-        parameterVisitor = new ParameterVisitor();
-    }
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
@@ -46,6 +42,11 @@ public class SprocCompiler extends AbstractProcessor {
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         messager = processingEnv.getMessager();
+
+        parameterVisitor = new SingleProcedureVisitor(
+            processingEnv.getTypeUtils(),
+            processingEnv.getElementUtils()
+        );
     }
 
     @Override

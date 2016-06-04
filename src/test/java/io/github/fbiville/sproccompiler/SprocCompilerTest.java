@@ -35,4 +35,17 @@ public class SprocCompilerTest {
                 .withErrorContaining("Missing @org.neo4j.procedure.Name on parameter <otherParam>")
                 .in(sproc).onLine(14);
     }
+
+    @Test
+    public void fails_if_return_type_is_not_stream() {
+        JavaFileObject sproc = forResource("test_classes/bad_return_type/BadReturnTypeSproc.java");
+
+        assert_().about(javaSource())
+                .that(sproc)
+                .processedWith(sprocCompiler)
+                .failsToCompile()
+                .withErrorCount(1)
+                .withErrorContaining("Return type of BadReturnTypeSproc#niceSproc must be java.util.stream.Stream")
+                .in(sproc).onLine(13);
+    }
 }
