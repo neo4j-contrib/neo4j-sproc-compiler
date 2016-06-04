@@ -19,12 +19,17 @@ public class SingleProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
 
     private final Types typeUtils;
     private final Elements elementUtils;
+    private final TypeVisitor<Stream<CompilationError>, Void> recordVisitor;
 
     public SingleProcedureVisitor(Types typeUtils, Elements elementUtils) {
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
+        this.recordVisitor = new RecordTypeVisitor(typeUtils);
     }
 
+    /**
+     * Validates method parameters and return type
+     */
     @Override
     public Stream<CompilationError> visitExecutable(ExecutableElement executableElement, Void ignored) {
         return Stream.concat(
@@ -33,6 +38,9 @@ public class SingleProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
         );
     }
 
+    /**
+     * Validates a method parameter
+     */
     @Override
     public Stream<CompilationError> visitVariable(VariableElement parameter, Void ignored) {
 
@@ -70,11 +78,14 @@ public class SingleProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
         if (!typeUtils.isSubtype(erasedReturnType, expectedType)) {
             return Stream.of(new ReturnTypeError(
                     method,
-                    "Return type must be %s",
+                    "Return type of %s#%s must be %s",
+                    method.getEnclosingElement().getSimpleName(),
+                    method.getSimpleName(),
                     streamClassName
             ));
         }
-        return Stream.empty();
+
+        return recordVisitor.visit(returnType);
     }
 
     private AnnotationMirror annotationMirror(List<? extends AnnotationMirror> mirrors) {

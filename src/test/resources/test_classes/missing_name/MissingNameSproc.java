@@ -8,10 +8,14 @@ import java.util.stream.Stream;
 
 public class MissingNameSproc {
 
+    public static class GoodRecord {
+        public int age;
+    }
+
     @Context public GraphDatabaseService db;
 
     @Procedure
-    public Stream<Long> niceSproc(String parameter, String otherParam) {
+    public Stream<GoodRecord> niceSproc(String parameter, String otherParam) {
         return Stream.empty();
     }
 }
