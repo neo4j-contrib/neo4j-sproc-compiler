@@ -9,10 +9,3 @@ some unit tests to verify some runtime behaviours.
 # Use the processor
 
 TODO
-
-# Remaining tasks
-
- - get stored proc formal spec and correct assumptions if needed
- - check @Context fields are non-final and public
- - check stored proc unicity within the scanned project
- - write integration test for the processor
