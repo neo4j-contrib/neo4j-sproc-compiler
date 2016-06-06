@@ -20,11 +20,13 @@ public class SingleProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
     private final Types typeUtils;
     private final Elements elementUtils;
     private final TypeVisitor<Stream<CompilationError>, Void> recordVisitor;
+    private final TypeVisitor<Stream<CompilationError>, VariableElement> parameterTypeVisitor;
 
     public SingleProcedureVisitor(Types typeUtils, Elements elementUtils) {
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
         this.recordVisitor = new RecordTypeVisitor(typeUtils);
+        this.parameterTypeVisitor = new ParameterTypeVisitor(typeUtils, elementUtils);
     }
 
     /**
@@ -46,7 +48,7 @@ public class SingleProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
 
         Name annotation = parameter.getAnnotation(Name.class);
         if (annotation == null) {
-            return Stream.of(new ParameterError(
+            return Stream.of(new ParameterMissingAnnotationError(
                     parameter,
                     annotationMirror(parameter.getAnnotationMirrors()),
                     "Missing @%s on parameter <%s>",
@@ -54,7 +56,8 @@ public class SingleProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
                     nameOf(parameter)
             ));
         }
-        return Stream.empty();
+
+        return parameterTypeVisitor.visit(parameter.asType(), parameter);
     }
 
     private Stream<CompilationError> validateParameters(List<? extends VariableElement> parameters, Void ignored) {

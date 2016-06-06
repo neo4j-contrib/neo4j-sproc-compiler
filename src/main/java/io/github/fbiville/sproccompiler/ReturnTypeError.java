@@ -3,7 +3,7 @@ package io.github.fbiville.sproccompiler;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-public class ReturnTypeError implements CompilationError {
+class ReturnTypeError implements CompilationError {
 
     private final Element element;
     private final String errorMessage;
