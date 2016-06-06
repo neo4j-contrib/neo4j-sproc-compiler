@@ -8,6 +8,8 @@ import org.junit.Test;
 import javax.annotation.processing.Processor;
 import javax.tools.JavaFileObject;
 
+import java.net.URL;
+
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaFileObjects.forResource;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
@@ -21,7 +23,7 @@ public class SprocCompilerTest {
 
     @Test
     public void fails_if_parameters_are_not_properly_annotated() {
-        JavaFileObject sproc = forResource("test_classes/missing_name/MissingNameSproc.java");
+        JavaFileObject sproc = forResource(at("missing_name/MissingNameSproc.java"));
 
         CompileTester.UnsuccessfulCompilationClause compilation = assert_().about(javaSource())
                 .that(sproc)
@@ -40,7 +42,7 @@ public class SprocCompilerTest {
 
     @Test
     public void fails_if_return_type_is_not_stream() {
-        JavaFileObject sproc = forResource("test_classes/bad_return_type/BadReturnTypeSproc.java");
+        JavaFileObject sproc = forResource(at("bad_return_type/BadReturnTypeSproc.java"));
 
         assert_().about(javaSource())
                 .that(sproc)
@@ -53,7 +55,7 @@ public class SprocCompilerTest {
 
     @Test
     public void fails_if_record_type_has_nonpublic_fields() {
-        JavaFileObject record = forResource("test_classes/bad_record_type/BadRecord.java");
+        JavaFileObject record = forResource(at("bad_record_type/BadRecord.java"));
 
         CompileTester.UnsuccessfulCompilationClause compilation = assert_().about(javaSources())
                 .that(asList(forResource("test_classes/bad_record_type/BadRecordTypeSproc.java"), record))
@@ -66,5 +68,9 @@ public class SprocCompilerTest {
 
         compilation.withErrorContaining("Field BadRecord#age must be public")
                 .in(record).onLine(7);
+    }
+
+    private URL at(String resource) {
+        return this.getClass().getResource(String.format("/test_classes/%s", resource));
     }
 }
