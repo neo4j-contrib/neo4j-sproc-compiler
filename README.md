@@ -1,5 +1,7 @@
 # Neo4j stored procedure compiler
 
+[![Build Status](https://travis-ci.org/fbiville/neo4j-sproc-compiler.png?branch=master)](https://travis-ci.org/fbiville/neo4j-sproc-compiler)
+
 This is a annotation processor that will verify your stored procedures
 at compile time.
 
