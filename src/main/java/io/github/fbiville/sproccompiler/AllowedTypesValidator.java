@@ -5,12 +5,14 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 class AllowedTypesValidator implements Predicate<TypeMirror> {
 
+    private final TypeMirrors typeMirrors;
     private Collection<TypeMirror> whitelistedTypes;
     private final Types typeUtils;
     private final Elements elementUtils;
@@ -22,15 +24,22 @@ class AllowedTypesValidator implements Predicate<TypeMirror> {
         this.whitelistedTypes = whitelistedTypes;
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
+        this.typeMirrors = new TypeMirrors(typeUtils, elementUtils);
     }
 
     @Override
     public boolean test(TypeMirror typeMirror) {
         return allowedTypes().anyMatch(type -> {
-            return typeUtils.isSameType(
-                    typeUtils.erasure(type),
-                    typeUtils.erasure(typeMirror)
-            );
+            TypeMirror erasedAllowedType = typeUtils.erasure(type);
+            TypeMirror erasedActualType = typeUtils.erasure(typeMirror);
+
+            TypeMirror map = typeUtils.erasure(typeMirrors.typeMirror(Map.class));
+            TypeMirror list = typeUtils.erasure(typeMirrors.typeMirror(List.class));
+            if (typeUtils.isSameType(erasedAllowedType, map) || typeUtils.isSameType(erasedAllowedType, list)) {
+                return typeUtils.isSubtype(erasedActualType, erasedAllowedType);
+            }
+
+            return typeUtils.isSameType(erasedActualType, erasedAllowedType);
         }) && validAsMapType(typeMirror);
     }
 

@@ -15,10 +15,7 @@ import javax.lang.model.type.TypeVisitor;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -41,11 +38,11 @@ public class RecordFieldTypeVisitorTest {
     @Test
     public void validates_supported_simple_types() {
         assertThat(visitor.visit(typeMirror(String.class))).isTrue();
+        assertThat(visitor.visit(typeMirror(Number.class))).isTrue();
         assertThat(visitor.visit(typeMirror(Long.class))).isTrue();
         assertThat(visitor.visit(primitive(TypeKind.LONG))).isTrue();
         assertThat(visitor.visit(typeMirror(Double.class))).isTrue();
         assertThat(visitor.visit(primitive(TypeKind.DOUBLE))).isTrue();
-        assertThat(visitor.visit(typeMirror(Number.class))).isTrue();
         assertThat(visitor.visit(typeMirror(Boolean.class))).isTrue();
         assertThat(visitor.visit(primitive(TypeKind.BOOLEAN))).isTrue();
         assertThat(visitor.visit(typeMirror(Path.class))).isTrue();
@@ -57,10 +54,12 @@ public class RecordFieldTypeVisitorTest {
     @Test
     public void validates_supported_generic_types() {
         assertThat(visitor.visit(genericSimpleTypeMirror(Map.class, asList(String.class, Object.class)))).isTrue();
+        assertThat(visitor.visit(genericSimpleTypeMirror(HashMap.class, asList(String.class, Object.class)))).isTrue();
+        assertThat(visitor.visit(genericSimpleTypeMirror(LinkedHashMap.class, asList(String.class, Object.class)))).isTrue();
         assertThat(visitor.visit(genericSimpleTypeMirror(List.class, String.class))).isTrue();
-        assertThat(visitor.visit(genericSimpleTypeMirror(List.class, Long.class))).isTrue();
+        assertThat(visitor.visit(genericSimpleTypeMirror(LinkedList.class, Number.class))).isTrue();
+        assertThat(visitor.visit(genericSimpleTypeMirror(ArrayList.class, Long.class))).isTrue();
         assertThat(visitor.visit(genericSimpleTypeMirror(List.class, Double.class))).isTrue();
-        assertThat(visitor.visit(genericSimpleTypeMirror(List.class, Number.class))).isTrue();
         assertThat(visitor.visit(genericSimpleTypeMirror(List.class, Boolean.class))).isTrue();
         assertThat(visitor.visit(genericSimpleTypeMirror(List.class, Path.class))).isTrue();
         assertThat(visitor.visit(genericSimpleTypeMirror(List.class, Node.class))).isTrue();
@@ -70,8 +69,8 @@ public class RecordFieldTypeVisitorTest {
                 List.class, // List<Map<String,Object>>
                 genericSimpleTypeMirror(Map.class, asList(String.class, Object.class))))).isTrue();
         assertThat(visitor.visit(genericCompoundTypeMirror(
-                List.class, // List<List<Long>>
-                genericSimpleTypeMirror(List.class, Long.class)))).isTrue();
+                List.class, // List<LinkedList<Long>>
+                genericSimpleTypeMirror(LinkedList.class, Long.class)))).isTrue();
     }
 
     @Test
