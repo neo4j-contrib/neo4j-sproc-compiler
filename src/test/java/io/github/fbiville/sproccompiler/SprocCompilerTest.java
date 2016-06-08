@@ -2,6 +2,7 @@ package io.github.fbiville.sproccompiler;
 
 import com.google.testing.compile.CompilationRule;
 import com.google.testing.compile.CompileTester;
+import com.google.testing.compile.CompileTester.UnsuccessfulCompilationClause;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -9,6 +10,7 @@ import javax.annotation.processing.Processor;
 import javax.tools.JavaFileObject;
 
 import java.net.URL;
+import java.util.Arrays;
 
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaFileObjects.forResource;
@@ -19,14 +21,13 @@ import static java.util.Arrays.asList;
 public class SprocCompilerTest {
 
     @Rule public CompilationRule compilation = new CompilationRule();
-
-    Processor processor = new SprocCompiler();
+    private Processor processor = new SprocCompiler();
 
     @Test
     public void fails_if_parameters_are_not_properly_annotated() {
         JavaFileObject sproc = forResource(at("missing_name/MissingNameSproc.java"));
 
-        CompileTester.UnsuccessfulCompilationClause compilation = assert_().about(javaSource())
+        UnsuccessfulCompilationClause compilation = assert_().about(javaSource())
                 .that(sproc)
                 .processedWith(processor)
                 .failsToCompile()
@@ -58,7 +59,7 @@ public class SprocCompilerTest {
     public void fails_if_record_type_has_nonpublic_fields() {
         JavaFileObject record = forResource(at("bad_record_type/BadRecord.java"));
 
-        CompileTester.UnsuccessfulCompilationClause compilation = assert_().about(javaSources())
+        UnsuccessfulCompilationClause compilation = assert_().about(javaSources())
                 .that(asList(forResource("test_classes/bad_record_type/BadRecordTypeSproc.java"), record))
                 .processedWith(processor)
                 .failsToCompile()
@@ -89,7 +90,7 @@ public class SprocCompilerTest {
     public void fails_if_procedure_generic_input_type_is_not_supported() {
         JavaFileObject sproc = forResource(at("bad_proc_input_type/BadGenericInputSproc.java"));
 
-        CompileTester.UnsuccessfulCompilationClause compilation = assert_().about(javaSource())
+        UnsuccessfulCompilationClause compilation = assert_().about(javaSource())
                 .that(sproc)
                 .processedWith(processor)
                 .failsToCompile()
@@ -108,6 +109,44 @@ public class SprocCompilerTest {
                     "<java.util.Map<java.lang.String,java.util.List<java.lang.Object>>>" +
                     " of procedure BadGenericInputSproc#doSomething2"
                 ).in(sproc).onLine(16);
+    }
+
+    @Test
+    public void fails_if_procedure_primitive_record_field_type_is_not_supported() {
+        JavaFileObject record = forResource(at("bad_record_field_type/BadRecordSimpleFieldType.java"));
+
+        assert_().about(javaSources())
+                .that(asList(forResource(at("bad_record_field_type/BadRecordSimpleFieldTypeSproc.java")), record))
+                .processedWith(processor)
+                .failsToCompile()
+                .withErrorCount(1)
+                .withErrorContaining(
+                    "Type of field BadRecordSimpleFieldType#wrongType is not supported"
+                ).in(record).onLine(9);
+    }
+
+    @Test
+    public void fails_if_procedure_generic_record_field_type_is_not_supported() {
+        JavaFileObject record = forResource(at("bad_record_field_type/BadRecordGenericFieldType.java"));
+
+        UnsuccessfulCompilationClause compilation = assert_().about(javaSources())
+                .that(asList(forResource(at("bad_record_field_type/BadRecordGenericFieldTypeSproc.java")), record))
+                .processedWith(processor)
+                .failsToCompile()
+                .withErrorCount(3);
+
+        compilation
+                .withErrorContaining(
+                    "Type of field BadRecordGenericFieldType#wrongType1 is not supported"
+                ).in(record).onLine(14);
+        compilation
+                .withErrorContaining(
+                    "Type of field BadRecordGenericFieldType#wrongType2 is not supported"
+                ).in(record).onLine(15);
+        compilation
+                .withErrorContaining(
+                    "Type of field BadRecordGenericFieldType#wrongType3 is not supported"
+                ).in(record).onLine(16);
     }
 
     private URL at(String resource) {

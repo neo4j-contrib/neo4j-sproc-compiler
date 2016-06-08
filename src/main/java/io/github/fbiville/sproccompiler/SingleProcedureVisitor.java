@@ -15,7 +15,7 @@ import javax.lang.model.util.Types;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class SingleProcedureVisitor extends SimpleElementVisitor8<Stream<CompilationError>, Void> {
+class SingleProcedureVisitor extends SimpleElementVisitor8<Stream<CompilationError>, Void> {
 
     private final Types typeUtils;
     private final Elements elementUtils;
@@ -25,7 +25,7 @@ public class SingleProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
     public SingleProcedureVisitor(Types typeUtils, Elements elementUtils) {
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
-        this.recordVisitor = new RecordTypeVisitor(typeUtils);
+        this.recordVisitor = new RecordTypeVisitor(typeUtils, elementUtils);
         this.parameterTypeVisitor = new ParameterTypeVisitor(typeUtils, elementUtils);
     }
 

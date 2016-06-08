@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 public class MissingNameSproc {
 
     public static class GoodRecord {
-        public int age;
+        public long age;
     }
 
     @Context public GraphDatabaseService db;

@@ -1,7 +1,6 @@
 package io.github.fbiville.sproccompiler;
 
 import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
@@ -10,27 +9,32 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 
 class ParameterTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationError>, VariableElement> {
 
-    private final Types typeUtils;
-    private final Elements elementUtils;
+    private final TypeMirrors typeMirrors;
+    private final Predicate<TypeMirror> allowedTypesValidator;
 
     public ParameterTypeVisitor(Types typeUtils, Elements elementUtils) {
-        this.typeUtils = typeUtils;
-        this.elementUtils = elementUtils;
+        this.typeMirrors = new TypeMirrors(typeUtils, elementUtils);
+        allowedTypesValidator = new AllowedTypesValidator(
+            allowedTypes(),
+                typeUtils, elementUtils
+        );
     }
 
     @Override
     public Stream<CompilationError> visitDeclared(DeclaredType parameterType, VariableElement initialElement) {
         return Stream.concat(
-            validate(parameterType, initialElement),
-            parameterType.getTypeArguments().stream().flatMap(type -> visit(type, initialElement))
+                validate(parameterType, initialElement),
+                parameterType.getTypeArguments().stream().flatMap(type -> visit(type, initialElement))
         );
     }
 
@@ -44,52 +48,27 @@ class ParameterTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationError>, 
         return compilationError(initialElement);
     }
 
-    private final Stream<TypeMirror> allowedTypes() {
-        PrimitiveType bool = primitive(TypeKind.BOOLEAN);
-        PrimitiveType longType = primitive(TypeKind.LONG);
-        PrimitiveType doubleType = primitive(TypeKind.DOUBLE);
+    private final Collection<TypeMirror> allowedTypes() {
+        PrimitiveType bool = typeMirrors.primitive(TypeKind.BOOLEAN);
+        PrimitiveType longType = typeMirrors.primitive(TypeKind.LONG);
+        PrimitiveType doubleType = typeMirrors.primitive(TypeKind.DOUBLE);
         return asList(
-            bool, boxed(bool),
-            longType, boxed(longType),
-            doubleType, boxed(doubleType),
-            typeMirror(String.class),
-            typeMirror(Number.class),
-            typeMirror(Object.class),
-            typeMirror(Map.class),
-            typeMirror(List.class)
-        ).stream();
+            bool, typeMirrors.boxed(bool),
+            longType, typeMirrors.boxed(longType),
+            doubleType, typeMirrors.boxed(doubleType),
+            typeMirrors.typeMirror(String.class),
+            typeMirrors.typeMirror(Number.class),
+            typeMirrors.typeMirror(Object.class),
+            typeMirrors.typeMirror(Map.class),
+            typeMirrors.typeMirror(List.class)
+        );
     }
 
     private Stream<CompilationError> validate(TypeMirror typeMirror, VariableElement initialElement) {
-        if (!isValid(typeMirror)) {
+        if (!allowedTypesValidator.test(typeMirror)) {
             return compilationError(initialElement);
         }
-
         return Stream.empty();
-    }
-
-    private boolean isValid(TypeMirror typeMirror) {
-        return allowedTypes().anyMatch(type -> {
-            return typeUtils.isSameType(
-                    typeUtils.erasure(type),
-                    typeUtils.erasure(typeMirror)
-            );
-        }) && validAsMapType(typeMirror);
-    }
-
-    private boolean validAsMapType(TypeMirror typeMirror) {
-        TypeElement mapElement = elementUtils.getTypeElement(Map.class.getCanonicalName());
-        if (!typeUtils.isSameType(typeUtils.erasure(mapElement.asType()), typeUtils.erasure(typeMirror))) {
-            return true; // check does not apply
-        }
-
-        TypeMirror validMapType = typeUtils.getDeclaredType(
-            mapElement,
-            elementUtils.getTypeElement(String.class.getCanonicalName()).asType(),
-            elementUtils.getTypeElement(Object.class.getCanonicalName()).asType()
-        );
-
-        return typeUtils.isSameType(validMapType, typeMirror);
     }
 
     private Stream<CompilationError> compilationError(VariableElement initialElement) {
@@ -101,17 +80,5 @@ class ParameterTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationError>, 
                 method.getEnclosingElement().getSimpleName(),
                 method.getSimpleName()
         ));
-    }
-
-    private PrimitiveType primitive(TypeKind kind) {
-        return typeUtils.getPrimitiveType(kind);
-    }
-
-    private TypeMirror boxed(PrimitiveType bool) {
-        return typeUtils.boxedClass(bool).asType();
-    }
-
-    private TypeMirror typeMirror(Class<?> type) {
-        return elementUtils.getTypeElement(type.getName()).asType();
     }
 }
