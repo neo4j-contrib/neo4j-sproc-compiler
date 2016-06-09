@@ -1,7 +1,6 @@
 package io.github.fbiville.sproccompiler;
 
 import com.google.testing.compile.CompilationRule;
-import com.google.testing.compile.CompileTester;
 import com.google.testing.compile.CompileTester.UnsuccessfulCompilationClause;
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,7 +9,6 @@ import javax.annotation.processing.Processor;
 import javax.tools.JavaFileObject;
 
 import java.net.URL;
-import java.util.Arrays;
 
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaFileObjects.forResource;
@@ -18,10 +16,10 @@ import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 import static com.google.testing.compile.JavaSourcesSubjectFactory.javaSources;
 import static java.util.Arrays.asList;
 
-public class SprocCompilerTest {
+public class StoredProcedureProcessorTest {
 
     @Rule public CompilationRule compilation = new CompilationRule();
-    private Processor processor = new SprocCompiler();
+    private Processor processor = new StoredProcedureProcessor();
 
     @Test
     public void fails_if_parameters_are_not_properly_annotated() {

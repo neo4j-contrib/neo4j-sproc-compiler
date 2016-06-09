@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 import static javax.tools.Diagnostic.Kind.ERROR;
 
 @AutoService(Processor.class)
-public class SprocCompiler extends AbstractProcessor {
+public class StoredProcedureProcessor extends AbstractProcessor {
 
     private static final Class<? extends Annotation> sprocType = Procedure.class;
     private ElementVisitor<Stream<CompilationError>, Void> parameterVisitor;
@@ -43,7 +43,7 @@ public class SprocCompiler extends AbstractProcessor {
         super.init(processingEnv);
         messager = processingEnv.getMessager();
 
-        parameterVisitor = new SingleProcedureVisitor(
+        parameterVisitor = new StoredProcedureVisitor(
             processingEnv.getTypeUtils(),
             processingEnv.getElementUtils()
         );
