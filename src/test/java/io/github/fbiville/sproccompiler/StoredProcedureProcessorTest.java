@@ -147,6 +147,27 @@ public class StoredProcedureProcessorTest {
                 ).in(record).onLine(16);
     }
 
+    @Test
+    public void fails_if_context_injected_fields_have_wrong_modifiers() {
+        JavaFileObject sproc = forResource(at("bad_context_field/BadContextSproc.java"));
+
+        UnsuccessfulCompilationClause unsuccessfulCompilationClause = assert_().about(javaSource())
+                .that(sproc)
+                .processedWith(processor)
+                .failsToCompile()
+                .withErrorCount(3);
+
+        unsuccessfulCompilationClause
+                .withErrorContaining("Field BadContextSproc#shouldBePublic should be public, non-static and non-final")
+                .in(sproc).onLine(9);
+        unsuccessfulCompilationClause
+                .withErrorContaining("Field BadContextSproc#shouldBeNonStatic should be public, non-static and non-final")
+                .in(sproc).onLine(10);
+        unsuccessfulCompilationClause
+                .withErrorContaining("Field BadContextSproc#shouldBeNonFinal should be public, non-static and non-final")
+                .in(sproc).onLine(11);
+    }
+
     private URL at(String resource) {
         return this.getClass().getResource(String.format("/test_classes/%s", resource));
     }
