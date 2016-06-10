@@ -94,6 +94,7 @@ class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<CompilationErr
     private AnnotationMirror annotationMirror(List<? extends AnnotationMirror> mirrors) {
         return mirrors.stream()
                 .filter(mirror -> {
+                    //TODO fix comparison
                     DeclaredType actualType = mirror.getAnnotationType();
                     String expectedType = Name.class.getSimpleName();
                     return actualType.asElement().getSimpleName().contentEquals(expectedType);

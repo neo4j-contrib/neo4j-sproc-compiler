@@ -9,9 +9,14 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementVisitor;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static javax.tools.Diagnostic.Kind.ERROR;
@@ -21,6 +26,9 @@ public class StoredProcedureProcessor extends AbstractProcessor {
 
     private static final Class<? extends Annotation> sprocType = Procedure.class;
     private static final Class<? extends Annotation> contextType = Context.class;
+    private final Set<Element> visitedProcedures = new LinkedHashSet<>();
+
+    private Function<Collection<Element>, Stream<CompilationError>> duplicateProcedure;
     private ElementVisitor<Stream<CompilationError>, Void> parameterVisitor;
     private ElementVisitor<Stream<CompilationError>, Void> contextFieldVisitor;
     private Messager messager;
@@ -41,12 +49,13 @@ public class StoredProcedureProcessor extends AbstractProcessor {
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-        messager = processingEnv.getMessager();
+        Types typeUtils = processingEnv.getTypeUtils();
+        Elements elementUtils = processingEnv.getElementUtils();
 
-        parameterVisitor = new StoredProcedureVisitor(
-            processingEnv.getTypeUtils(),
-            processingEnv.getElementUtils()
-        );
+        visitedProcedures.clear();
+        duplicateProcedure = new DuplicatedStoredProcedureValidator(typeUtils, elementUtils);
+        messager = processingEnv.getMessager();
+        parameterVisitor = new StoredProcedureVisitor(typeUtils, elementUtils);
         contextFieldVisitor = new ContextFieldVisitor();
     }
 
@@ -56,11 +65,17 @@ public class StoredProcedureProcessor extends AbstractProcessor {
 
         processStoredProcedures(roundEnv);
         processStoredProcedureContextFields(roundEnv);
+        if (roundEnv.processingOver()) {
+            duplicateProcedure.apply(visitedProcedures)
+                    .forEach(this::printError);
+        }
         return false;
     }
 
     private void processStoredProcedures(RoundEnvironment roundEnv) {
-        roundEnv.getElementsAnnotatedWith(sprocType)
+        Set<? extends Element> procedures = roundEnv.getElementsAnnotatedWith(sprocType);
+        visitedProcedures.addAll(procedures);
+        procedures
                 .stream()
                 .flatMap(this::validateStoredProcedure)
                 .forEachOrdered(this::printError);

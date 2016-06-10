@@ -7,7 +7,6 @@ import org.junit.Test;
 
 import javax.annotation.processing.Processor;
 import javax.tools.JavaFileObject;
-
 import java.net.URL;
 
 import static com.google.common.truth.Truth.assert_;
@@ -19,6 +18,7 @@ import static java.util.Arrays.asList;
 public class StoredProcedureProcessorTest {
 
     @Rule public CompilationRule compilation = new CompilationRule();
+
     private Processor processor = new StoredProcedureProcessor();
 
     @Test
@@ -99,14 +99,14 @@ public class StoredProcedureProcessorTest {
                     "Unsupported parameter type " +
                     "<java.util.List<java.util.List<java.util.Map<java.lang.String,java.lang.Thread>>>>" +
                     " of procedure BadGenericInputSproc#doSomething"
-                ).in(sproc).onLine(11);
+                ).in(sproc).onLine(12);
 
         compilation
                 .withErrorContaining(
                     "Unsupported parameter type " +
                     "<java.util.Map<java.lang.String,java.util.List<java.lang.Object>>>" +
                     " of procedure BadGenericInputSproc#doSomething2"
-                ).in(sproc).onLine(16);
+                ).in(sproc).onLine(17);
     }
 
     @Test
@@ -166,6 +166,19 @@ public class StoredProcedureProcessorTest {
         unsuccessfulCompilationClause
                 .withErrorContaining("Field BadContextSproc#shouldBeNonFinal should be public, non-static and non-final")
                 .in(sproc).onLine(11);
+    }
+
+    @Test
+    public void fails_if_duplicate_procedures_are_declared() {
+        JavaFileObject firstDuplicate = forResource(at("duplicated/Sproc1.java"));
+        JavaFileObject secondDuplicate = forResource(at("duplicated/Sproc2.java"));
+
+        assert_().about(javaSources())
+                .that(asList(firstDuplicate, secondDuplicate))
+                .processedWith(processor)
+                .failsToCompile()
+                .withErrorCount(1)
+                .withErrorContaining("Package <duplicated> contains 2 definitions of procedure <foobar>. Offending classes: <Sproc1,Sproc2>");
     }
 
     private URL at(String resource) {

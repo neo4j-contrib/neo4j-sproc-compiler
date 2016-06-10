@@ -1,7 +1,8 @@
 package test_classes.bad_proc_input_type;
 
-import org.neo4j.procedure.Procedure;
 import org.neo4j.procedure.Name;
+import org.neo4j.procedure.Procedure;
+
 import java.util.List;
 import java.util.Map;
 
