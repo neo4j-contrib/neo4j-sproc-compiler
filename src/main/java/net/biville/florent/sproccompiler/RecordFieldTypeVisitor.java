@@ -25,7 +25,11 @@ class RecordFieldTypeVisitor extends SimpleTypeVisitor8<Boolean, Void> {
 
     public RecordFieldTypeVisitor(Types typeUtils, Elements elementUtils) {
         typeMirrors = new TypeMirrors(typeUtils, elementUtils);
-        allowedTypesValidator = new AllowedTypesValidator(allowedTypes(), typeUtils, elementUtils);
+        allowedTypesValidator = new AllowedTypesValidator(
+            typeMirrors.procedureAllowedTypes(),
+            typeUtils,
+            elementUtils
+        );
     }
 
     @Override
@@ -40,24 +44,5 @@ class RecordFieldTypeVisitor extends SimpleTypeVisitor8<Boolean, Void> {
     @Override
     public Boolean visitPrimitive(PrimitiveType primitiveType, Void ignored) {
         return allowedTypesValidator.test(primitiveType);
-    }
-
-    private final Collection<TypeMirror> allowedTypes() {
-        PrimitiveType bool = typeMirrors.primitive(TypeKind.BOOLEAN);
-        PrimitiveType longType = typeMirrors.primitive(TypeKind.LONG);
-        PrimitiveType doubleType = typeMirrors.primitive(TypeKind.DOUBLE);
-        return asList(
-                bool, typeMirrors.boxed(bool),
-                longType, typeMirrors.boxed(longType),
-                doubleType, typeMirrors.boxed(doubleType),
-                typeMirrors.typeMirror(String.class),
-                typeMirrors.typeMirror(Number.class),
-                typeMirrors.typeMirror(Object.class),
-                typeMirrors.typeMirror(Map.class),
-                typeMirrors.typeMirror(List.class),
-                typeMirrors.typeMirror(Path.class),
-                typeMirrors.typeMirror(Node.class),
-                typeMirrors.typeMirror(Relationship.class)
-        );
     }
 }

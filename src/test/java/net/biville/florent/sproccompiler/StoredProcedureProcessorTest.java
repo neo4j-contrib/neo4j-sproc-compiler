@@ -81,7 +81,7 @@ public class StoredProcedureProcessorTest {
                 .withErrorCount(1)
                 .withErrorContaining(
                     "Unsupported parameter type <short> of procedure BadPrimitiveInputSproc#doSomething"
-                ).in(sproc).onLine(9);
+                ).in(sproc).onLine(12);
     }
 
     @Test
@@ -99,14 +99,14 @@ public class StoredProcedureProcessorTest {
                     "Unsupported parameter type " +
                     "<java.util.List<java.util.List<java.util.Map<java.lang.String,java.lang.Thread>>>>" +
                     " of procedure BadGenericInputSproc#doSomething"
-                ).in(sproc).onLine(12);
+                ).in(sproc).onLine(15);
 
         compilation
                 .withErrorContaining(
                     "Unsupported parameter type " +
                     "<java.util.Map<java.lang.String,java.util.List<java.lang.Object>>>" +
                     " of procedure BadGenericInputSproc#doSomething2"
-                ).in(sproc).onLine(17);
+                ).in(sproc).onLine(20);
     }
 
     @Test
