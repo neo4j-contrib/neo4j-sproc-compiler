@@ -8,6 +8,7 @@ import org.neo4j.procedure.Procedure;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 public class BadGenericInputSproc {
 
@@ -17,7 +18,12 @@ public class BadGenericInputSproc {
     }
 
     @Procedure
-    public void doSomething2(@Name("test") Map<String, List<Object>> unsupportedType) {
+    public void doSomething2(@Name("test") Map<String, List<ExecutorService>> unsupportedType) {
+
+    }
+
+    @Procedure
+    public void doSomething3(@Name("test") Map unsupportedType) {
 
     }
 
@@ -28,4 +34,6 @@ public class BadGenericInputSproc {
     @Procedure public void works5(@Name("test") List<List<List<Path>>> supported) {}
     @Procedure public void works6(@Name("test") List<Node> supported) {}
     @Procedure public void works7(@Name("test") List<List<Relationship>> supported) {}
+    @Procedure public void works8(@Name("test") Map<String, List<List<Relationship>>> supported) {}
+    @Procedure public void works9(@Name("test") Map<String, Map<String, List<Node>>> supported) {}
 }

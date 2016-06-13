@@ -1,8 +1,12 @@
 package net.biville.florent.sproccompiler;
 
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.SimpleElementVisitor8;
+import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
 import java.util.Collection;
 import java.util.List;
@@ -45,17 +49,32 @@ class AllowedTypesValidator implements Predicate<TypeMirror> {
 
     private boolean validAsMapType(TypeMirror typeMirror) {
         TypeElement mapElement = elementUtils.getTypeElement(Map.class.getCanonicalName());
-        if (!typeUtils.isSameType(typeUtils.erasure(mapElement.asType()), typeUtils.erasure(typeMirror))) {
+        if (!isMapType(typeMirror, mapElement)) {
             return true; // check does not apply
         }
 
-        TypeMirror validMapType = typeUtils.getDeclaredType(
-                mapElement,
-                elementUtils.getTypeElement(String.class.getCanonicalName()).asType(),
-                elementUtils.getTypeElement(Object.class.getCanonicalName()).asType()
-        );
+        return new SimpleTypeVisitor8<Boolean, Void>() {
+            @Override
+            public Boolean visitDeclared(DeclaredType map, Void aVoid) {
+                List<? extends TypeMirror> typeArguments = map.getTypeArguments();
+                if (typeArguments.size() != 2) {
+                    return false;
+                }
 
-        return typeUtils.isSameType(validMapType, typeMirror);
+                TypeMirror key = typeArguments.get(0);
+                if (!typeUtils.isSameType(key, typeMirrors.typeMirror(String.class))) {
+                    return false;
+                }
+                return test(typeArguments.get(1));
+            }
+        }.visit(typeMirror);
+    }
+
+    private boolean isMapType(TypeMirror typeMirror, TypeElement mapElement) {
+        return typeUtils.isSameType(
+            typeUtils.erasure(mapElement.asType()),
+            typeUtils.erasure(typeMirror)
+        );
     }
 
     private Stream<TypeMirror> allowedTypes() {

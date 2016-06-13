@@ -92,21 +92,26 @@ public class StoredProcedureProcessorTest {
                 .that(sproc)
                 .processedWith(processor)
                 .failsToCompile()
-                .withErrorCount(2);
+                .withErrorCount(3);
 
         compilation
                 .withErrorContaining(
                     "Unsupported parameter type " +
                     "<java.util.List<java.util.List<java.util.Map<java.lang.String,java.lang.Thread>>>>" +
                     " of procedure BadGenericInputSproc#doSomething"
-                ).in(sproc).onLine(15);
+                ).in(sproc).onLine(16);
 
         compilation
                 .withErrorContaining(
                     "Unsupported parameter type " +
-                    "<java.util.Map<java.lang.String,java.util.List<java.lang.Object>>>" +
+                    "<java.util.Map<java.lang.String,java.util.List<java.util.concurrent.ExecutorService>>>" +
                     " of procedure BadGenericInputSproc#doSomething2"
-                ).in(sproc).onLine(20);
+                ).in(sproc).onLine(21);
+
+        compilation
+                .withErrorContaining(
+                    "Unsupported parameter type <java.util.Map> of procedure BadGenericInputSproc#doSomething3"
+                ).in(sproc).onLine(26);
     }
 
     @Test
