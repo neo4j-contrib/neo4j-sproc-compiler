@@ -1,4 +1,4 @@
-package io.github.fbiville.sproccompiler;
+package net.biville.florent.sproccompiler;
 
 import com.google.auto.service.AutoService;
 import org.neo4j.procedure.Context;

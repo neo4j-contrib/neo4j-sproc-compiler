@@ -1,4 +1,4 @@
-package io.github.fbiville.sproccompiler;
+package net.biville.florent.sproccompiler;
 
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;

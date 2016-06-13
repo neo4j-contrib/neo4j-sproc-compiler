@@ -1,4 +1,4 @@
-package io.github.fbiville.sproccompiler;
+package net.biville.florent.sproccompiler;
 
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;

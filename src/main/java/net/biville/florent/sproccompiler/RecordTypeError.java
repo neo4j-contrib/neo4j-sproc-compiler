@@ -1,22 +1,22 @@
-package io.github.fbiville.sproccompiler;
+package net.biville.florent.sproccompiler;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-class ContextFieldError implements CompilationError {
+class RecordTypeError implements CompilationError {
 
-    private final Element field;
+
+    private final Element element;
     private final String errorMessage;
 
-    public ContextFieldError(Element field, String errorMessage, CharSequence... args) {
-
-        this.field = field;
+    public RecordTypeError(Element element, String errorMessage, CharSequence... args) {
+        this.element = element;
         this.errorMessage = String.format(errorMessage, args);
     }
 
     @Override
     public Element getElement() {
-        return field;
+        return element;
     }
 
     @Override
