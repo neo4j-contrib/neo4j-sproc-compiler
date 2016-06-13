@@ -10,4 +10,46 @@ some unit tests to verify some runtime behaviours.
 
 # Use the processor
 
-TODO
+## Maven
+
+Add to `<repositories>` section:
+
+```xml
+   <repository>
+      <id>sonatype-snapshot-repo</id>
+      <name>Sonatype SNAPSHOT repository</name>
+      <layout>default</layout>
+      <releases>
+         <enabled>false</enabled>
+      </releases>
+      <snapshots>
+         <enabled>true</enabled>
+      </snapshots>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+   </repository>
+```
+
+And add the dependency simply as follows:
+
+```xml
+<dependency>
+   <groupId>net.biville.florent</groupId>
+   <artifactId>neo4j-sproc-compiler</artifactId>
+   <version>1.0-SNAPSHOT</version>
+   <optional>true</optional>
+</dependency>
+```
+
+## Gradle
+
+Just add to your repositories:
+
+```
+maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+```
+
+And to your dependencies:
+
+```
+compileOnly group: 'net.biville.florent', name: 'neo4j-sproc-compiler', version:'1.0-SNAPSHOT'
+```
