@@ -18,12 +18,12 @@ public class Records {
     }
 
     public static class SimpleTypesWrapper {
-        public String           field01;
-        public long             field02;
-        public Long             field03;
-        public Number           field04;
-        public Boolean          field05;
-        public boolean          field06;
+        public String           field01 = "string";
+        public long             field02 = 2;
+        public Long             field03 = 3L;
+        public Number           field04 = 4.0;
+        public Boolean          field05 = true;
+        public boolean          field06 = true;
         public Object           field07;
         public Node             field08;
         public Path             field09;
