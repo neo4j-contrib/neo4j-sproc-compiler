@@ -12,6 +12,10 @@ some unit tests to verify some runtime behaviours.
 
 ## Maven
 
+### SNAPSHOT repository
+
+> If you do not plan to test the development version, you can skip this section.
+
 Add to `<repositories>` section:
 
 ```xml
@@ -29,18 +33,24 @@ Add to `<repositories>` section:
    </repository>
 ```
 
-And add the dependency simply as follows:
+### Dependency
+
+Add the dependency simply as follows:
 
 ```xml
 <dependency>
    <groupId>net.biville.florent</groupId>
    <artifactId>neo4j-sproc-compiler</artifactId>
-   <version>1.0-SNAPSHOT</version>
+   <version><!-- check last release on https://search.maven.org --></version>
    <optional>true</optional>
 </dependency>
 ```
 
 ## Gradle
+
+### SNAPSHOT repository
+
+> If you do not plan to test the development version, you can skip this section.
 
 Just add to your repositories:
 
@@ -48,8 +58,10 @@ Just add to your repositories:
 maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 ```
 
-And to your dependencies:
+### Dependency
+
+Add to your dependencies:
 
 ```
-compileOnly group: 'net.biville.florent', name: 'neo4j-sproc-compiler', version:'1.0-SNAPSHOT'
+compileOnly group: 'net.biville.florent', name: 'neo4j-sproc-compiler', version:'/* check last release on https://search.maven.org */'
 ```
