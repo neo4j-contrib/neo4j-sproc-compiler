@@ -23,7 +23,7 @@ public class StoredProcedureProcessorTest {
 
     @Test
     public void fails_if_parameters_are_not_properly_annotated() {
-        JavaFileObject sproc = forResource(at("missing_name/MissingNameSproc.java"));
+        JavaFileObject sproc = resource("missing_name/MissingNameSproc.java");
 
         UnsuccessfulCompilationClause compilation = assert_().about(javaSource())
                 .that(sproc)
@@ -42,7 +42,7 @@ public class StoredProcedureProcessorTest {
 
     @Test
     public void fails_if_return_type_is_not_stream() {
-        JavaFileObject sproc = forResource(at("bad_return_type/BadReturnTypeSproc.java"));
+        JavaFileObject sproc = resource("bad_return_type/BadReturnTypeSproc.java");
 
         assert_().about(javaSource())
                 .that(sproc)
@@ -55,7 +55,7 @@ public class StoredProcedureProcessorTest {
 
     @Test
     public void fails_if_record_type_has_nonpublic_fields() {
-        JavaFileObject record = forResource(at("bad_record_type/BadRecord.java"));
+        JavaFileObject record = resource("bad_record_type/BadRecord.java");
 
         UnsuccessfulCompilationClause compilation = assert_().about(javaSources())
                 .that(asList(forResource("test_classes/bad_record_type/BadRecordTypeSproc.java"), record))
@@ -72,7 +72,7 @@ public class StoredProcedureProcessorTest {
 
     @Test
     public void fails_if_procedure_primitive_input_type_is_not_supported() {
-        JavaFileObject sproc = forResource(at("bad_proc_input_type/BadPrimitiveInputSproc.java"));
+        JavaFileObject sproc = resource("bad_proc_input_type/BadPrimitiveInputSproc.java");
 
         assert_().about(javaSource())
                 .that(sproc)
@@ -86,7 +86,7 @@ public class StoredProcedureProcessorTest {
 
     @Test
     public void fails_if_procedure_generic_input_type_is_not_supported() {
-        JavaFileObject sproc = forResource(at("bad_proc_input_type/BadGenericInputSproc.java"));
+        JavaFileObject sproc = resource("bad_proc_input_type/BadGenericInputSproc.java");
 
         UnsuccessfulCompilationClause compilation = assert_().about(javaSource())
                 .that(sproc)
@@ -116,10 +116,10 @@ public class StoredProcedureProcessorTest {
 
     @Test
     public void fails_if_procedure_primitive_record_field_type_is_not_supported() {
-        JavaFileObject record = forResource(at("bad_record_field_type/BadRecordSimpleFieldType.java"));
+        JavaFileObject record = resource("bad_record_field_type/BadRecordSimpleFieldType.java");
 
         assert_().about(javaSources())
-                .that(asList(forResource(at("bad_record_field_type/BadRecordSimpleFieldTypeSproc.java")), record))
+                .that(asList(resource("bad_record_field_type/BadRecordSimpleFieldTypeSproc.java"), record))
                 .processedWith(processor)
                 .failsToCompile()
                 .withErrorCount(1)
@@ -130,10 +130,10 @@ public class StoredProcedureProcessorTest {
 
     @Test
     public void fails_if_procedure_generic_record_field_type_is_not_supported() {
-        JavaFileObject record = forResource(at("bad_record_field_type/BadRecordGenericFieldType.java"));
+        JavaFileObject record = resource("bad_record_field_type/BadRecordGenericFieldType.java");
 
         UnsuccessfulCompilationClause compilation = assert_().about(javaSources())
-                .that(asList(forResource(at("bad_record_field_type/BadRecordGenericFieldTypeSproc.java")), record))
+                .that(asList(resource("bad_record_field_type/BadRecordGenericFieldTypeSproc.java"), record))
                 .processedWith(processor)
                 .failsToCompile()
                 .withErrorCount(3);
@@ -154,7 +154,7 @@ public class StoredProcedureProcessorTest {
 
     @Test
     public void fails_if_context_injected_fields_have_wrong_modifiers() {
-        JavaFileObject sproc = forResource(at("bad_context_field/BadContextSproc.java"));
+        JavaFileObject sproc = resource("bad_context_field/BadContextSproc.java");
 
         UnsuccessfulCompilationClause unsuccessfulCompilationClause = assert_().about(javaSource())
                 .that(sproc)
@@ -175,8 +175,8 @@ public class StoredProcedureProcessorTest {
 
     @Test
     public void fails_if_duplicate_procedures_are_declared() {
-        JavaFileObject firstDuplicate = forResource(at("duplicated/Sproc1.java"));
-        JavaFileObject secondDuplicate = forResource(at("duplicated/Sproc2.java"));
+        JavaFileObject firstDuplicate = resource("duplicated/Sproc1.java");
+        JavaFileObject secondDuplicate = resource("duplicated/Sproc2.java");
 
         assert_().about(javaSources())
                 .that(asList(firstDuplicate, secondDuplicate))
@@ -184,6 +184,21 @@ public class StoredProcedureProcessorTest {
                 .failsToCompile()
                 .withErrorCount(1)
                 .withErrorContaining("Package <duplicated> contains 2 definitions of procedure <foobar>. Offending classes: <Sproc1,Sproc2>");
+    }
+
+    @Test
+    public void succeeds_to_process_valid_stored_procedures() {
+        assert_().about(javaSources())
+                .that(asList(
+                        resource("working_procedures/Procedures.java"),
+                        resource("working_procedures/Records.java")))
+                .processedWith(processor)
+                .compilesWithoutError();
+
+    }
+
+    private JavaFileObject resource(String url) {
+        return forResource(at(url));
     }
 
     private URL at(String resource) {
