@@ -46,7 +46,7 @@ public class ContextFieldVisitorTest {
 
         assertThat(result)
                 .extracting(CompilationError::getErrorMessage)
-                .containsExactly("Field NonPublicContextMisuse#arithm should be public, non-static and non-final");
+                .containsExactly("@org.neo4j.procedure.Context usage error: field NonPublicContextMisuse#arithm should be public, non-static and non-final");
     }
 
     @Test
@@ -57,7 +57,7 @@ public class ContextFieldVisitorTest {
 
         assertThat(result)
                 .extracting(CompilationError::getErrorMessage)
-                .containsExactly("Field StaticContextMisuse#db should be public, non-static and non-final");
+                .containsExactly("@org.neo4j.procedure.Context usage error: field StaticContextMisuse#db should be public, non-static and non-final");
     }
 
     @Test
@@ -68,7 +68,7 @@ public class ContextFieldVisitorTest {
 
         assertThat(result)
                 .extracting(CompilationError::getErrorMessage)
-                .containsExactly("Field FinalContextMisuse#kernel should be public, non-static and non-final");
+                .containsExactly("@org.neo4j.procedure.Context usage error: field FinalContextMisuse#kernel should be public, non-static and non-final");
     }
 
     private Stream<VariableElement> getFields(Class<?> type) {

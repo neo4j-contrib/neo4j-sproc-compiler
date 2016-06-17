@@ -49,7 +49,7 @@ class RecordTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationError>, Voi
                 })
                 .map(element -> new RecordTypeError(
                         element,
-                        "Field %s#%s must be public",
+                        "Record definition error: field %s#%s must be public",
                         recordElement.getSimpleName(),
                         element.getSimpleName()
                 ));
@@ -62,7 +62,7 @@ class RecordTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationError>, Voi
                 .filter(element -> !fieldTypeVisitor.visit(element.asType()))
                 .map(element -> new RecordTypeError(
                         element,
-                        "Type of field %s#%s is not supported",
+                        "Record definition error: type of field %s#%s is not supported",
                         recordElement.getSimpleName(),
                         element.getSimpleName()
                 ));

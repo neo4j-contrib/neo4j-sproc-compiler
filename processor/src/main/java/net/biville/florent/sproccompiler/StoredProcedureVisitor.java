@@ -51,7 +51,7 @@ class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<CompilationErr
             return Stream.of(new ParameterMissingAnnotationError(
                     parameter,
                     annotationMirror(parameter.getAnnotationMirrors()),
-                    "Missing @%s on parameter <%s>",
+                    "@%s usage error: missing on parameter <%s>",
                     Name.class.getCanonicalName(),
                     nameOf(parameter)
             ));

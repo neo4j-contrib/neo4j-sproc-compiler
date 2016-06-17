@@ -1,5 +1,7 @@
 package net.biville.florent.sproccompiler;
 
+import org.neo4j.procedure.Context;
+
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.SimpleElementVisitor8;
@@ -17,7 +19,8 @@ class ContextFieldVisitor extends SimpleElementVisitor8<Stream<CompilationError>
 
             return Stream.of(new ContextFieldError(
                     field,
-                    "Field %s#%s should be public, non-static and non-final",
+                    "@%s usage error: field %s#%s should be public, non-static and non-final",
+                    Context.class.getName(),
                     field.getEnclosingElement().getSimpleName(),
                     field.getSimpleName()
             ));
