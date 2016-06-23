@@ -8,6 +8,19 @@ at compile time.
 While most of the basic checks can be performed, you still need
 some unit tests to verify some runtime behaviours.
 
+
+# What does it do?
+
+Once the stored procedure compiler is added into your project classpath (see Maven/Gradle
+instructions below), it will trigger compilation failures if any of the following requirements
+is not met:
+
+ - `@Context` fields must be `public` and non-`final`
+ - `@Procedure` method must return a Stream
+ - `@Procedure` parameter and record types must be supported
+ - `@Procedure` parameters must be annotated with `@Name`
+ - within the same package, all `@Procedure` method names must be unique
+
 # Use the processor
 
 ## Maven
