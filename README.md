@@ -55,6 +55,7 @@ Add the dependency simply as follows:
    <groupId>net.biville.florent</groupId>
    <artifactId>neo4j-sproc-compiler</artifactId>
    <version><!-- check last release on https://search.maven.org --></version>
+   <scope>provided</scope>
    <optional>true</optional>
 </dependency>
 ```
