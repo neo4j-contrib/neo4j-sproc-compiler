@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016-2016 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.biville.florent.sproccompiler;
 
 import com.google.testing.compile.CompilationRule;
@@ -33,11 +48,11 @@ public class StoredProcedureProcessorTest {
 
         compilation
                 .withErrorContaining("@org.neo4j.procedure.Name usage error: missing on parameter <parameter>")
-                .in(sproc).onLine(18);
+                .in(sproc).onLine(33);
 
         compilation
                 .withErrorContaining("@org.neo4j.procedure.Name usage error: missing on parameter <otherParam>")
-                .in(sproc).onLine(18);
+                .in(sproc).onLine(33);
     }
 
     @Test
@@ -50,7 +65,7 @@ public class StoredProcedureProcessorTest {
                 .failsToCompile()
                 .withErrorCount(1)
                 .withErrorContaining("Return type of BadReturnTypeSproc#niceSproc must be java.util.stream.Stream")
-                .in(sproc).onLine(13);
+                .in(sproc).onLine(28);
     }
 
     @Test
@@ -64,10 +79,10 @@ public class StoredProcedureProcessorTest {
                 .withErrorCount(2);
 
         compilation.withErrorContaining("Record definition error: field BadRecord#label must be public")
-                .in(record).onLine(6);
+                .in(record).onLine(21);
 
         compilation.withErrorContaining("Record definition error: field BadRecord#age must be public")
-                .in(record).onLine(7);
+                .in(record).onLine(22);
     }
 
     @Test
@@ -81,7 +96,7 @@ public class StoredProcedureProcessorTest {
                 .withErrorCount(1)
                 .withErrorContaining(
                     "Unsupported parameter type <short> of procedure BadPrimitiveInputSproc#doSomething"
-                ).in(sproc).onLine(12);
+                ).in(sproc).onLine(27);
     }
 
     @Test
@@ -99,19 +114,19 @@ public class StoredProcedureProcessorTest {
                     "Unsupported parameter type " +
                     "<java.util.List<java.util.List<java.util.Map<java.lang.String,java.lang.Thread>>>>" +
                     " of procedure BadGenericInputSproc#doSomething"
-                ).in(sproc).onLine(16);
+                ).in(sproc).onLine(31);
 
         compilation
                 .withErrorContaining(
                     "Unsupported parameter type " +
                     "<java.util.Map<java.lang.String,java.util.List<java.util.concurrent.ExecutorService>>>" +
                     " of procedure BadGenericInputSproc#doSomething2"
-                ).in(sproc).onLine(21);
+                ).in(sproc).onLine(36);
 
         compilation
                 .withErrorContaining(
                     "Unsupported parameter type <java.util.Map> of procedure BadGenericInputSproc#doSomething3"
-                ).in(sproc).onLine(26);
+                ).in(sproc).onLine(41);
     }
 
     @Test
@@ -125,7 +140,7 @@ public class StoredProcedureProcessorTest {
                 .withErrorCount(1)
                 .withErrorContaining(
                     "Record definition error: type of field BadRecordSimpleFieldType#wrongType is not supported"
-                ).in(record).onLine(9);
+                ).in(record).onLine(24);
     }
 
     @Test
@@ -141,15 +156,15 @@ public class StoredProcedureProcessorTest {
         compilation
                 .withErrorContaining(
                     "Record definition error: type of field BadRecordGenericFieldType#wrongType1 is not supported"
-                ).in(record).onLine(14);
+                ).in(record).onLine(29);
         compilation
                 .withErrorContaining(
                     "Record definition error: type of field BadRecordGenericFieldType#wrongType2 is not supported"
-                ).in(record).onLine(15);
+                ).in(record).onLine(30);
         compilation
                 .withErrorContaining(
                     "Record definition error: type of field BadRecordGenericFieldType#wrongType3 is not supported"
-                ).in(record).onLine(16);
+                ).in(record).onLine(31);
     }
 
     @Test
@@ -164,13 +179,13 @@ public class StoredProcedureProcessorTest {
 
         unsuccessfulCompilationClause
                 .withErrorContaining("@org.neo4j.procedure.Context usage error: field BadContextSproc#shouldBePublic should be public, non-static and non-final")
-                .in(sproc).onLine(9);
+                .in(sproc).onLine(24);
         unsuccessfulCompilationClause
                 .withErrorContaining("@org.neo4j.procedure.Context usage error: field BadContextSproc#shouldBeNonStatic should be public, non-static and non-final")
-                .in(sproc).onLine(10);
+                .in(sproc).onLine(25);
         unsuccessfulCompilationClause
                 .withErrorContaining("@org.neo4j.procedure.Context usage error: field BadContextSproc#shouldBeNonFinal should be public, non-static and non-final")
-                .in(sproc).onLine(11);
+                .in(sproc).onLine(26);
     }
 
     @Test
