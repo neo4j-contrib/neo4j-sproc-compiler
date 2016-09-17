@@ -72,7 +72,7 @@ public class StoredProcedureProcessor extends AbstractProcessor {
         Elements elementUtils = processingEnv.getElementUtils();
 
         visitedProcedures.clear();
-        duplicateProcedure = new DuplicatedStoredProcedureValidator();
+        duplicateProcedure = new DuplicatedStoredProcedureValidator(typeUtils, elementUtils);
         messager = processingEnv.getMessager();
         parameterVisitor = new StoredProcedureVisitor(typeUtils, elementUtils);
         contextFieldVisitor = new ContextFieldVisitor();

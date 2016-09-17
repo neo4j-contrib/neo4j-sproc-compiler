@@ -17,18 +17,34 @@ package net.biville.florent.sproccompiler.validators;
 
 import net.biville.florent.sproccompiler.errors.CompilationError;
 import net.biville.florent.sproccompiler.errors.DuplicatedProcedureError;
+import org.neo4j.procedure.Procedure;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.SimpleElementVisitor8;
+import javax.lang.model.util.SimpleTypeVisitor8;
+import javax.lang.model.util.Types;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
 
 public class DuplicatedStoredProcedureValidator implements Function<Collection<Element>, Stream<CompilationError>> {
+
+    private final Types types;
+    private final Elements elements;
+
+    public DuplicatedStoredProcedureValidator(Types types, Elements elements) {
+        this.types = types;
+        this.elements = elements;
+    }
 
     @Override
     public Stream<CompilationError> apply(Collection<Element> visitedProcedures) {
@@ -36,43 +52,60 @@ public class DuplicatedStoredProcedureValidator implements Function<Collection<E
     }
 
     private Stream<CompilationError> findDuplicates(Collection<Element> visitedProcedures) {
-        return indexByLocation(visitedProcedures)
-                .filter(c -> c.getValue().size() > 1)
-                .map(this::asError);
+        return indexByName(visitedProcedures)
+                .filter(index -> index.getValue().size() > 1)
+                .flatMap(this::asErrors);
     }
 
-    private Stream<Map.Entry<ProcedureSourceLocation, List<VisitedProcedureMapEntry>>> indexByLocation(Collection<Element> visitedProcedures) {
+    private Stream<Map.Entry<String, List<Element>>> indexByName(Collection<Element> visitedProcedures) {
         return visitedProcedures.stream()
-                .map(VisitedProcedureMapEntry::new)
-                .collect(groupingBy(VisitedProcedureMapEntry::key))
+                .collect(groupingBy(this::getProcedureName))
                 .entrySet().stream();
     }
 
-    private CompilationError asError(Map.Entry<ProcedureSourceLocation, List<VisitedProcedureMapEntry>> entry) {
-        ProcedureSourceLocation duplicatedName = entry.getKey();
-        List<VisitedProcedureMapEntry> duplicates = entry.getValue();
-        Element packageElement = duplicates.get(0).value().getEnclosingElement().getEnclosingElement();
-        return duplicationError(
+    private String getProcedureName(Element procedure) {
+        Procedure annotation = procedure.getAnnotation(Procedure.class);
+        String override = annotation.value();
+        if (!override.isEmpty()) {
+            return override;
+        }
+        return defaultQualifiedName(procedure);
+    }
+
+    private String defaultQualifiedName(Element procedure) {
+        return String.format("%s#%s", elements.getPackageOf(procedure).toString(), procedure.getSimpleName());
+    }
+
+    private Stream<CompilationError> asErrors(Map.Entry<String, List<Element>> indexedProcedures) {
+        String duplicatedName = indexedProcedures.getKey();
+        return indexedProcedures.getValue().stream()
+                .map(procedure -> asError(procedure, duplicatedName, indexedProcedures.getValue().size()));
+    }
+
+    private CompilationError asError(Element procedure, String duplicatedName, int duplicateCount) {
+        return new DuplicatedProcedureError(
+                procedure,
+                getAnnotationMirror(procedure),
+                "Procedure name <%s> is already defined %s times. It should be defined only once!",
                 duplicatedName,
-                duplicates.size(),
-                packageElement,
-                duplicates.stream()
-                        .map(dupe -> dupe.value().getEnclosingElement().getSimpleName().toString())
-                        .collect(Collectors.joining(","))
+                String.valueOf(duplicateCount)
         );
     }
 
-    private DuplicatedProcedureError duplicationError(ProcedureSourceLocation duplicateLocation,
-                                                      int size,
-                                                      Element element,
-                                                      String classes) {
-        return new DuplicatedProcedureError(
-                element,
-                "Package <%s> contains %s definitions of procedure <%s>. Offending classes: <%s>",
-                duplicateLocation.packageName(),
-                String.valueOf(size),
-                duplicateLocation.methodName(),
-                classes
-        );
+    private AnnotationMirror getAnnotationMirror(Element procedure) {
+        return procedure.getAnnotationMirrors().stream()
+                .filter(this::isProcedureAnnotationType)
+                .findFirst()
+                .get();
     }
+
+    private boolean isProcedureAnnotationType(AnnotationMirror mirror) {
+        return new SimpleElementVisitor8<Boolean, Void>() {
+            @Override
+            public Boolean visitType(TypeElement annotationType, Void aVoid) {
+                return annotationType.getQualifiedName().contentEquals(Procedure.class.getName());
+            }
+        }.visit(mirror.getAnnotationType().asElement());
+    }
+
 }

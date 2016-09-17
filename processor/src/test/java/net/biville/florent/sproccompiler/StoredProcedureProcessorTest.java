@@ -197,8 +197,10 @@ public class StoredProcedureProcessorTest {
                 .that(asList(firstDuplicate, secondDuplicate))
                 .processedWith(processor)
                 .failsToCompile()
-                .withErrorCount(1)
-                .withErrorContaining("Package <duplicated> contains 2 definitions of procedure <foobar>. Offending classes: <Sproc1,Sproc2>");
+                .withErrorCount(2)
+                .withErrorContaining(
+                        "Procedure name <test_classes.duplicated#foobar> is already defined 2 times. " +
+                        "It should be defined only once!");
     }
 
     @Test

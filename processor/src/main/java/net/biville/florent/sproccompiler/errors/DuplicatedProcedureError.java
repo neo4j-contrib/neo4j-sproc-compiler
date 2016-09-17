@@ -21,12 +21,15 @@ import javax.lang.model.element.Element;
 public class DuplicatedProcedureError implements CompilationError {
 
     private final Element element;
+    private final AnnotationMirror annotationMirror;
     private final String errorMessage;
 
     public DuplicatedProcedureError(Element element,
+                                    AnnotationMirror annotationMirror,
                                     String errorMessage,
                                     CharSequence... args) {
         this.element = element;
+        this.annotationMirror = annotationMirror;
         this.errorMessage = String.format(errorMessage, args);
     }
 
@@ -37,7 +40,7 @@ public class DuplicatedProcedureError implements CompilationError {
 
     @Override
     public AnnotationMirror getMirror() {
-        return null;
+        return annotationMirror;
     }
 
     @Override

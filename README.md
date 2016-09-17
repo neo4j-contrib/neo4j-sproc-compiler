@@ -19,7 +19,11 @@ is not met:
  - `@Procedure` method must return a Stream
  - `@Procedure` parameter and record types must be supported
  - `@Procedure` parameters must be annotated with `@Name`
- - within the same package, all `@Procedure` method names must be unique
+ - all visited `@Procedure` names must be unique*
+
+* A deployed Neo4j instance can aggregate stored procedures from different JARs.
+Inter-JAR naming conflict cannot be detected by an annotation processor.
+By definition, it can only inspect one compilation at a time.
 
 # Use the processor
 
