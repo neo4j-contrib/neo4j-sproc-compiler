@@ -17,60 +17,87 @@ package net.biville.florent.sproccompiler.validators;
 
 import net.biville.florent.sproccompiler.compilerutils.TypeMirrors;
 
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
+/**
+ * This predicate makes sure that a given declared type (record field type,
+ * procedure parameter type...) is supported by Neo4j stored procedures.
+ */
 public class AllowedTypesValidator implements Predicate<TypeMirror> {
 
     private final TypeMirrors typeMirrors;
-    private Collection<TypeMirror> whitelistedTypes;
+    private final Collection<TypeMirror> whitelistedTypes;
     private final Types typeUtils;
-    private final Elements elementUtils;
 
-    public AllowedTypesValidator(Collection<TypeMirror> whitelistedTypes,
-                                 Types typeUtils,
-                                 Elements elementUtils) {
+    public AllowedTypesValidator(TypeMirrors typeMirrors,
+                                 Types typeUtils) {
 
-        this.whitelistedTypes = whitelistedTypes;
+        this.typeMirrors = typeMirrors;
+        this.whitelistedTypes = typeMirrors.procedureAllowedTypes();
         this.typeUtils = typeUtils;
-        this.elementUtils = elementUtils;
-        this.typeMirrors = new TypeMirrors(typeUtils, elementUtils);
     }
 
     @Override
     public boolean test(TypeMirror typeMirror) {
-        return allowedTypes().anyMatch(type -> {
+        TypeMirror erasedActualType = typeUtils.erasure(typeMirror);
+
+        return isValidErasedType(erasedActualType)
+                && (!isSameErasedType(List.class, typeMirror) || isValidListType(typeMirror))
+                && (!isSameErasedType(Map.class,  typeMirror) || isValidMapType(typeMirror));
+    }
+
+    private boolean isValidErasedType(TypeMirror actualType) {
+        return whitelistedTypes.stream().anyMatch(type -> {
             TypeMirror erasedAllowedType = typeUtils.erasure(type);
-            TypeMirror erasedActualType = typeUtils.erasure(typeMirror);
 
             TypeMirror map = typeUtils.erasure(typeMirrors.typeMirror(Map.class));
             TypeMirror list = typeUtils.erasure(typeMirrors.typeMirror(List.class));
             if (typeUtils.isSameType(erasedAllowedType, map) || typeUtils.isSameType(erasedAllowedType, list)) {
-                return typeUtils.isSubtype(erasedActualType, erasedAllowedType);
+                return typeUtils.isSubtype(actualType, erasedAllowedType);
             }
 
-            return typeUtils.isSameType(erasedActualType, erasedAllowedType);
-        }) && validAsMapType(typeMirror);
+            return typeUtils.isSameType(actualType, erasedAllowedType);
+        });
     }
 
-    private boolean validAsMapType(TypeMirror typeMirror) {
-        TypeElement mapElement = elementUtils.getTypeElement(Map.class.getCanonicalName());
-        if (!isMapType(typeMirror, mapElement)) {
-            return true; // check does not apply
-        }
-
+    /**
+     * Recursively visits List type arguments
+     *
+     * @param typeMirror the List type mirror
+     * @return true if the declaration is valid, false otherwise
+     */
+    private boolean isValidListType(TypeMirror typeMirror) {
         return new SimpleTypeVisitor8<Boolean, Void>() {
             @Override
-            public Boolean visitDeclared(DeclaredType map, Void aVoid) {
+            public Boolean visitDeclared(DeclaredType list, Void aVoid) {
+                List<? extends TypeMirror> typeArguments = list.getTypeArguments();
+                if (typeArguments.size() != 1) {
+                    return false;
+                }
+                return test(typeArguments.get(0));
+            }
+        }.visit(typeMirror);
+    }
+
+    /**
+     * Recursively visits Map type arguments
+     * Map key type argument must be a String as of Neo4j stored procedure specification
+     * Map value type argument is recursively visited
+     *
+     * @param typeMirror Map type mirror
+     * @return true if the declaration is valid, false otherwise
+     */
+    private boolean isValidMapType(TypeMirror typeMirror) {
+        return new SimpleTypeVisitor8<Boolean, Void>() {
+            @Override
+            public Boolean visitDeclared(DeclaredType map, Void ignored) {
                 List<? extends TypeMirror> typeArguments = map.getTypeArguments();
                 if (typeArguments.size() != 2) {
                     return false;
@@ -85,14 +112,11 @@ public class AllowedTypesValidator implements Predicate<TypeMirror> {
         }.visit(typeMirror);
     }
 
-    private boolean isMapType(TypeMirror typeMirror, TypeElement mapElement) {
+    private boolean isSameErasedType(Class<?> type, TypeMirror typeMirror) {
         return typeUtils.isSameType(
-            typeUtils.erasure(mapElement.asType()),
-            typeUtils.erasure(typeMirror)
+                typeUtils.erasure(typeMirrors.typeMirror(type)),
+                typeUtils.erasure(typeMirror)
         );
     }
 
-    private Stream<TypeMirror> allowedTypes() {
-        return whitelistedTypes.stream();
-    }
 }

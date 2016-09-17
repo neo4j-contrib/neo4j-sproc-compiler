@@ -15,6 +15,7 @@
  */
 package net.biville.florent.sproccompiler.visitors;
 
+import net.biville.florent.sproccompiler.compilerutils.TypeMirrors;
 import net.biville.florent.sproccompiler.errors.CompilationError;
 import net.biville.florent.sproccompiler.errors.RecordTypeError;
 
@@ -23,7 +24,6 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVisitor;
-import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
 import java.util.Set;
@@ -38,9 +38,9 @@ public class RecordTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationErro
     private final Types typeUtils;
     private final TypeVisitor<Boolean, Void> fieldTypeVisitor;
 
-    public RecordTypeVisitor(Types typeUtils, Elements elementUtils) {
+    public RecordTypeVisitor(Types typeUtils, TypeMirrors typeMirrors) {
         this.typeUtils = typeUtils;
-        fieldTypeVisitor = new RecordFieldTypeVisitor(typeUtils, elementUtils);
+        fieldTypeVisitor = new RecordFieldTypeVisitor(typeUtils, typeMirrors);
     }
 
     @Override

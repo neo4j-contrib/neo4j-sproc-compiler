@@ -15,6 +15,7 @@
  */
 package net.biville.florent.sproccompiler.visitors;
 
+import net.biville.florent.sproccompiler.compilerutils.TypeMirrors;
 import net.biville.florent.sproccompiler.errors.CompilationError;
 import net.biville.florent.sproccompiler.errors.ParameterMissingAnnotationError;
 import net.biville.florent.sproccompiler.errors.ReturnTypeError;
@@ -41,10 +42,11 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
     private final TypeVisitor<Stream<CompilationError>, VariableElement> parameterTypeVisitor;
 
     public StoredProcedureVisitor(Types typeUtils, Elements elementUtils) {
+        TypeMirrors typeMirrors = new TypeMirrors(typeUtils, elementUtils);
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
-        this.recordVisitor = new RecordTypeVisitor(typeUtils, elementUtils);
-        this.parameterTypeVisitor = new ParameterTypeVisitor(typeUtils, elementUtils);
+        this.recordVisitor = new RecordTypeVisitor(typeUtils, typeMirrors);
+        this.parameterTypeVisitor = new ParameterTypeVisitor(typeUtils, typeMirrors);
     }
 
     /**

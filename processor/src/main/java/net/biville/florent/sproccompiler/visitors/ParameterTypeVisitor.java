@@ -25,7 +25,6 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
 import java.util.function.Predicate;
@@ -33,16 +32,10 @@ import java.util.stream.Stream;
 
 public class ParameterTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationError>, VariableElement> {
 
-    private final TypeMirrors typeMirrors;
     private final Predicate<TypeMirror> allowedTypesValidator;
 
-    public ParameterTypeVisitor(Types typeUtils, Elements elementUtils) {
-        this.typeMirrors = new TypeMirrors(typeUtils, elementUtils);
-        allowedTypesValidator = new AllowedTypesValidator(
-            typeMirrors.procedureAllowedTypes(),
-            typeUtils,
-            elementUtils
-        );
+    public ParameterTypeVisitor(Types typeUtils, TypeMirrors typeMirrors) {
+        allowedTypesValidator = new AllowedTypesValidator(typeMirrors, typeUtils);
     }
 
     @Override
