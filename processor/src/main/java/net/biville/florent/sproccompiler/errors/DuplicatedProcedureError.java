@@ -1,9 +1,9 @@
-package net.biville.florent.sproccompiler;
+package net.biville.florent.sproccompiler.errors;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-class DuplicatedProcedureError implements CompilationError {
+public class DuplicatedProcedureError implements CompilationError {
 
     private final Element element;
     private final String errorMessage;

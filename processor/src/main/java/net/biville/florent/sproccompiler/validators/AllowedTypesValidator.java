@@ -1,11 +1,11 @@
-package net.biville.florent.sproccompiler;
+package net.biville.florent.sproccompiler.validators;
+
+import net.biville.florent.sproccompiler.compilerutils.TypeMirrors;
 
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
-import javax.lang.model.util.SimpleElementVisitor8;
 import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
 import java.util.Collection;
@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-class AllowedTypesValidator implements Predicate<TypeMirror> {
+public class AllowedTypesValidator implements Predicate<TypeMirror> {
 
     private final TypeMirrors typeMirrors;
     private Collection<TypeMirror> whitelistedTypes;

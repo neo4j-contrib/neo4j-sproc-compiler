@@ -1,5 +1,7 @@
-package net.biville.florent.sproccompiler;
+package net.biville.florent.sproccompiler.visitors;
 
+import net.biville.florent.sproccompiler.errors.CompilationError;
+import net.biville.florent.sproccompiler.errors.ContextFieldError;
 import org.neo4j.procedure.Context;
 
 import javax.lang.model.element.Modifier;
@@ -8,7 +10,7 @@ import javax.lang.model.util.SimpleElementVisitor8;
 import java.util.Set;
 import java.util.stream.Stream;
 
-class ContextFieldVisitor extends SimpleElementVisitor8<Stream<CompilationError>, Void> {
+public class ContextFieldVisitor extends SimpleElementVisitor8<Stream<CompilationError>, Void> {
 
     @Override
     public Stream<CompilationError> visitVariable(VariableElement field, Void ignored) {

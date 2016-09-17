@@ -1,4 +1,4 @@
-package net.biville.florent.sproccompiler;
+package net.biville.florent.sproccompiler.compilerutils;
 
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
@@ -15,7 +15,7 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 
-class TypeMirrors {
+public class TypeMirrors {
 
     private Types typeUtils;
     private Elements elementUtils;

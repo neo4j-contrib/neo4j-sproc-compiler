@@ -1,4 +1,9 @@
-package net.biville.florent.sproccompiler;
+package net.biville.florent.sproccompiler.visitors;
+
+import net.biville.florent.sproccompiler.validators.AllowedTypesValidator;
+import net.biville.florent.sproccompiler.compilerutils.TypeMirrors;
+import net.biville.florent.sproccompiler.errors.CompilationError;
+import net.biville.florent.sproccompiler.errors.ParameterTypeError;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.VariableElement;
@@ -11,7 +16,7 @@ import javax.lang.model.util.Types;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-class ParameterTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationError>, VariableElement> {
+public class ParameterTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationError>, VariableElement> {
 
     private final TypeMirrors typeMirrors;
     private final Predicate<TypeMirror> allowedTypesValidator;

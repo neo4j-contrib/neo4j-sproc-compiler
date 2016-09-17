@@ -1,8 +1,9 @@
-package net.biville.florent.sproccompiler;
+package net.biville.florent.sproccompiler.validators;
+
+import net.biville.florent.sproccompiler.errors.CompilationError;
+import net.biville.florent.sproccompiler.errors.DuplicatedProcedureError;
 
 import javax.lang.model.element.Element;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -12,15 +13,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
 
-class DuplicatedStoredProcedureValidator implements Function<Collection<Element>, Stream<CompilationError>> {
-
-    private final Types typeUtils;
-    private final Elements elementUtils;
-
-    public DuplicatedStoredProcedureValidator(Types typeUtils, Elements elementUtils) {
-        this.typeUtils = typeUtils;
-        this.elementUtils = elementUtils;
-    }
+public class DuplicatedStoredProcedureValidator implements Function<Collection<Element>, Stream<CompilationError>> {
 
     @Override
     public Stream<CompilationError> apply(Collection<Element> visitedProcedures) {

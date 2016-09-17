@@ -1,5 +1,8 @@
-package net.biville.florent.sproccompiler;
+package net.biville.florent.sproccompiler.visitors;
 
+import net.biville.florent.sproccompiler.errors.CompilationError;
+import net.biville.florent.sproccompiler.errors.ParameterMissingAnnotationError;
+import net.biville.florent.sproccompiler.errors.ReturnTypeError;
 import org.neo4j.procedure.Name;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -15,7 +18,7 @@ import javax.lang.model.util.Types;
 import java.util.List;
 import java.util.stream.Stream;
 
-class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<CompilationError>, Void> {
+public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<CompilationError>, Void> {
 
     private final Types typeUtils;
     private final Elements elementUtils;

@@ -1,4 +1,7 @@
-package net.biville.florent.sproccompiler;
+package net.biville.florent.sproccompiler.visitors;
+
+import net.biville.florent.sproccompiler.errors.CompilationError;
+import net.biville.florent.sproccompiler.errors.RecordTypeError;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
@@ -15,7 +18,7 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.lang.model.element.Modifier.STATIC;
 import static javax.lang.model.util.ElementFilter.fieldsIn;
 
-class RecordTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationError>, Void> {
+public class RecordTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationError>, Void> {
 
     private final Types typeUtils;
     private final TypeVisitor<Boolean, Void> fieldTypeVisitor;

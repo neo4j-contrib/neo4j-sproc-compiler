@@ -1,6 +1,7 @@
-package net.biville.florent.sproccompiler;
+package net.biville.florent.sproccompiler.visitors;
 
 import com.google.testing.compile.CompilationRule;
+import net.biville.florent.sproccompiler.visitors.RecordFieldTypeVisitor;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

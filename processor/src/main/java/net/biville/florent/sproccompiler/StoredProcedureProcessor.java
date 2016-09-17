@@ -1,6 +1,10 @@
 package net.biville.florent.sproccompiler;
 
 import com.google.auto.service.AutoService;
+import net.biville.florent.sproccompiler.errors.CompilationError;
+import net.biville.florent.sproccompiler.validators.DuplicatedStoredProcedureValidator;
+import net.biville.florent.sproccompiler.visitors.ContextFieldVisitor;
+import net.biville.florent.sproccompiler.visitors.StoredProcedureVisitor;
 import org.neo4j.procedure.Context;
 import org.neo4j.procedure.Procedure;
 
@@ -53,7 +57,7 @@ public class StoredProcedureProcessor extends AbstractProcessor {
         Elements elementUtils = processingEnv.getElementUtils();
 
         visitedProcedures.clear();
-        duplicateProcedure = new DuplicatedStoredProcedureValidator(typeUtils, elementUtils);
+        duplicateProcedure = new DuplicatedStoredProcedureValidator();
         messager = processingEnv.getMessager();
         parameterVisitor = new StoredProcedureVisitor(typeUtils, elementUtils);
         contextFieldVisitor = new ContextFieldVisitor();

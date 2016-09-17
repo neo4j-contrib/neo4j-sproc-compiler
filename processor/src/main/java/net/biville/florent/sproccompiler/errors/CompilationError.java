@@ -1,4 +1,4 @@
-package net.biville.florent.sproccompiler;
+package net.biville.florent.sproccompiler.errors;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;

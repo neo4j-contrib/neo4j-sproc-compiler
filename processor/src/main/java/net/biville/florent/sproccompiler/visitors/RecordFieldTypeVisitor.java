@@ -1,24 +1,17 @@
-package net.biville.florent.sproccompiler;
+package net.biville.florent.sproccompiler.visitors;
 
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Path;
-import org.neo4j.graphdb.Relationship;
+import net.biville.florent.sproccompiler.validators.AllowedTypesValidator;
+import net.biville.florent.sproccompiler.compilerutils.TypeMirrors;
 
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 
-import static java.util.Arrays.asList;
-
-class RecordFieldTypeVisitor extends SimpleTypeVisitor8<Boolean, Void> {
+public class RecordFieldTypeVisitor extends SimpleTypeVisitor8<Boolean, Void> {
 
     private final TypeMirrors typeMirrors;
     private final Predicate<TypeMirror> allowedTypesValidator;

@@ -1,15 +1,16 @@
-package net.biville.florent.sproccompiler;
+package net.biville.florent.sproccompiler.errors;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-class ReturnTypeError implements CompilationError {
-
+public class ParameterMissingAnnotationError implements CompilationError {
     private final Element element;
+    private final AnnotationMirror mirror;
     private final String errorMessage;
 
-    public ReturnTypeError(Element element, String errorMessage, CharSequence... args) {
+    public ParameterMissingAnnotationError(Element element, AnnotationMirror mirror, String errorMessage, String... args) {
         this.element = element;
+        this.mirror = mirror;
         this.errorMessage = String.format(errorMessage, args);
     }
 
@@ -20,7 +21,7 @@ class ReturnTypeError implements CompilationError {
 
     @Override
     public AnnotationMirror getMirror() {
-        return null;
+        return mirror;
     }
 
     @Override

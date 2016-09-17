@@ -1,4 +1,4 @@
-package net.biville.florent.sproccompiler;
+package net.biville.florent.sproccompiler.validators;
 
 import java.util.Objects;
 

@@ -1,14 +1,14 @@
-package net.biville.florent.sproccompiler;
+package net.biville.florent.sproccompiler.errors;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-class ParameterTypeError implements CompilationError {
+public class ReturnTypeError implements CompilationError {
 
     private final Element element;
     private final String errorMessage;
 
-    public ParameterTypeError(Element element, String errorMessage, CharSequence... args) {
+    public ReturnTypeError(Element element, String errorMessage, CharSequence... args) {
         this.element = element;
         this.errorMessage = String.format(errorMessage, args);
     }
