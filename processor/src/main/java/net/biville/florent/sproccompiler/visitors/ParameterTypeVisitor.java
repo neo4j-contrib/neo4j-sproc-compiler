@@ -15,22 +15,17 @@
  */
 package net.biville.florent.sproccompiler.visitors;
 
-import net.biville.florent.sproccompiler.validators.AllowedTypesValidator;
 import net.biville.florent.sproccompiler.compilerutils.TypeMirrorUtils;
-import net.biville.florent.sproccompiler.errors.CompilationError;
-import net.biville.florent.sproccompiler.errors.ParameterTypeError;
+import net.biville.florent.sproccompiler.validators.AllowedTypesValidator;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
-class ParameterTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationError>, VariableElement> {
+class ParameterTypeVisitor extends SimpleTypeVisitor8<Boolean, Void> {
 
     private final Predicate<TypeMirror> allowedTypesValidator;
 
@@ -39,35 +34,16 @@ class ParameterTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationError>, 
     }
 
     @Override
-    public Stream<CompilationError> visitDeclared(DeclaredType parameterType, VariableElement initialElement) {
-        return validate(parameterType, initialElement);
+    public Boolean visitDeclared(DeclaredType parameterType, Void ignored) {
+        return validate(parameterType);
     }
 
     @Override
-    public Stream<CompilationError> visitPrimitive(PrimitiveType primitive, VariableElement initialElement) {
-        return validate(primitive, initialElement);
+    public Boolean visitPrimitive(PrimitiveType primitive, Void ignored) {
+        return validate(primitive);
     }
 
-    @Override
-    protected Stream<CompilationError> defaultAction(TypeMirror unknown, VariableElement initialElement) {
-        return compilationError(initialElement);
-    }
-
-    private Stream<CompilationError> validate(TypeMirror typeMirror, VariableElement initialElement) {
-        if (!allowedTypesValidator.test(typeMirror)) {
-            return compilationError(initialElement);
-        }
-        return Stream.empty();
-    }
-
-    private Stream<CompilationError> compilationError(VariableElement initialElement) {
-        Element method = initialElement.getEnclosingElement();
-        return Stream.of(new ParameterTypeError(
-                initialElement,
-                "Unsupported parameter type <%s> of procedure %s#%s",
-                initialElement.asType().toString(),
-                method.getEnclosingElement().getSimpleName(),
-                method.getSimpleName()
-        ));
+    private Boolean validate(TypeMirror typeMirror) {
+        return allowedTypesValidator.test(typeMirror);
     }
 }

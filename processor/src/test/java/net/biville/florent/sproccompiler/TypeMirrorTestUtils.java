@@ -53,8 +53,8 @@ public class TypeMirrorTestUtils {
         );
     }
 
-    public PrimitiveType typeOf(TypeKind aDouble) {
-        return typeMirrors.primitive(aDouble);
+    public PrimitiveType typeOf(TypeKind kind) {
+        return typeMirrors.primitive(kind);
     }
 
     public TypeMirror typeOf(Class<?> type) {

@@ -18,10 +18,12 @@ package net.biville.florent.sproccompiler.visitors;
 import net.biville.florent.sproccompiler.compilerutils.TypeMirrorUtils;
 import net.biville.florent.sproccompiler.errors.CompilationError;
 import net.biville.florent.sproccompiler.errors.ParameterMissingAnnotationError;
+import net.biville.florent.sproccompiler.errors.ParameterTypeError;
 import net.biville.florent.sproccompiler.errors.ReturnTypeError;
 import org.neo4j.procedure.Name;
 
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
@@ -38,7 +40,7 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
     private final Types typeUtils;
     private final Elements elementUtils;
     private final TypeVisitor<Stream<CompilationError>, Void> recordVisitor;
-    private final TypeVisitor<Stream<CompilationError>, VariableElement> parameterTypeVisitor;
+    private final TypeVisitor<Boolean, Void> parameterTypeVisitor;
 
     public StoredProcedureVisitor(Types typeUtils, Elements elementUtils) {
         TypeMirrorUtils typeMirrors = new TypeMirrorUtils(typeUtils, elementUtils);
@@ -76,7 +78,17 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
             ));
         }
 
-        return parameterTypeVisitor.visit(parameter.asType(), parameter);
+        if (!parameterTypeVisitor.visit(parameter.asType())) {
+            Element method = parameter.getEnclosingElement();
+            return Stream.of(new ParameterTypeError(
+                    parameter,
+                    "Unsupported parameter type <%s> of procedure %s#%s",
+                    parameter.asType().toString(),
+                    method.getEnclosingElement().getSimpleName(),
+                    method.getSimpleName()
+            ));
+        }
+        return Stream.empty();
     }
 
     private Stream<CompilationError> validateParameters(List<? extends VariableElement> parameters, Void ignored) {

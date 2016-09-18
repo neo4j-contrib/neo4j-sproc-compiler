@@ -25,7 +25,7 @@ import javax.lang.model.type.TypeVisitor;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-public class RecordFieldTypeVisitorTest extends TypeValidationTestSuite {
+public class ParameterTypeVisitorTest extends TypeValidationTestSuite {
 
     @Rule public CompilationRule compilationRule = new CompilationRule();
     private Types types;
@@ -42,7 +42,7 @@ public class RecordFieldTypeVisitorTest extends TypeValidationTestSuite {
 
     @Override
     protected TypeVisitor<Boolean, Void> visitor() {
-        return new RecordFieldTypeVisitor(types, typeMirrorUtils);
+        return new ParameterTypeVisitor(types, typeMirrorUtils);
     }
 
     @Override
