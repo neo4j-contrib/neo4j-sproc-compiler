@@ -15,7 +15,7 @@
  */
 package net.biville.florent.sproccompiler.visitors;
 
-import net.biville.florent.sproccompiler.TypeMirrorTestUtils;
+import net.biville.florent.sproccompiler.testutils.TypeMirrorTestUtils;
 import org.junit.Test;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;

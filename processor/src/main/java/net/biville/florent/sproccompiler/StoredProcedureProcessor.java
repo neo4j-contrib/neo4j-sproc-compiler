@@ -17,10 +17,9 @@ package net.biville.florent.sproccompiler;
 
 import com.google.auto.service.AutoService;
 import net.biville.florent.sproccompiler.errors.CompilationError;
+import net.biville.florent.sproccompiler.errors.ErrorPrinter;
 import net.biville.florent.sproccompiler.validators.DuplicatedStoredProcedureValidator;
-import net.biville.florent.sproccompiler.visitors.ContextFieldVisitor;
 import net.biville.florent.sproccompiler.visitors.StoredProcedureVisitor;
-import org.neo4j.procedure.Context;
 import org.neo4j.procedure.Procedure;
 
 import javax.annotation.processing.*;
@@ -38,25 +37,21 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static javax.tools.Diagnostic.Kind.ERROR;
-
 @AutoService(Processor.class)
 public class StoredProcedureProcessor extends AbstractProcessor {
 
     private static final Class<? extends Annotation> sprocType = Procedure.class;
-    private static final Class<? extends Annotation> contextType = Context.class;
     private final Set<Element> visitedProcedures = new LinkedHashSet<>();
 
     private Function<Collection<Element>, Stream<CompilationError>> duplicateProcedure;
     private ElementVisitor<Stream<CompilationError>, Void> storedProcedureVisitor;
     private ElementVisitor<Stream<CompilationError>, Void> contextFieldVisitor;
-    private Messager messager;
+    private ErrorPrinter errorPrinter;
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> types = new HashSet<>();
         types.add(sprocType.getName());
-        types.add(contextType.getName());
         return types;
     }
 
@@ -72,10 +67,8 @@ public class StoredProcedureProcessor extends AbstractProcessor {
         Elements elementUtils = processingEnv.getElementUtils();
 
         visitedProcedures.clear();
-        messager = processingEnv.getMessager();
-
+        errorPrinter = new ErrorPrinter(processingEnv.getMessager());
         storedProcedureVisitor = new StoredProcedureVisitor(typeUtils, elementUtils);
-        contextFieldVisitor = new ContextFieldVisitor();
         duplicateProcedure = new DuplicatedStoredProcedureValidator(typeUtils, elementUtils);
     }
 
@@ -84,10 +77,8 @@ public class StoredProcedureProcessor extends AbstractProcessor {
                            RoundEnvironment roundEnv) {
 
         processStoredProcedures(roundEnv);
-        processStoredProcedureContextFields(roundEnv);
         if (roundEnv.processingOver()) {
-            duplicateProcedure.apply(visitedProcedures)
-                    .forEach(this::printError);
+            duplicateProcedure.apply(visitedProcedures).forEach(errorPrinter::print);
         }
         return false;
     }
@@ -98,31 +89,11 @@ public class StoredProcedureProcessor extends AbstractProcessor {
         procedures
                 .stream()
                 .flatMap(this::validateStoredProcedure)
-                .forEachOrdered(this::printError);
-    }
-
-    private void processStoredProcedureContextFields(RoundEnvironment roundEnv) {
-        roundEnv.getElementsAnnotatedWith(contextType)
-                .stream()
-                .flatMap(this::validateContextField)
-                .forEachOrdered(this::printError);
-
+                .forEachOrdered(errorPrinter::print);
     }
 
     private Stream<CompilationError> validateStoredProcedure(Element element) {
         return storedProcedureVisitor.visit(element);
     }
 
-    private Stream<CompilationError> validateContextField(Element element) {
-        return contextFieldVisitor.visit(element);
-    }
-
-    private void printError(CompilationError error) {
-        messager.printMessage(
-                ERROR,
-                error.getErrorMessage(),
-                error.getElement(),
-                error.getMirror()
-        );
-    }
 }

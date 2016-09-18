@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.biville.florent.sproccompiler;
+package net.biville.florent.sproccompiler.testutils;
 
 import net.biville.florent.sproccompiler.compilerutils.TypeMirrorUtils;
 

@@ -16,7 +16,7 @@
 package net.biville.florent.sproccompiler.validators;
 
 import com.google.testing.compile.CompilationRule;
-import net.biville.florent.sproccompiler.TypeMirrorTestUtils;
+import net.biville.florent.sproccompiler.testutils.TypeMirrorTestUtils;
 import net.biville.florent.sproccompiler.compilerutils.TypeMirrorUtils;
 import org.junit.Before;
 import org.junit.Rule;
