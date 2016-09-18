@@ -25,72 +25,77 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.stream.Stream;
 import javax.lang.model.element.ElementVisitor;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.Elements;
-import java.util.stream.Stream;
 
 import static javax.lang.model.util.ElementFilter.fieldsIn;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ContextFieldVisitorTest {
+public class ContextFieldVisitorTest
+{
 
-    @Rule public CompilationRule compilationRule = new CompilationRule();
-    private ElementVisitor<Stream<CompilationError>, Void> contextFieldVisitor = new ContextFieldVisitor();
+    @Rule
+    public CompilationRule compilationRule = new CompilationRule();
+    private ElementVisitor<Stream<CompilationError>,Void> contextFieldVisitor = new ContextFieldVisitor();
     private Elements elements;
 
     @Before
-    public void prepare() {
+    public void prepare()
+    {
         elements = compilationRule.getElements();
     }
 
     @Test
-    public void validates_visibility_of_fields() throws Exception {
-        Stream<VariableElement> fields = getFields(GoodContextUse.class);
+    public void validates_visibility_of_fields() throws Exception
+    {
+        Stream<VariableElement> fields = getFields( GoodContextUse.class );
 
-        Stream<CompilationError> result = fields.flatMap(contextFieldVisitor::visit);
+        Stream<CompilationError> result = fields.flatMap( contextFieldVisitor::visit );
 
-        assertThat(result).isEmpty();
+        assertThat( result ).isEmpty();
     }
 
     @Test
-    public void rejects_non_public_fields() throws Exception {
-        Stream<VariableElement> fields = getFields(NonPublicContextMisuse.class);
+    public void rejects_non_public_fields() throws Exception
+    {
+        Stream<VariableElement> fields = getFields( NonPublicContextMisuse.class );
 
-        Stream<CompilationError> result = fields.flatMap(contextFieldVisitor::visit);
+        Stream<CompilationError> result = fields.flatMap( contextFieldVisitor::visit );
 
-        assertThat(result)
-                .extracting(CompilationError::getErrorMessage)
-                .containsExactly("@org.neo4j.procedure.Context usage error: field NonPublicContextMisuse#arithm should be public, non-static and non-final");
+        assertThat( result ).extracting( CompilationError::getErrorMessage ).containsExactly(
+                "@org.neo4j.procedure.Context usage error: field NonPublicContextMisuse#arithm should be public, non-static and non-final" );
     }
 
     @Test
-    public void rejects_static_fields() throws Exception {
-        Stream<VariableElement> fields = getFields(StaticContextMisuse.class);
+    public void rejects_static_fields() throws Exception
+    {
+        Stream<VariableElement> fields = getFields( StaticContextMisuse.class );
 
-        Stream<CompilationError> result = fields.flatMap(contextFieldVisitor::visit);
+        Stream<CompilationError> result = fields.flatMap( contextFieldVisitor::visit );
 
-        assertThat(result)
-                .extracting(CompilationError::getErrorMessage)
-                .containsExactly("@org.neo4j.procedure.Context usage error: field StaticContextMisuse#db should be public, non-static and non-final");
+        assertThat( result ).extracting( CompilationError::getErrorMessage ).containsExactly(
+                "@org.neo4j.procedure.Context usage error: field StaticContextMisuse#db should be public, non-static and non-final" );
     }
 
     @Test
-    public void rejects_final_fields() throws Exception {
-        Stream<VariableElement> fields = getFields(FinalContextMisuse.class);
+    public void rejects_final_fields() throws Exception
+    {
+        Stream<VariableElement> fields = getFields( FinalContextMisuse.class );
 
-        Stream<CompilationError> result = fields.flatMap(contextFieldVisitor::visit);
+        Stream<CompilationError> result = fields.flatMap( contextFieldVisitor::visit );
 
-        assertThat(result)
-                .extracting(CompilationError::getErrorMessage)
-                .containsExactly("@org.neo4j.procedure.Context usage error: field FinalContextMisuse#kernel should be public, non-static and non-final");
+        assertThat( result ).extracting( CompilationError::getErrorMessage ).containsExactly(
+                "@org.neo4j.procedure.Context usage error: field FinalContextMisuse#kernel should be public, non-static and non-final" );
     }
 
-    private Stream<VariableElement> getFields(Class<?> type) {
-        TypeElement procedure = elements.getTypeElement(type.getName());
+    private Stream<VariableElement> getFields( Class<?> type )
+    {
+        TypeElement procedure = elements.getTypeElement( type.getName() );
 
-        return fieldsIn(procedure.getEnclosedElements()).stream();
+        return fieldsIn( procedure.getEnclosedElements() ).stream();
     }
 }
 

@@ -15,7 +15,8 @@
  */
 package net.biville.florent.sproccompiler.visitors.examples;
 
-public class ValidRecord {
+public class ValidRecord
+{
     private static String BAR = "bar";
 
     public String foo = BAR;

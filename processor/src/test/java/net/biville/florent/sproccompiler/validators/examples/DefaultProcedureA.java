@@ -17,9 +17,11 @@ package net.biville.florent.sproccompiler.validators.examples;
 
 import org.neo4j.procedure.Procedure;
 
-public class DefaultProcedureA {
+public class DefaultProcedureA
+{
     @Procedure
-    public void procedure() {
+    public void procedure()
+    {
 
     }
 }

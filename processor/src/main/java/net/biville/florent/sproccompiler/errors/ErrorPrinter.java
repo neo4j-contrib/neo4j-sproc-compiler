@@ -19,20 +19,18 @@ import javax.annotation.processing.Messager;
 
 import static javax.tools.Diagnostic.Kind.ERROR;
 
-public class ErrorPrinter {
+public class ErrorPrinter
+{
 
     private final Messager messager;
 
-    public ErrorPrinter(Messager messager) {
+    public ErrorPrinter( Messager messager )
+    {
         this.messager = messager;
     }
 
-    public void print(CompilationError error) {
-        messager.printMessage(
-                ERROR,
-                error.getErrorMessage(),
-                error.getElement(),
-                error.getMirror()
-        );
+    public void print( CompilationError error )
+    {
+        messager.printMessage( ERROR, error.getErrorMessage(), error.getElement(), error.getMirror() );
     }
 }

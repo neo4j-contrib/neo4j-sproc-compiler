@@ -17,30 +17,29 @@ package net.biville.florent.sproccompiler.visitors;
 
 import net.biville.florent.sproccompiler.errors.CompilationError;
 import net.biville.florent.sproccompiler.errors.ContextFieldError;
-import org.neo4j.procedure.Context;
 
+import java.util.Set;
+import java.util.stream.Stream;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.SimpleElementVisitor8;
-import java.util.Set;
-import java.util.stream.Stream;
 
-public class ContextFieldVisitor extends SimpleElementVisitor8<Stream<CompilationError>, Void> {
+import org.neo4j.procedure.Context;
+
+public class ContextFieldVisitor extends SimpleElementVisitor8<Stream<CompilationError>,Void>
+{
 
     @Override
-    public Stream<CompilationError> visitVariable(VariableElement field, Void ignored) {
+    public Stream<CompilationError> visitVariable( VariableElement field, Void ignored )
+    {
         Set<Modifier> modifiers = field.getModifiers();
-        if (!modifiers.contains(Modifier.PUBLIC)
-                || modifiers.contains(Modifier.STATIC)
-                || modifiers.contains(Modifier.FINAL)) {
+        if ( !modifiers.contains( Modifier.PUBLIC ) || modifiers.contains( Modifier.STATIC ) ||
+                modifiers.contains( Modifier.FINAL ) )
+        {
 
-            return Stream.of(new ContextFieldError(
-                    field,
-                    "@%s usage error: field %s#%s should be public, non-static and non-final",
-                    Context.class.getName(),
-                    field.getEnclosingElement().getSimpleName(),
-                    field.getSimpleName()
-            ));
+            return Stream.of( new ContextFieldError( field,
+                    "@%s usage error: field %s#%s should be public, non-static and non-final", Context.class.getName(),
+                    field.getEnclosingElement().getSimpleName(), field.getSimpleName() ) );
         }
         return Stream.empty();
     }

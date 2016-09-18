@@ -20,15 +20,7 @@ import net.biville.florent.sproccompiler.errors.CompilationError;
 import net.biville.florent.sproccompiler.errors.ErrorPrinter;
 import net.biville.florent.sproccompiler.validators.DuplicatedStoredProcedureValidator;
 import net.biville.florent.sproccompiler.visitors.StoredProcedureVisitor;
-import org.neo4j.procedure.Procedure;
 
-import javax.annotation.processing.*;
-import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementVisitor;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashSet;
@@ -36,64 +28,80 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.Processor;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementVisitor;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
-@AutoService(Processor.class)
-public class StoredProcedureProcessor extends AbstractProcessor {
+import org.neo4j.procedure.Procedure;
+
+@AutoService( Processor.class )
+public class StoredProcedureProcessor extends AbstractProcessor
+{
 
     private static final Class<? extends Annotation> sprocType = Procedure.class;
     private final Set<Element> visitedProcedures = new LinkedHashSet<>();
 
-    private Function<Collection<Element>, Stream<CompilationError>> duplicateProcedure;
-    private ElementVisitor<Stream<CompilationError>, Void> storedProcedureVisitor;
-    private ElementVisitor<Stream<CompilationError>, Void> contextFieldVisitor;
+    private Function<Collection<Element>,Stream<CompilationError>> duplicateProcedure;
+    private ElementVisitor<Stream<CompilationError>,Void> storedProcedureVisitor;
+    private ElementVisitor<Stream<CompilationError>,Void> contextFieldVisitor;
     private ErrorPrinter errorPrinter;
 
     @Override
-    public Set<String> getSupportedAnnotationTypes() {
+    public Set<String> getSupportedAnnotationTypes()
+    {
         Set<String> types = new HashSet<>();
-        types.add(sprocType.getName());
+        types.add( sprocType.getName() );
         return types;
     }
 
     @Override
-    public SourceVersion getSupportedSourceVersion() {
+    public SourceVersion getSupportedSourceVersion()
+    {
         return SourceVersion.RELEASE_8;
     }
 
     @Override
-    public synchronized void init(ProcessingEnvironment processingEnv) {
-        super.init(processingEnv);
+    public synchronized void init( ProcessingEnvironment processingEnv )
+    {
+        super.init( processingEnv );
         Types typeUtils = processingEnv.getTypeUtils();
         Elements elementUtils = processingEnv.getElementUtils();
 
         visitedProcedures.clear();
-        errorPrinter = new ErrorPrinter(processingEnv.getMessager());
-        storedProcedureVisitor = new StoredProcedureVisitor(typeUtils, elementUtils);
-        duplicateProcedure = new DuplicatedStoredProcedureValidator(typeUtils, elementUtils);
+        errorPrinter = new ErrorPrinter( processingEnv.getMessager() );
+        storedProcedureVisitor = new StoredProcedureVisitor( typeUtils, elementUtils );
+        duplicateProcedure = new DuplicatedStoredProcedureValidator( typeUtils, elementUtils );
     }
 
     @Override
-    public boolean process(Set<? extends TypeElement> annotations,
-                           RoundEnvironment roundEnv) {
+    public boolean process( Set<? extends TypeElement> annotations, RoundEnvironment roundEnv )
+    {
 
-        processStoredProcedures(roundEnv);
-        if (roundEnv.processingOver()) {
-            duplicateProcedure.apply(visitedProcedures).forEach(errorPrinter::print);
+        processStoredProcedures( roundEnv );
+        if ( roundEnv.processingOver() )
+        {
+            duplicateProcedure.apply( visitedProcedures ).forEach( errorPrinter::print );
         }
         return false;
     }
 
-    private void processStoredProcedures(RoundEnvironment roundEnv) {
-        Set<? extends Element> procedures = roundEnv.getElementsAnnotatedWith(sprocType);
-        visitedProcedures.addAll(procedures);
-        procedures
-                .stream()
-                .flatMap(this::validateStoredProcedure)
-                .forEachOrdered(errorPrinter::print);
+    private void processStoredProcedures( RoundEnvironment roundEnv )
+    {
+        Set<? extends Element> procedures = roundEnv.getElementsAnnotatedWith( sprocType );
+        visitedProcedures.addAll( procedures );
+        procedures.stream().flatMap( this::validateStoredProcedure ).forEachOrdered( errorPrinter::print );
     }
 
-    private Stream<CompilationError> validateStoredProcedure(Element element) {
-        return storedProcedureVisitor.visit(element);
+    private Stream<CompilationError> validateStoredProcedure( Element element )
+    {
+        return storedProcedureVisitor.visit( element );
     }
 
 }

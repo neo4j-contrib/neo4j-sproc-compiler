@@ -18,6 +18,8 @@ package net.biville.florent.sproccompiler.visitors.examples;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.procedure.Context;
 
-public class GoodContextUse {
-    @Context public GraphDatabaseService db;
+public class GoodContextUse
+{
+    @Context
+    public GraphDatabaseService db;
 }

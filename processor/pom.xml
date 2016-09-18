@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -56,7 +57,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <annotationProcessors>
-                        <annotationProcessor>com.google.auto.service.processor.AutoServiceProcessor</annotationProcessor>
+                        <annotationProcessor>com.google.auto.service.processor.AutoServiceProcessor
+                        </annotationProcessor>
                     </annotationProcessors>
                 </configuration>
             </plugin>
@@ -67,7 +69,9 @@
                 <executions>
                     <execution>
                         <id>add-custom-test-sources</id>
-                        <goals><goal>add-test-source</goal></goals>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
                         <configuration>
                             <sources>
                                 <source>${project.basedir}/src/test/resources/test_classes/working_procedures</source>
@@ -85,7 +89,9 @@
                             <goal>test-jar</goal>
                         </goals>
                         <configuration>
-                            <includes><include>**/working_procedures/**</include></includes>
+                            <includes>
+                                <include>**/working_procedures/**</include>
+                            </includes>
                         </configuration>
                     </execution>
                 </executions>

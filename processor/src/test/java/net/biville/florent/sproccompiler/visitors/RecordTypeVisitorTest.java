@@ -16,52 +16,55 @@
 package net.biville.florent.sproccompiler.visitors;
 
 import com.google.testing.compile.CompilationRule;
-import net.biville.florent.sproccompiler.testutils.TypeMirrorTestUtils;
 import net.biville.florent.sproccompiler.compilerutils.TypeMirrorUtils;
+import net.biville.florent.sproccompiler.testutils.TypeMirrorTestUtils;
 import net.biville.florent.sproccompiler.visitors.examples.InvalidRecord;
 import net.biville.florent.sproccompiler.visitors.examples.ValidRecord;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.stream.Stream;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RecordTypeVisitorTest {
+public class RecordTypeVisitorTest
+{
 
-    @Rule public CompilationRule compilation = new CompilationRule();
+    @Rule
+    public CompilationRule compilation = new CompilationRule();
     private TypeMirrorTestUtils typeMirrorTestUtils;
     private RecordTypeVisitor visitor;
 
     @Before
-    public void prepare() {
+    public void prepare()
+    {
         Types types = compilation.getTypes();
         Elements elements = compilation.getElements();
-        TypeMirrorUtils typeMirrors = new TypeMirrorUtils(types, elements);
+        TypeMirrorUtils typeMirrors = new TypeMirrorUtils( types, elements );
 
-        typeMirrorTestUtils = new TypeMirrorTestUtils(types, elements, typeMirrors);
-        visitor = new RecordTypeVisitor(types, typeMirrors);
+        typeMirrorTestUtils = new TypeMirrorTestUtils( types, elements, typeMirrors );
+        visitor = new RecordTypeVisitor( types, typeMirrors );
     }
 
     @Test
-    public void validates_supported_record() throws Exception {
-        TypeMirror recordStreamType = typeMirrorTestUtils.typeOf(Stream.class, ValidRecord.class);
+    public void validates_supported_record() throws Exception
+    {
+        TypeMirror recordStreamType = typeMirrorTestUtils.typeOf( Stream.class, ValidRecord.class );
 
-        assertThat(visitor.visit(recordStreamType)).isEmpty();
+        assertThat( visitor.visit( recordStreamType ) ).isEmpty();
     }
 
     @Test
-    public void does_not_validate_record_with_nonpublic_fields() throws Exception {
-        TypeMirror recordStreamType = typeMirrorTestUtils.typeOf(Stream.class, InvalidRecord.class);
+    public void does_not_validate_record_with_nonpublic_fields() throws Exception
+    {
+        TypeMirror recordStreamType = typeMirrorTestUtils.typeOf( Stream.class, InvalidRecord.class );
 
-        assertThat(visitor.visit(recordStreamType))
-                .hasSize(1)
-                .extracting("errorMessage")
-                .contains("Record definition error: field InvalidRecord#foo must be public");
+        assertThat( visitor.visit( recordStreamType ) ).hasSize( 1 ).extracting( "errorMessage" )
+                .contains( "Record definition error: field InvalidRecord#foo must be public" );
     }
 
 }

@@ -18,6 +18,8 @@ package net.biville.florent.sproccompiler.visitors.examples;
 import org.neo4j.kernel.api.KernelTransaction;
 import org.neo4j.procedure.Context;
 
-public class FinalContextMisuse {
-    @Context public final KernelTransaction kernel = null;
+public class FinalContextMisuse
+{
+    @Context
+    public final KernelTransaction kernel = null;
 }

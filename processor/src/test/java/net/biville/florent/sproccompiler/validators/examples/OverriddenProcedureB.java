@@ -17,10 +17,12 @@ package net.biville.florent.sproccompiler.validators.examples;
 
 import org.neo4j.procedure.Procedure;
 
-public class OverriddenProcedureB {
+public class OverriddenProcedureB
+{
 
-    @Procedure(value = "override")
-    public void procedure() {
+    @Procedure( value = "override" )
+    public void procedure()
+    {
 
     }
 }

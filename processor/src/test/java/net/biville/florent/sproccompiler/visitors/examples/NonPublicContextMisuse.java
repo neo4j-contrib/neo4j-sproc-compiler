@@ -18,6 +18,8 @@ package net.biville.florent.sproccompiler.visitors.examples;
 import org.neo4j.logging.Log;
 import org.neo4j.procedure.Context;
 
-public class NonPublicContextMisuse {
-    @Context Log arithm;
+public class NonPublicContextMisuse
+{
+    @Context
+    Log arithm;
 }

@@ -18,16 +18,19 @@ package net.biville.florent.sproccompiler.testutils;
 import com.google.testing.compile.JavaFileObjects;
 import net.biville.florent.sproccompiler.StoredProcedureProcessorTest;
 
-import javax.tools.JavaFileObject;
 import java.net.URL;
+import javax.tools.JavaFileObject;
 
-public class JavaFileObjectUtils {
+public class JavaFileObjectUtils
+{
 
-    public static JavaFileObject resource(String url) {
-        return JavaFileObjects.forResource(at(url));
+    public static JavaFileObject resource( String url )
+    {
+        return JavaFileObjects.forResource( at( url ) );
     }
 
-    private static URL at(String resource) {
-        return StoredProcedureProcessorTest.class.getResource(String.format("/test_classes/%s", resource));
+    private static URL at( String resource )
+    {
+        return StoredProcedureProcessorTest.class.getResource( String.format( "/test_classes/%s", resource ) );
     }
 }

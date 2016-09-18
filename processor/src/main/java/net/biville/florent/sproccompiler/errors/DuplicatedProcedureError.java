@@ -18,33 +18,36 @@ package net.biville.florent.sproccompiler.errors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-public class DuplicatedProcedureError implements CompilationError {
+public class DuplicatedProcedureError implements CompilationError
+{
 
     private final Element element;
     private final AnnotationMirror annotationMirror;
     private final String errorMessage;
 
-    public DuplicatedProcedureError(Element element,
-                                    AnnotationMirror annotationMirror,
-                                    String errorMessage,
-                                    CharSequence... args) {
+    public DuplicatedProcedureError( Element element, AnnotationMirror annotationMirror, String errorMessage,
+            CharSequence... args )
+    {
         this.element = element;
         this.annotationMirror = annotationMirror;
-        this.errorMessage = String.format(errorMessage, args);
+        this.errorMessage = String.format( errorMessage, args );
     }
 
     @Override
-    public Element getElement() {
+    public Element getElement()
+    {
         return element;
     }
 
     @Override
-    public AnnotationMirror getMirror() {
+    public AnnotationMirror getMirror()
+    {
         return annotationMirror;
     }
 
     @Override
-    public String getErrorMessage() {
+    public String getErrorMessage()
+    {
         return errorMessage;
     }
 }

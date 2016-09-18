@@ -27,33 +27,34 @@ import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 import static net.biville.florent.sproccompiler.testutils.JavaFileObjectUtils.resource;
 
-public class ContextProcessorTest {
+public class ContextProcessorTest
+{
 
-    @Rule public CompilationRule compilation = new CompilationRule();
+    @Rule
+    public CompilationRule compilation = new CompilationRule();
 
     private Processor processor = new ContextProcessor();
 
     @Test
-    public void fails_if_context_injected_fields_have_wrong_modifiers() {
-        JavaFileObject sproc = resource("bad_context_field/BadContextSproc.java");
+    public void fails_if_context_injected_fields_have_wrong_modifiers()
+    {
+        JavaFileObject sproc = resource( "bad_context_field/BadContextSproc.java" );
 
-        CompileTester.UnsuccessfulCompilationClause unsuccessfulCompilationClause = assert_().about(javaSource())
-                .that(sproc)
-                .processedWith(processor)
-                .failsToCompile()
-                .withErrorCount(3);
+        CompileTester.UnsuccessfulCompilationClause unsuccessfulCompilationClause =
+                assert_().about( javaSource() ).that( sproc ).processedWith( processor ).failsToCompile()
+                        .withErrorCount( 3 );
 
-        unsuccessfulCompilationClause
-                .withErrorContaining("@org.neo4j.procedure.Context usage error: field BadContextSproc#shouldBePublic should be public, non-static and non-final")
-                .in(sproc).onLine(24);
+        unsuccessfulCompilationClause.withErrorContaining(
+                "@org.neo4j.procedure.Context usage error: field BadContextSproc#shouldBeNonStatic should be public, non-static and non-final" )
+                .in( sproc ).onLine( 25 );
 
-        unsuccessfulCompilationClause
-                .withErrorContaining("@org.neo4j.procedure.Context usage error: field BadContextSproc#shouldBeNonStatic should be public, non-static and non-final")
-                .in(sproc).onLine(25);
+        unsuccessfulCompilationClause.withErrorContaining(
+                "@org.neo4j.procedure.Context usage error: field BadContextSproc#shouldBeNonFinal should be public, non-static and non-final" )
+                .in( sproc ).onLine( 27 );
 
-        unsuccessfulCompilationClause
-                .withErrorContaining("@org.neo4j.procedure.Context usage error: field BadContextSproc#shouldBeNonFinal should be public, non-static and non-final")
-                .in(sproc).onLine(26);
+        unsuccessfulCompilationClause.withErrorContaining(
+                "@org.neo4j.procedure.Context usage error: field BadContextSproc#shouldBePublic should be public, non-static and non-final" )
+                .in( sproc ).onLine( 31 );
     }
 
 

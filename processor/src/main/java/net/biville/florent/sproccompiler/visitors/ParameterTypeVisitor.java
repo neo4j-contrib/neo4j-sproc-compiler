@@ -18,32 +18,37 @@ package net.biville.florent.sproccompiler.visitors;
 import net.biville.florent.sproccompiler.compilerutils.TypeMirrorUtils;
 import net.biville.florent.sproccompiler.validators.AllowedTypesValidator;
 
+import java.util.function.Predicate;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
-import java.util.function.Predicate;
 
-class ParameterTypeVisitor extends SimpleTypeVisitor8<Boolean, Void> {
+class ParameterTypeVisitor extends SimpleTypeVisitor8<Boolean,Void>
+{
 
     private final Predicate<TypeMirror> allowedTypesValidator;
 
-    public ParameterTypeVisitor(Types typeUtils, TypeMirrorUtils typeMirrors) {
-        allowedTypesValidator = new AllowedTypesValidator(typeMirrors, typeUtils);
+    public ParameterTypeVisitor( Types typeUtils, TypeMirrorUtils typeMirrors )
+    {
+        allowedTypesValidator = new AllowedTypesValidator( typeMirrors, typeUtils );
     }
 
     @Override
-    public Boolean visitDeclared(DeclaredType parameterType, Void ignored) {
-        return validate(parameterType);
+    public Boolean visitDeclared( DeclaredType parameterType, Void ignored )
+    {
+        return validate( parameterType );
     }
 
     @Override
-    public Boolean visitPrimitive(PrimitiveType primitive, Void ignored) {
-        return validate(primitive);
+    public Boolean visitPrimitive( PrimitiveType primitive, Void ignored )
+    {
+        return validate( primitive );
     }
 
-    private Boolean validate(TypeMirror typeMirror) {
-        return allowedTypesValidator.test(typeMirror);
+    private Boolean validate( TypeMirror typeMirror )
+    {
+        return allowedTypesValidator.test( typeMirror );
     }
 }
