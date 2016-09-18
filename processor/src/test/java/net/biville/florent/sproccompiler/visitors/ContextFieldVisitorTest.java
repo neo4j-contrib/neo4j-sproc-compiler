@@ -17,21 +17,21 @@ package net.biville.florent.sproccompiler.visitors;
 
 import com.google.testing.compile.CompilationRule;
 import net.biville.florent.sproccompiler.errors.CompilationError;
+import net.biville.florent.sproccompiler.visitors.examples.FinalContextMisuse;
+import net.biville.florent.sproccompiler.visitors.examples.GoodContextUse;
+import net.biville.florent.sproccompiler.visitors.examples.NonPublicContextMisuse;
+import net.biville.florent.sproccompiler.visitors.examples.StaticContextMisuse;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.kernel.api.KernelTransaction;
-import org.neo4j.logging.Log;
-import org.neo4j.procedure.Context;
 
 import javax.lang.model.element.ElementVisitor;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import java.util.stream.Stream;
 
+import static javax.lang.model.util.ElementFilter.fieldsIn;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ContextFieldVisitorTest {
@@ -88,23 +88,9 @@ public class ContextFieldVisitorTest {
     }
 
     private Stream<VariableElement> getFields(Class<?> type) {
-        TypeElement procedure = elements.getTypeElement(type.getCanonicalName());
-        return ElementFilter.fieldsIn(procedure.getEnclosedElements()).stream();
+        TypeElement procedure = elements.getTypeElement(type.getName());
+
+        return fieldsIn(procedure.getEnclosedElements()).stream();
     }
 }
 
-class GoodContextUse {
-    @Context public GraphDatabaseService db;
-}
-
-class NonPublicContextMisuse {
-    @Context Log arithm;
-}
-
-class StaticContextMisuse {
-    @Context public static GraphDatabaseService db;
-}
-
-class FinalContextMisuse {
-    @Context public final KernelTransaction kernel = null;
-}

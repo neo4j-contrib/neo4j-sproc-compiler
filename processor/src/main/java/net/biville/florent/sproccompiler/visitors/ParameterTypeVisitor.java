@@ -30,7 +30,7 @@ import javax.lang.model.util.Types;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class ParameterTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationError>, VariableElement> {
+class ParameterTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationError>, VariableElement> {
 
     private final Predicate<TypeMirror> allowedTypesValidator;
 
@@ -40,10 +40,7 @@ public class ParameterTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationE
 
     @Override
     public Stream<CompilationError> visitDeclared(DeclaredType parameterType, VariableElement initialElement) {
-        return Stream.concat(
-                validate(parameterType, initialElement),
-                parameterType.getTypeArguments().stream().flatMap(type -> visit(type, initialElement))
-        );
+        return validate(parameterType, initialElement);
     }
 
     @Override

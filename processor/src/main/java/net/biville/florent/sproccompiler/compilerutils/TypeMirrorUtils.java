@@ -63,11 +63,11 @@ public class TypeMirrorUtils {
         return typeUtils.getPrimitiveType(kind);
     }
 
-    public TypeMirror boxed(PrimitiveType bool) {
-        return typeUtils.boxedClass(bool).asType();
-    }
-
     public TypeMirror typeMirror(Class<?> type) {
         return elementUtils.getTypeElement(type.getName()).asType();
+    }
+
+    private TypeMirror boxed(PrimitiveType bool) {
+        return typeUtils.boxedClass(bool).asType();
     }
 }
