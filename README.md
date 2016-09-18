@@ -21,9 +21,9 @@ is not met:
  - `@Procedure` parameters must be annotated with `@Name`
  - all visited `@Procedure` names must be unique*
 
-* A deployed Neo4j instance can aggregate stored procedures from different JARs.
+*A deployed Neo4j instance can aggregate stored procedures from different JARs.
 Inter-JAR naming conflict cannot be detected by an annotation processor.
-By definition, it can only inspect one compilation at a time.
+By definition, it can only inspect one compilation unit at a time.
 
 # Use the processor
 
