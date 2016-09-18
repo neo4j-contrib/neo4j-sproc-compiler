@@ -40,7 +40,7 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 
-public class DuplicatedStoredProcedureValidatorTest
+public class DuplicatedProcedureValidatorTest
 {
 
     @Rule
@@ -53,7 +53,7 @@ public class DuplicatedStoredProcedureValidatorTest
     public void prepare()
     {
         elements = compilation.getElements();
-        validator = new DuplicatedStoredProcedureValidator( compilation.getTypes(), elements );
+        validator = new DuplicatedProcedureValidator( elements );
     }
 
     @Test
@@ -65,7 +65,7 @@ public class DuplicatedStoredProcedureValidatorTest
 
         Stream<CompilationMessage> errors = validator.apply( duplicates );
 
-        String procedureName = "net.biville.florent.sproccompiler.validators.examples#procedure";
+        String procedureName = "net.biville.florent.sproccompiler.validators.examples.procedure";
         assertThat( errors ).extracting( CompilationMessage::getCategory, CompilationMessage::getElement,
                 CompilationMessage::getContents ).containsExactlyInAnyOrder( tuple( Diagnostic.Kind.ERROR, procedureA,
                 "Procedure name <" + procedureName + "> is already defined 2 times. It should be defined only once!" ),

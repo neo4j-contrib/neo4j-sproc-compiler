@@ -29,13 +29,13 @@ import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 import static com.google.testing.compile.JavaSourcesSubjectFactory.javaSources;
 import static java.util.Arrays.asList;
 
-public class StoredProcedureProcessorTest
+public class ProcedureProcessorTest
 {
 
     @Rule
     public CompilationRule compilation = new CompilationRule();
 
-    private Processor processor = new StoredProcedureProcessor();
+    private Processor processor = new ProcedureProcessor();
 
     @Test
     public void fails_if_parameters_are_not_properly_annotated()
@@ -162,7 +162,8 @@ public class StoredProcedureProcessorTest
 
         assert_().about( javaSources() ).that( asList( firstDuplicate, secondDuplicate ) ).processedWith( processor )
                 .failsToCompile().withErrorCount( 2 ).withErrorContaining(
-                "Procedure name <net.biville.florent.sproccompiler.procedures.invalid.duplicated#foobar> is already defined 2 times. " +
+                "Procedure name <net.biville.florent.sproccompiler.procedures.invalid.duplicated.foobar> is already " +
+                        "defined 2 times. " +
                         "It should be defined only once!" );
     }
 

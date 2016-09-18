@@ -18,7 +18,7 @@ package net.biville.florent.sproccompiler;
 import com.google.auto.service.AutoService;
 import net.biville.florent.sproccompiler.messages.CompilationMessage;
 import net.biville.florent.sproccompiler.messages.MessagePrinter;
-import net.biville.florent.sproccompiler.validators.DuplicatedStoredProcedureValidator;
+import net.biville.florent.sproccompiler.validators.DuplicatedProcedureValidator;
 import net.biville.florent.sproccompiler.visitors.StoredProcedureVisitor;
 
 import java.lang.annotation.Annotation;
@@ -43,16 +43,17 @@ import javax.lang.model.util.Types;
 import org.neo4j.procedure.Procedure;
 
 @AutoService( Processor.class )
-public class StoredProcedureProcessor extends AbstractProcessor
+public class ProcedureProcessor extends AbstractProcessor
 {
 
     private static final Class<? extends Annotation> sprocType = Procedure.class;
     private static final String IGNORE_CONTEXT_WARNINGS = "IgnoreContextWarnings";
     private final Set<Element> visitedProcedures = new LinkedHashSet<>();
 
-    private Function<Collection<Element>,Stream<CompilationMessage>> duplicateProcedure;
-    private ElementVisitor<Stream<CompilationMessage>,Void> storedProcedureVisitor;
+    private Function<Collection<Element>,Stream<CompilationMessage>> duplicationPredicate;
+    private ElementVisitor<Stream<CompilationMessage>,Void> visitor;
     private MessagePrinter messagePrinter;
+
 
     @Override
     public Set<String> getSupportedOptions()
@@ -83,28 +84,33 @@ public class StoredProcedureProcessor extends AbstractProcessor
 
         visitedProcedures.clear();
         messagePrinter = new MessagePrinter( processingEnv.getMessager() );
-        storedProcedureVisitor = new StoredProcedureVisitor( typeUtils, elementUtils,
-                processingEnv.getOptions().containsKey( IGNORE_CONTEXT_WARNINGS ) );
-        duplicateProcedure = new DuplicatedStoredProcedureValidator( typeUtils, elementUtils );
+        visitor = new StoredProcedureVisitor( typeUtils, elementUtils, processingEnv.getOptions().containsKey(
+                IGNORE_CONTEXT_WARNINGS) );
+        duplicationPredicate = new DuplicatedProcedureValidator( elementUtils );
     }
 
     @Override
     public boolean process( Set<? extends TypeElement> annotations, RoundEnvironment roundEnv )
     {
 
-        processStoredProcedures( roundEnv );
+        processElements( roundEnv );
         if ( roundEnv.processingOver() )
         {
-            duplicateProcedure.apply( visitedProcedures ).forEach( messagePrinter::print );
+            duplicationPredicate.apply( visitedProcedures ).forEach( messagePrinter::print );
         }
         return false;
     }
 
-    private void processStoredProcedures( RoundEnvironment roundEnv )
+    private void processElements( RoundEnvironment roundEnv )
     {
         Set<? extends Element> procedures = roundEnv.getElementsAnnotatedWith( sprocType );
         visitedProcedures.addAll( procedures );
-        procedures.stream().flatMap( storedProcedureVisitor::visit ).forEachOrdered( messagePrinter::print );
+        procedures.stream().flatMap( this::validate ).forEachOrdered( messagePrinter::print );
+    }
+
+    private Stream<CompilationMessage> validate( Element element )
+    {
+        return visitor.visit( element );
     }
 
 }

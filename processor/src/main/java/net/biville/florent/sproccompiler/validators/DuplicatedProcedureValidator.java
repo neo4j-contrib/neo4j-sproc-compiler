@@ -27,21 +27,18 @@ import java.util.stream.Stream;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 
 import org.neo4j.procedure.Procedure;
 
 import static java.util.stream.Collectors.groupingBy;
 
-public class DuplicatedStoredProcedureValidator implements Function<Collection<Element>,Stream<CompilationMessage>>
+public class DuplicatedProcedureValidator implements Function<Collection<Element>,Stream<CompilationMessage>>
 {
 
-    private final Types types;
     private final Elements elements;
 
-    public DuplicatedStoredProcedureValidator( Types types, Elements elements )
+    public DuplicatedProcedureValidator( Elements elements )
     {
-        this.types = types;
         this.elements = elements;
     }
 
@@ -65,17 +62,17 @@ public class DuplicatedStoredProcedureValidator implements Function<Collection<E
     private String getProcedureName( Element procedure )
     {
         Procedure annotation = procedure.getAnnotation( Procedure.class );
-        String override = annotation.value();
-        if ( !override.isEmpty() )
+        String value = annotation.value();
+        if ( !value.isEmpty() )
         {
-            return override;
+            return value;
         }
         return defaultQualifiedName( procedure );
     }
 
     private String defaultQualifiedName( Element procedure )
     {
-        return String.format( "%s#%s", elements.getPackageOf( procedure ).toString(), procedure.getSimpleName() );
+        return String.format( "%s.%s", elements.getPackageOf( procedure ).toString(), procedure.getSimpleName() );
     }
 
     private Stream<CompilationMessage> asErrors( Map.Entry<String,List<Element>> indexedProcedures )
