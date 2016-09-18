@@ -17,16 +17,12 @@ package net.biville.florent.sproccompiler.validators;
 
 import net.biville.florent.sproccompiler.errors.CompilationError;
 import net.biville.florent.sproccompiler.errors.DuplicatedProcedureError;
+import net.biville.florent.sproccompiler.visitors.AnnotationTypeVisitor;
 import org.neo4j.procedure.Procedure;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
-import javax.lang.model.util.SimpleElementVisitor8;
-import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
 import java.util.Collection;
 import java.util.List;
@@ -96,16 +92,11 @@ public class DuplicatedStoredProcedureValidator implements Function<Collection<E
         return procedure.getAnnotationMirrors().stream()
                 .filter(this::isProcedureAnnotationType)
                 .findFirst()
-                .get();
+                .orElse(null);
     }
 
     private boolean isProcedureAnnotationType(AnnotationMirror mirror) {
-        return new SimpleElementVisitor8<Boolean, Void>() {
-            @Override
-            public Boolean visitType(TypeElement annotationType, Void aVoid) {
-                return annotationType.getQualifiedName().contentEquals(Procedure.class.getName());
-            }
-        }.visit(mirror.getAnnotationType().asElement());
+        return new AnnotationTypeVisitor(Procedure.class).visit(mirror.getAnnotationType().asElement());
     }
 
 }

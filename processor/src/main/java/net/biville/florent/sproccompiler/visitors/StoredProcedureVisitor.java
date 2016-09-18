@@ -112,13 +112,9 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
     }
 
     private AnnotationMirror annotationMirror(List<? extends AnnotationMirror> mirrors) {
+        AnnotationTypeVisitor nameVisitor = new AnnotationTypeVisitor(Name.class);
         return mirrors.stream()
-                .filter(mirror -> {
-                    //TODO fix comparison
-                    DeclaredType actualType = mirror.getAnnotationType();
-                    String expectedType = Name.class.getSimpleName();
-                    return actualType.asElement().getSimpleName().contentEquals(expectedType);
-                })
+                .filter(mirror -> nameVisitor.visit(mirror.getAnnotationType().asElement()))
                 .findFirst()
                 .orElse(null);
     }
