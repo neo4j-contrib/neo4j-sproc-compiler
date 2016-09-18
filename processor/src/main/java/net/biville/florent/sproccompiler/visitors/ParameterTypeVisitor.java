@@ -16,7 +16,7 @@
 package net.biville.florent.sproccompiler.visitors;
 
 import net.biville.florent.sproccompiler.validators.AllowedTypesValidator;
-import net.biville.florent.sproccompiler.compilerutils.TypeMirrors;
+import net.biville.florent.sproccompiler.compilerutils.TypeMirrorUtils;
 import net.biville.florent.sproccompiler.errors.CompilationError;
 import net.biville.florent.sproccompiler.errors.ParameterTypeError;
 
@@ -34,7 +34,7 @@ public class ParameterTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationE
 
     private final Predicate<TypeMirror> allowedTypesValidator;
 
-    public ParameterTypeVisitor(Types typeUtils, TypeMirrors typeMirrors) {
+    public ParameterTypeVisitor(Types typeUtils, TypeMirrorUtils typeMirrors) {
         allowedTypesValidator = new AllowedTypesValidator(typeMirrors, typeUtils);
     }
 

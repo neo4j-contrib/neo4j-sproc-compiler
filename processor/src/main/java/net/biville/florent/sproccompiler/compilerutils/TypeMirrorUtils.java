@@ -30,12 +30,12 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 
-public class TypeMirrors {
+public class TypeMirrorUtils {
 
     private Types typeUtils;
     private Elements elementUtils;
 
-    public TypeMirrors(Types typeUtils, Elements elementUtils) {
+    public TypeMirrorUtils(Types typeUtils, Elements elementUtils) {
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
     }

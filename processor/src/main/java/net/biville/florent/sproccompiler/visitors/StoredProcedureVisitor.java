@@ -15,7 +15,7 @@
  */
 package net.biville.florent.sproccompiler.visitors;
 
-import net.biville.florent.sproccompiler.compilerutils.TypeMirrors;
+import net.biville.florent.sproccompiler.compilerutils.TypeMirrorUtils;
 import net.biville.florent.sproccompiler.errors.CompilationError;
 import net.biville.florent.sproccompiler.errors.ParameterMissingAnnotationError;
 import net.biville.florent.sproccompiler.errors.ReturnTypeError;
@@ -42,7 +42,7 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
     private final TypeVisitor<Stream<CompilationError>, VariableElement> parameterTypeVisitor;
 
     public StoredProcedureVisitor(Types typeUtils, Elements elementUtils) {
-        TypeMirrors typeMirrors = new TypeMirrors(typeUtils, elementUtils);
+        TypeMirrorUtils typeMirrors = new TypeMirrorUtils(typeUtils, elementUtils);
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
         this.recordVisitor = new RecordTypeVisitor(typeUtils, typeMirrors);
@@ -89,7 +89,7 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
     private Stream<CompilationError> validateReturnType(ExecutableElement method) {
         String streamClassName = Stream.class.getCanonicalName();
 
-        TypeMirror expectedType = typeUtils.erasure(elementUtils.getTypeElement(streamClassName).asType());
+        TypeMirror streamType = typeUtils.erasure(elementUtils.getTypeElement(streamClassName).asType());
         TypeMirror returnType = method.getReturnType();
         TypeMirror erasedReturnType = typeUtils.erasure(returnType);
 
@@ -98,7 +98,7 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
             return Stream.empty();
         }
 
-        if (!typeUtils.isSubtype(erasedReturnType, expectedType)) {
+        if (!typeUtils.isSubtype(erasedReturnType, streamType)) {
             return Stream.of(new ReturnTypeError(
                     method,
                     "Return type of %s#%s must be %s",

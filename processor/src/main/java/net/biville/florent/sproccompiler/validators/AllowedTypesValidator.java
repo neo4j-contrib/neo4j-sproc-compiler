@@ -15,7 +15,7 @@
  */
 package net.biville.florent.sproccompiler.validators;
 
-import net.biville.florent.sproccompiler.compilerutils.TypeMirrors;
+import net.biville.florent.sproccompiler.compilerutils.TypeMirrorUtils;
 
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
@@ -32,11 +32,11 @@ import java.util.function.Predicate;
  */
 public class AllowedTypesValidator implements Predicate<TypeMirror> {
 
-    private final TypeMirrors typeMirrors;
+    private final TypeMirrorUtils typeMirrors;
     private final Collection<TypeMirror> whitelistedTypes;
     private final Types typeUtils;
 
-    public AllowedTypesValidator(TypeMirrors typeMirrors,
+    public AllowedTypesValidator(TypeMirrorUtils typeMirrors,
                                  Types typeUtils) {
 
         this.typeMirrors = typeMirrors;

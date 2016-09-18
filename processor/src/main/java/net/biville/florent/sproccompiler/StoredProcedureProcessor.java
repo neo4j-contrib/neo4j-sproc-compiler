@@ -48,7 +48,7 @@ public class StoredProcedureProcessor extends AbstractProcessor {
     private final Set<Element> visitedProcedures = new LinkedHashSet<>();
 
     private Function<Collection<Element>, Stream<CompilationError>> duplicateProcedure;
-    private ElementVisitor<Stream<CompilationError>, Void> parameterVisitor;
+    private ElementVisitor<Stream<CompilationError>, Void> storedProcedureVisitor;
     private ElementVisitor<Stream<CompilationError>, Void> contextFieldVisitor;
     private Messager messager;
 
@@ -72,10 +72,11 @@ public class StoredProcedureProcessor extends AbstractProcessor {
         Elements elementUtils = processingEnv.getElementUtils();
 
         visitedProcedures.clear();
-        duplicateProcedure = new DuplicatedStoredProcedureValidator(typeUtils, elementUtils);
         messager = processingEnv.getMessager();
-        parameterVisitor = new StoredProcedureVisitor(typeUtils, elementUtils);
+
+        storedProcedureVisitor = new StoredProcedureVisitor(typeUtils, elementUtils);
         contextFieldVisitor = new ContextFieldVisitor();
+        duplicateProcedure = new DuplicatedStoredProcedureValidator(typeUtils, elementUtils);
     }
 
     @Override
@@ -109,7 +110,7 @@ public class StoredProcedureProcessor extends AbstractProcessor {
     }
 
     private Stream<CompilationError> validateStoredProcedure(Element element) {
-        return parameterVisitor.visit(element);
+        return storedProcedureVisitor.visit(element);
     }
 
     private Stream<CompilationError> validateContextField(Element element) {

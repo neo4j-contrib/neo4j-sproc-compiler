@@ -16,7 +16,7 @@
 package net.biville.florent.sproccompiler.visitors;
 
 import com.google.testing.compile.CompilationRule;
-import net.biville.florent.sproccompiler.compilerutils.TypeMirrors;
+import net.biville.florent.sproccompiler.compilerutils.TypeMirrorUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,7 +48,7 @@ public class RecordFieldTypeVisitorTest {
     public void prepare() {
         elementUtils = compilationRule.getElements();
         typeUtils = compilationRule.getTypes();
-        visitor = new RecordFieldTypeVisitor(typeUtils, new TypeMirrors(typeUtils, elementUtils));
+        visitor = new RecordFieldTypeVisitor(typeUtils, new TypeMirrorUtils(typeUtils, elementUtils));
     }
 
     @Test

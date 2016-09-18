@@ -16,7 +16,7 @@
 package net.biville.florent.sproccompiler.visitors;
 
 import net.biville.florent.sproccompiler.validators.AllowedTypesValidator;
-import net.biville.florent.sproccompiler.compilerutils.TypeMirrors;
+import net.biville.florent.sproccompiler.compilerutils.TypeMirrorUtils;
 
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
@@ -25,11 +25,11 @@ import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
 import java.util.function.Predicate;
 
-public class RecordFieldTypeVisitor extends SimpleTypeVisitor8<Boolean, Void> {
+class RecordFieldTypeVisitor extends SimpleTypeVisitor8<Boolean, Void> {
 
     private final Predicate<TypeMirror> allowedTypesValidator;
 
-    public RecordFieldTypeVisitor(Types typeUtils, TypeMirrors typeMirrors) {
+    public RecordFieldTypeVisitor(Types typeUtils, TypeMirrorUtils typeMirrors) {
         allowedTypesValidator = new AllowedTypesValidator(typeMirrors, typeUtils);
     }
 
