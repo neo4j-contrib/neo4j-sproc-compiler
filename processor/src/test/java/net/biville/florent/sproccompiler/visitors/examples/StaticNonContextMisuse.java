@@ -15,13 +15,7 @@
  */
 package net.biville.florent.sproccompiler.visitors.examples;
 
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.procedure.Context;
-
-public class GoodContextUse
+public class StaticNonContextMisuse
 {
-    private static final Object lock = new Object();
-
-    @Context
-    public GraphDatabaseService db;
+    String value;
 }

@@ -21,25 +21,26 @@ import net.biville.florent.sproccompiler.visitors.examples.FinalContextMisuse;
 import net.biville.florent.sproccompiler.visitors.examples.GoodContextUse;
 import net.biville.florent.sproccompiler.visitors.examples.NonPublicContextMisuse;
 import net.biville.florent.sproccompiler.visitors.examples.StaticContextMisuse;
+import net.biville.florent.sproccompiler.visitors.examples.StaticNonContextMisuse;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.stream.Stream;
 import javax.lang.model.element.ElementVisitor;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.Elements;
+import java.util.stream.Stream;
 
 import static javax.lang.model.util.ElementFilter.fieldsIn;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ContextFieldVisitorTest
+public class FieldVisitorTest
 {
 
     @Rule
     public CompilationRule compilationRule = new CompilationRule();
-    private ElementVisitor<Stream<CompilationError>,Void> contextFieldVisitor = new ContextFieldVisitor();
+    private ElementVisitor<Stream<CompilationError>,Void> fieldVisitor = new FieldVisitor();
     private Elements elements;
 
     @Before
@@ -53,42 +54,53 @@ public class ContextFieldVisitorTest
     {
         Stream<VariableElement> fields = getFields( GoodContextUse.class );
 
-        Stream<CompilationError> result = fields.flatMap( contextFieldVisitor::visit );
+        Stream<CompilationError> result = fields.flatMap( fieldVisitor::visit );
 
         assertThat( result ).isEmpty();
     }
 
     @Test
-    public void rejects_non_public_fields() throws Exception
+    public void rejects_non_public_context_fields() throws Exception
     {
         Stream<VariableElement> fields = getFields( NonPublicContextMisuse.class );
 
-        Stream<CompilationError> result = fields.flatMap( contextFieldVisitor::visit );
+        Stream<CompilationError> result = fields.flatMap( fieldVisitor::visit );
 
         assertThat( result ).extracting( CompilationError::getErrorMessage ).containsExactly(
                 "@org.neo4j.procedure.Context usage error: field NonPublicContextMisuse#arithm should be public, non-static and non-final" );
     }
 
     @Test
-    public void rejects_static_fields() throws Exception
+    public void rejects_static_context_fields() throws Exception
     {
         Stream<VariableElement> fields = getFields( StaticContextMisuse.class );
 
-        Stream<CompilationError> result = fields.flatMap( contextFieldVisitor::visit );
+        Stream<CompilationError> result = fields.flatMap( fieldVisitor::visit );
 
         assertThat( result ).extracting( CompilationError::getErrorMessage ).containsExactly(
                 "@org.neo4j.procedure.Context usage error: field StaticContextMisuse#db should be public, non-static and non-final" );
     }
 
     @Test
-    public void rejects_final_fields() throws Exception
+    public void rejects_final_context_fields() throws Exception
     {
         Stream<VariableElement> fields = getFields( FinalContextMisuse.class );
 
-        Stream<CompilationError> result = fields.flatMap( contextFieldVisitor::visit );
+        Stream<CompilationError> result = fields.flatMap( fieldVisitor::visit );
 
         assertThat( result ).extracting( CompilationError::getErrorMessage ).containsExactly(
                 "@org.neo4j.procedure.Context usage error: field FinalContextMisuse#kernel should be public, non-static and non-final" );
+    }
+
+    @Test
+    public void rejects_non_static_non_context_fields() throws Exception
+    {
+        Stream<VariableElement> fields = getFields( StaticNonContextMisuse.class );
+
+        Stream<CompilationError> result = fields.flatMap( fieldVisitor::visit );
+
+        assertThat( result ).extracting( CompilationError::getErrorMessage ).containsExactly(
+                "Field StaticNonContextMisuse#value should be static" );
     }
 
     private Stream<VariableElement> getFields( Class<?> type )

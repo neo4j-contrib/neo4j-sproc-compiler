@@ -16,15 +16,15 @@
 package net.biville.florent.sproccompiler.errors;
 
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
+import javax.lang.model.element.VariableElement;
 
-public class ContextFieldError implements CompilationError
+public class FieldError implements CompilationError
 {
 
-    private final Element field;
+    private final VariableElement field;
     private final String errorMessage;
 
-    public ContextFieldError( Element field, String errorMessage, CharSequence... args )
+    public FieldError( VariableElement field, String errorMessage, CharSequence... args )
     {
 
         this.field = field;
@@ -32,7 +32,7 @@ public class ContextFieldError implements CompilationError
     }
 
     @Override
-    public Element getElement()
+    public VariableElement getElement()
     {
         return field;
     }
