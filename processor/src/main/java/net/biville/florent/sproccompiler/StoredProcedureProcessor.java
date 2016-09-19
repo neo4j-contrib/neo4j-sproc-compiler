@@ -50,7 +50,6 @@ public class StoredProcedureProcessor extends AbstractProcessor
 
     private Function<Collection<Element>,Stream<CompilationError>> duplicateProcedure;
     private ElementVisitor<Stream<CompilationError>,Void> storedProcedureVisitor;
-    private ElementVisitor<Stream<CompilationError>,Void> contextFieldVisitor;
     private ErrorPrinter errorPrinter;
 
     @Override
@@ -96,12 +95,7 @@ public class StoredProcedureProcessor extends AbstractProcessor
     {
         Set<? extends Element> procedures = roundEnv.getElementsAnnotatedWith( sprocType );
         visitedProcedures.addAll( procedures );
-        procedures.stream().flatMap( this::validateStoredProcedure ).forEachOrdered( errorPrinter::print );
-    }
-
-    private Stream<CompilationError> validateStoredProcedure( Element element )
-    {
-        return storedProcedureVisitor.visit( element );
+        procedures.stream().flatMap( storedProcedureVisitor::visit ).forEachOrdered( errorPrinter::print );
     }
 
 }
