@@ -62,6 +62,11 @@ public class DuplicatedProcedureValidator implements Function<Collection<Element
     private String getProcedureName( Element procedure )
     {
         Procedure annotation = procedure.getAnnotation( Procedure.class );
+        String name = annotation.name();
+        if (!name.isEmpty())
+        {
+            return name;
+        }
         String value = annotation.value();
         if ( !value.isEmpty() )
         {

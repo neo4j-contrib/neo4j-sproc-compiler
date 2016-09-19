@@ -20,7 +20,7 @@ import org.neo4j.procedure.Procedure;
 public class OverriddenProcedureA
 {
 
-    @Procedure( value = "override" )
+    @Procedure( name = "override", value = "name-has-more-priority" )
     public void procedure()
     {
 
