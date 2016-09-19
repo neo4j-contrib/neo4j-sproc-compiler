@@ -142,6 +142,12 @@ public class AllowedTypesValidatorTest
     }
 
     @Test
+    public void unsupported_map_type_is_invalid()
+    {
+        assertThat( validator.test( typeMirrorTestUtils.typeOf( Map.class, Object.class, Boolean.class ) ) ).isFalse();
+    }
+
+    @Test
     public void supported_recursive_map_type_is_valid()
     {
         assertThat( validator.test( typeMirrorTestUtils.typeOf( Map.class, typeMirrorTestUtils.typeOf( String.class ),
