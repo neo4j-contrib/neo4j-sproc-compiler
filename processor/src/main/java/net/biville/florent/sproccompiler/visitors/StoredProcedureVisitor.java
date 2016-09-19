@@ -43,7 +43,7 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
 
     private final Types typeUtils;
     private final Elements elementUtils;
-    private final ElementVisitor<Stream<CompilationError>, Void> classVisitor = new StoredProcedureClassVisitor();
+    private final ElementVisitor<Stream<CompilationError>,Void> classVisitor = new StoredProcedureClassVisitor();
     private final TypeVisitor<Stream<CompilationError>,Void> recordVisitor;
     private final TypeVisitor<Boolean,Void> parameterTypeVisitor;
 
@@ -62,11 +62,9 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
     @Override
     public Stream<CompilationError> visitExecutable( ExecutableElement executableElement, Void ignored )
     {
-        return Stream.of(
-                classVisitor.visit( executableElement.getEnclosingElement() ),
+        return Stream.of( classVisitor.visit( executableElement.getEnclosingElement() ),
                 validateParameters( executableElement.getParameters(), ignored ),
-                validateReturnType( executableElement ) )
-                .flatMap(Function.identity());
+                validateReturnType( executableElement ) ).flatMap( Function.identity() );
     }
 
     /**
@@ -91,6 +89,7 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
                     parameter.asType().toString(), method.getEnclosingElement().getSimpleName(),
                     method.getSimpleName() ) );
         }
+
         return Stream.empty();
     }
 

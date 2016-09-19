@@ -16,27 +16,32 @@
 package net.biville.florent.sproccompiler.visitors;
 
 import net.biville.florent.sproccompiler.errors.CompilationError;
+import net.biville.florent.sproccompiler.errors.ProcedureMissingPublicNoArgConstructor;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.SimpleElementVisitor8;
 
-public class StoredProcedureClassVisitor extends SimpleElementVisitor8<Stream<CompilationError>, Void>
+import static javax.lang.model.util.ElementFilter.constructorsIn;
+
+public class StoredProcedureClassVisitor extends SimpleElementVisitor8<Stream<CompilationError>,Void>
 {
 
     private final Set<TypeElement> visitedElements = new HashSet<>();
     private final FieldVisitor fieldVisitor = new FieldVisitor();
 
     @Override
-    public Stream<CompilationError> visitType( TypeElement e, Void ignored )
+    public Stream<CompilationError> visitType( TypeElement procedureClass, Void ignored )
     {
-        if ( isFirstVisit( e ) )
+        if ( isFirstVisit( procedureClass ) )
         {
-            return e.getEnclosedElements()
-                    .stream()
-                    .flatMap( fieldVisitor::visit );
+            return Stream.concat( validateFields( procedureClass ), validateConstructor( procedureClass ) );
         }
         return Stream.empty();
     }
@@ -51,5 +56,25 @@ public class StoredProcedureClassVisitor extends SimpleElementVisitor8<Stream<Co
     private boolean isFirstVisit( TypeElement e )
     {
         return visitedElements.add( e );
+    }
+
+    private Stream<CompilationError> validateFields( TypeElement e )
+    {
+        return e.getEnclosedElements().stream().flatMap( fieldVisitor::visit );
+    }
+
+    private Stream<CompilationError> validateConstructor( Element procedureClass )
+    {
+        Optional<ExecutableElement> publicNoArgConstructor =
+                constructorsIn( procedureClass.getEnclosedElements() ).stream()
+                        .filter( c -> c.getModifiers().contains( Modifier.PUBLIC ) )
+                        .filter( c -> c.getParameters().isEmpty() ).findFirst();
+
+        if ( !publicNoArgConstructor.isPresent() )
+        {
+            return Stream.of( new ProcedureMissingPublicNoArgConstructor( procedureClass,
+                    "Procedure class %s should contain a public no-arg constructor, none found.", procedureClass ) );
+        }
+        return Stream.empty();
     }
 }

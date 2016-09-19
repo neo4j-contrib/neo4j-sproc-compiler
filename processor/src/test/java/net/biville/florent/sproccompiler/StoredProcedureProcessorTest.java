@@ -158,6 +158,18 @@ public class StoredProcedureProcessorTest
     }
 
     @Test
+    public void fails_if_procedure_class_has_no_public_no_arg_constructor()
+    {
+        JavaFileObject procedure = JavaFileObjectUtils.resource(
+                "missing_constructor/MissingConstructorProcedure.java" );
+
+        assert_().about( javaSource() ).that( procedure )
+                .processedWith( processor ).failsToCompile().withErrorCount( 1 ).withErrorContaining(
+                "Procedure class test_classes.duplicated.MissingConstructorProcedure should contain a public no-arg constructor, none found." )
+                .in( procedure ).onLine( 20 );
+    }
+
+    @Test
     public void succeeds_to_process_valid_stored_procedures()
     {
         assert_().about( javaSources() )
