@@ -40,7 +40,7 @@ public class ParameterTypeVisitorTest extends TypeValidationTestSuite
         Elements elements = compilationRule.getElements();
         types = compilationRule.getTypes();
         typeMirrorUtils = new TypeMirrorUtils( types, elements );
-        typeMirrorTestUtils = new TypeMirrorTestUtils( types, elements, typeMirrorUtils );
+        typeMirrorTestUtils = new TypeMirrorTestUtils( compilationRule );
     }
 
     @Override

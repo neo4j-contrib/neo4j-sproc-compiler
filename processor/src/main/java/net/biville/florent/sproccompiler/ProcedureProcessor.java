@@ -21,11 +21,11 @@ import net.biville.florent.sproccompiler.messages.MessagePrinter;
 import net.biville.florent.sproccompiler.validators.DuplicatedProcedureValidator;
 import net.biville.florent.sproccompiler.visitors.StoredProcedureVisitor;
 
-import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -46,7 +46,7 @@ import org.neo4j.procedure.Procedure;
 public class ProcedureProcessor extends AbstractProcessor
 {
 
-    private static final Class<? extends Annotation> sprocType = Procedure.class;
+    private static final Class<Procedure> sprocType = Procedure.class;
     private static final String IGNORE_CONTEXT_WARNINGS = "IgnoreContextWarnings";
     private final Set<Element> visitedProcedures = new LinkedHashSet<>();
 
@@ -54,6 +54,20 @@ public class ProcedureProcessor extends AbstractProcessor
     private ElementVisitor<Stream<CompilationMessage>,Void> visitor;
     private MessagePrinter messagePrinter;
 
+    public static Optional<String> getCustomName( Procedure proc )
+    {
+        String name = proc.name();
+        if ( !name.isEmpty() )
+        {
+            return Optional.of( name );
+        }
+        String value = proc.value();
+        if ( !value.isEmpty() )
+        {
+            return Optional.of( value );
+        }
+        return Optional.empty();
+    }
 
     @Override
     public Set<String> getSupportedOptions()
@@ -86,7 +100,8 @@ public class ProcedureProcessor extends AbstractProcessor
         messagePrinter = new MessagePrinter( processingEnv.getMessager() );
         visitor = new StoredProcedureVisitor( typeUtils, elementUtils, processingEnv.getOptions().containsKey(
                 IGNORE_CONTEXT_WARNINGS) );
-        duplicationPredicate = new DuplicatedProcedureValidator( elementUtils );
+        duplicationPredicate =
+                new DuplicatedProcedureValidator<>( elementUtils, sprocType, ProcedureProcessor::getCustomName );
     }
 
     @Override

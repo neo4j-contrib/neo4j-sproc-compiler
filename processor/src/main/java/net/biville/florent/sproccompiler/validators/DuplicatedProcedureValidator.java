@@ -19,9 +19,11 @@ import net.biville.florent.sproccompiler.messages.CompilationMessage;
 import net.biville.florent.sproccompiler.messages.DuplicatedProcedureError;
 import net.biville.florent.sproccompiler.visitors.AnnotationTypeVisitor;
 
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.lang.model.element.AnnotationMirror;
@@ -32,14 +34,20 @@ import org.neo4j.procedure.Procedure;
 
 import static java.util.stream.Collectors.groupingBy;
 
-public class DuplicatedProcedureValidator implements Function<Collection<Element>,Stream<CompilationMessage>>
+public class DuplicatedProcedureValidator<T extends Annotation>
+        implements Function<Collection<Element>,Stream<CompilationMessage>>
 {
 
     private final Elements elements;
+    private final Class<T> annotationType;
+    private final Function<T,Optional<String>> customNameExtractor;
 
-    public DuplicatedProcedureValidator( Elements elements )
+    public DuplicatedProcedureValidator( Elements elements, Class<T> annotationType,
+            Function<T,Optional<String>> customNameExtractor )
     {
         this.elements = elements;
+        this.annotationType = annotationType;
+        this.customNameExtractor = customNameExtractor;
     }
 
     @Override
@@ -56,23 +64,14 @@ public class DuplicatedProcedureValidator implements Function<Collection<Element
 
     private Stream<Map.Entry<String,List<Element>>> indexByName( Collection<Element> visitedProcedures )
     {
-        return visitedProcedures.stream().collect( groupingBy( this::getProcedureName ) ).entrySet().stream();
+        return visitedProcedures.stream().collect( groupingBy( this::getName ) ).entrySet().stream();
     }
 
-    private String getProcedureName( Element procedure )
+    private String getName( Element procedure )
     {
-        Procedure annotation = procedure.getAnnotation( Procedure.class );
-        String name = annotation.name();
-        if (!name.isEmpty())
-        {
-            return name;
-        }
-        String value = annotation.value();
-        if ( !value.isEmpty() )
-        {
-            return value;
-        }
-        return defaultQualifiedName( procedure );
+        T annotation = procedure.getAnnotation( annotationType );
+        Optional<String> customName = customNameExtractor.apply( annotation );
+        return customName.orElse( defaultQualifiedName( procedure ) );
     }
 
     private String defaultQualifiedName( Element procedure )
@@ -90,8 +89,8 @@ public class DuplicatedProcedureValidator implements Function<Collection<Element
     private CompilationMessage asError( Element procedure, String duplicatedName, int duplicateCount )
     {
         return new DuplicatedProcedureError( procedure, getAnnotationMirror( procedure ),
-                "Procedure name <%s> is already defined %s times. It should be defined only once!", duplicatedName,
-                String.valueOf( duplicateCount ) );
+                "Procedure|function name <%s> is already defined %s times. It should be defined only once!",
+                duplicatedName, String.valueOf( duplicateCount ) );
     }
 
     private AnnotationMirror getAnnotationMirror( Element procedure )

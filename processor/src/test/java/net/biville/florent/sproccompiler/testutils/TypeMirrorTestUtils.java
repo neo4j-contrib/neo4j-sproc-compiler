@@ -15,6 +15,7 @@
  */
 package net.biville.florent.sproccompiler.testutils;
 
+import com.google.testing.compile.CompilationRule;
 import net.biville.florent.sproccompiler.compilerutils.TypeMirrorUtils;
 
 import java.util.stream.Stream;
@@ -34,7 +35,12 @@ public class TypeMirrorTestUtils
     private final Elements elements;
     private final TypeMirrorUtils typeMirrors;
 
-    public TypeMirrorTestUtils( Types types, Elements elements, TypeMirrorUtils typeMirrors )
+    public TypeMirrorTestUtils( CompilationRule rule )
+    {
+        this( rule.getTypes(), rule.getElements(), new TypeMirrorUtils( rule.getTypes(), rule.getElements() ) );
+    }
+
+    private TypeMirrorTestUtils( Types types, Elements elements, TypeMirrorUtils typeMirrors )
     {
         this.types = types;
         this.elements = elements;

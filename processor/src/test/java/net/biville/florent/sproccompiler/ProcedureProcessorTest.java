@@ -90,7 +90,7 @@ public class ProcedureProcessorTest
 
         assert_().about( javaSource() ).that( sproc ).processedWith( processor ).failsToCompile().withErrorCount( 1 )
                 .withErrorContaining(
-                        "Unsupported parameter type <short> of procedure BadPrimitiveInputSproc#doSomething" )
+                        "Unsupported parameter type <short> of procedure|function BadPrimitiveInputSproc#doSomething" )
                 .in( sproc ).onLine( 28 );
     }
 
@@ -106,14 +106,14 @@ public class ProcedureProcessorTest
 
         compilation.withErrorContaining( "Unsupported parameter type " +
                 "<java.util.List<java.util.List<java.util.Map<java.lang.String,java.lang.Thread>>>>" +
-                " of procedure BadGenericInputSproc#doSomething" ).in( sproc ).onLine( 32 );
+                " of procedure|function BadGenericInputSproc#doSomething" ).in( sproc ).onLine( 32 );
 
         compilation.withErrorContaining( "Unsupported parameter type " +
                 "<java.util.Map<java.lang.String,java.util.List<java.util.concurrent.ExecutorService>>>" +
-                " of procedure BadGenericInputSproc#doSomething2" ).in( sproc ).onLine( 38 );
+                " of procedure|function BadGenericInputSproc#doSomething2" ).in( sproc ).onLine( 38 );
 
         compilation.withErrorContaining(
-                "Unsupported parameter type <java.util.Map> of procedure BadGenericInputSproc#doSomething3" )
+                "Unsupported parameter type <java.util.Map> of procedure|function BadGenericInputSproc#doSomething3" )
                 .in( sproc ).onLine( 44 );
     }
 
@@ -162,9 +162,8 @@ public class ProcedureProcessorTest
 
         assert_().about( javaSources() ).that( asList( firstDuplicate, secondDuplicate ) ).processedWith( processor )
                 .failsToCompile().withErrorCount( 2 ).withErrorContaining(
-                "Procedure name <net.biville.florent.sproccompiler.procedures.invalid.duplicated.foobar> is already " +
-                        "defined 2 times. " +
-                        "It should be defined only once!" );
+                "Procedure|function name <net.biville.florent.sproccompiler.procedures.invalid.duplicated.foobar> is " +
+                        "already defined 2 times. It should be defined only once!" );
     }
 
     @Test

@@ -16,6 +16,7 @@
 package net.biville.florent.sproccompiler.validators;
 
 import com.google.testing.compile.CompilationRule;
+import net.biville.florent.sproccompiler.ProcedureProcessor;
 import net.biville.florent.sproccompiler.messages.CompilationMessage;
 import net.biville.florent.sproccompiler.validators.examples.DefaultProcedureA;
 import net.biville.florent.sproccompiler.validators.examples.DefaultProcedureB;
@@ -53,7 +54,7 @@ public class DuplicatedProcedureValidatorTest
     public void prepare()
     {
         elements = compilation.getElements();
-        validator = new DuplicatedProcedureValidator( elements );
+        validator = new DuplicatedProcedureValidator<>( elements, Procedure.class, ProcedureProcessor::getCustomName );
     }
 
     @Test
@@ -68,8 +69,9 @@ public class DuplicatedProcedureValidatorTest
         String procedureName = "net.biville.florent.sproccompiler.validators.examples.procedure";
         assertThat( errors ).extracting( CompilationMessage::getCategory, CompilationMessage::getElement,
                 CompilationMessage::getContents ).containsExactlyInAnyOrder( tuple( Diagnostic.Kind.ERROR, procedureA,
-                "Procedure name <" + procedureName + "> is already defined 2 times. It should be defined only once!" ),
-                tuple( Diagnostic.Kind.ERROR, procedureB, "Procedure name <" + procedureName +
+                "Procedure|function name <" + procedureName + "> is already defined 2 times. It should be defined " +
+                        "only once!" ), tuple( Diagnostic.Kind.ERROR, procedureB,
+                "Procedure|function name <" + procedureName +
                         "> is already defined 2 times. It should be defined only once!" ) );
     }
 
@@ -84,9 +86,10 @@ public class DuplicatedProcedureValidatorTest
 
         assertThat( errors ).extracting( CompilationMessage::getCategory, CompilationMessage::getElement,
                 CompilationMessage::getContents ).containsExactlyInAnyOrder( tuple( Diagnostic.Kind.ERROR, procedureA,
-                "Procedure name <override> is already defined 2 times. It should be defined only once!" ),
+                "Procedure|function name <override> is already defined 2 times. It should be defined only once!" ),
                 tuple( Diagnostic.Kind.ERROR, procedureB,
-                        "Procedure name <override> is already defined 2 times. It should be defined only once!" ) );
+                        "Procedure|function name <override> is already defined 2 times. It should be defined only " +
+                                "once!" ) );
     }
 
     @Test

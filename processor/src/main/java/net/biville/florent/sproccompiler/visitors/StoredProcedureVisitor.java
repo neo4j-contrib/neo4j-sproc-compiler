@@ -17,15 +17,12 @@ package net.biville.florent.sproccompiler.visitors;
 
 import net.biville.florent.sproccompiler.compilerutils.TypeMirrorUtils;
 import net.biville.florent.sproccompiler.messages.CompilationMessage;
-import net.biville.florent.sproccompiler.messages.ParameterMissingAnnotationError;
-import net.biville.florent.sproccompiler.messages.ParameterTypeError;
 import net.biville.florent.sproccompiler.messages.ReturnTypeError;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementVisitor;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
@@ -45,16 +42,17 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
     private final Elements elementUtils;
     private final ElementVisitor<Stream<CompilationMessage>,Void> classVisitor;
     private final TypeVisitor<Stream<CompilationMessage>,Void> recordVisitor;
-    private final TypeVisitor<Boolean,Void> parameterTypeVisitor;
+    private final ElementVisitor<Stream<CompilationMessage>,Void> parameterVisitor;
 
     public StoredProcedureVisitor( Types typeUtils, Elements elementUtils, boolean skipContextWarnings )
     {
         TypeMirrorUtils typeMirrors = new TypeMirrorUtils( typeUtils, elementUtils );
+
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
         this.classVisitor = new StoredProcedureClassVisitor( typeUtils, elementUtils, skipContextWarnings );
         this.recordVisitor = new RecordTypeVisitor( typeUtils, typeMirrors );
-        this.parameterTypeVisitor = new ParameterTypeVisitor( typeUtils, typeMirrors );
+        this.parameterVisitor = new ParameterVisitor( new ParameterTypeVisitor( typeUtils, typeMirrors ) );
     }
 
     /**
@@ -68,35 +66,9 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
                 validateReturnType( executableElement ) ).flatMap( Function.identity() );
     }
 
-    /**
-     * Validates a method parameter
-     */
-    @Override
-    public Stream<CompilationMessage> visitVariable( VariableElement parameter, Void ignored )
-    {
-
-        Name annotation = parameter.getAnnotation( Name.class );
-        if ( annotation == null )
-        {
-            return Stream.of( new ParameterMissingAnnotationError( parameter,
-                    annotationMirror( parameter.getAnnotationMirrors() ), "@%s usage error: missing on parameter <%s>",
-                    Name.class.getCanonicalName(), nameOf( parameter ) ) );
-        }
-
-        if ( !parameterTypeVisitor.visit( parameter.asType() ) )
-        {
-            Element method = parameter.getEnclosingElement();
-            return Stream.of( new ParameterTypeError( parameter, "Unsupported parameter type <%s> of procedure %s#%s",
-                    parameter.asType().toString(), method.getEnclosingElement().getSimpleName(),
-                    method.getSimpleName() ) );
-        }
-
-        return Stream.empty();
-    }
-
     private Stream<CompilationMessage> validateParameters( List<? extends VariableElement> parameters, Void ignored )
     {
-        return parameters.stream().flatMap( var -> visitVariable( var, ignored ) );
+        return parameters.stream().flatMap( var -> parameterVisitor.visit( var, ignored ) );
     }
 
     private Stream<CompilationMessage> validateReturnType( ExecutableElement method )

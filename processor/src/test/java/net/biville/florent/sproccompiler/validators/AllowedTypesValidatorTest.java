@@ -53,7 +53,7 @@ public class AllowedTypesValidatorTest
         Elements elements = compilation.getElements();
         TypeMirrorUtils typeMirrors = new TypeMirrorUtils( types, elements );
 
-        typeMirrorTestUtils = new TypeMirrorTestUtils( types, elements, typeMirrors );
+        typeMirrorTestUtils = new TypeMirrorTestUtils( compilation );
         validator = new AllowedTypesValidator( typeMirrors, types );
     }
 

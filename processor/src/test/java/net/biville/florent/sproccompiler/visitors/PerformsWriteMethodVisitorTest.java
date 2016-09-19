@@ -16,12 +16,9 @@
 package net.biville.florent.sproccompiler.visitors;
 
 import com.google.testing.compile.CompilationRule;
-import net.biville.florent.sproccompiler.compilerutils.TypeMirrorUtils;
-import net.biville.florent.sproccompiler.errors.CompilationError;
-import net.biville.florent.sproccompiler.testutils.TypeMirrorTestUtils;
+import net.biville.florent.sproccompiler.messages.CompilationMessage;
+import net.biville.florent.sproccompiler.testutils.ElementTestUtils;
 import net.biville.florent.sproccompiler.visitors.examples.PerformsWriteProcedures;
-import org.assertj.core.api.Assertions;
-import org.assertj.core.groups.Tuple;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,67 +26,57 @@ import org.junit.Test;
 import java.util.stream.Stream;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementVisitor;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementFilter;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
+import javax.tools.Diagnostic;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.groups.Tuple.tuple;
 
 public class PerformsWriteMethodVisitorTest
 {
     @Rule
     public CompilationRule compilationRule = new CompilationRule();
-    private Types types;
-    private TypeMirrorTestUtils typeMirrorTestUtils;
 
-    private ElementVisitor<Stream<CompilationError>,Void> visitor = new PerformsWriteMethodVisitor();
+    private ElementVisitor<Stream<CompilationMessage>,Void> visitor = new PerformsWriteMethodVisitor();
+    private ElementTestUtils elementTestUtils;
 
     @Before
     public void prepare()
     {
-        types = compilationRule.getTypes();
-        Elements elements = compilationRule.getElements();
-        typeMirrorTestUtils = new TypeMirrorTestUtils( types, elements, new TypeMirrorUtils( types, elements ) );
+        elementTestUtils = new ElementTestUtils( compilationRule );
     }
 
     @Test
     public void rejects_non_procedure_methods()
     {
-        Element element = methodElement( PerformsWriteProcedures.class, "missingProcedureAnnotation" );
+        Element element =
+                elementTestUtils.findMethodElement( PerformsWriteProcedures.class, "missingProcedureAnnotation" );
 
-        Stream<CompilationError> errors = visitor.visit( element );
+        Stream<CompilationMessage> errors = visitor.visit( element );
 
-        Assertions.assertThat( errors ).hasSize( 1 ).extracting( "element", "errorMessage" ).contains(
-                Tuple.tuple( element, "@PerformsWrites usage error: missing @Procedure annotation on method" ) );
+        assertThat( errors ).hasSize( 1 ).extracting( CompilationMessage::getCategory, CompilationMessage::getElement,
+                CompilationMessage::getContents ).contains( tuple( Diagnostic.Kind.ERROR, element,
+                "@PerformsWrites usage error: missing @Procedure annotation on method" ) );
     }
 
     @Test
     public void rejects_conflicted_mode_usage()
     {
-        Element element = methodElement( PerformsWriteProcedures.class, "conflictingMode" );
+        Element element = elementTestUtils.findMethodElement( PerformsWriteProcedures.class, "conflictingMode" );
 
-        Stream<CompilationError> errors = visitor.visit( element );
+        Stream<CompilationMessage> errors = visitor.visit( element );
 
-        Assertions.assertThat( errors ).hasSize( 1 ).extracting( "element", "errorMessage" ).contains(
-                Tuple.tuple( element, "@PerformsWrites usage error: cannot use mode other than Mode" + ".DEFAULT" ) );
+        assertThat( errors ).hasSize( 1 ).extracting( CompilationMessage::getCategory, CompilationMessage::getElement,
+                CompilationMessage::getContents ).contains( tuple( Diagnostic.Kind.ERROR, element,
+                "@PerformsWrites usage error: cannot use mode other than Mode.DEFAULT" ) );
     }
 
     @Test
     public void validates_regular_procedure()
     {
-        Element element = methodElement( PerformsWriteProcedures.class, "ok" );
+        Element element = elementTestUtils.findMethodElement( PerformsWriteProcedures.class, "ok" );
 
-        Stream<CompilationError> errors = visitor.visit( element );
+        Stream<CompilationMessage> errors = visitor.visit( element );
 
-        Assertions.assertThat( errors ).isEmpty();
-    }
-
-    private Element methodElement( Class<?> type, String methodName )
-    {
-        TypeMirror mirror = typeMirrorTestUtils.typeOf( type );
-        return ElementFilter.methodsIn( types.asElement( mirror ).getEnclosedElements() ).stream().filter( method ->
-        {
-            return method.getSimpleName().contentEquals( methodName );
-        } ).findFirst().orElseThrow( () -> new AssertionError(
-                String.format( "Could not find method %s of class %s", methodName, type.getName() ) ) );
+        assertThat( errors ).isEmpty();
     }
 }

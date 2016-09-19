@@ -16,6 +16,7 @@
 package net.biville.florent.sproccompiler;
 
 import com.google.testing.compile.CompilationRule;
+import net.biville.florent.sproccompiler.testutils.JavaFileObjectUtils;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -24,7 +25,6 @@ import javax.tools.JavaFileObject;
 
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
-import static net.biville.florent.sproccompiler.testutils.JavaFileObjectUtils.resource;
 
 public class PerformsWriteProcessorTest
 {
@@ -36,7 +36,8 @@ public class PerformsWriteProcessorTest
     @Test
     public void fails_with_conflicting_mode() throws Exception
     {
-        JavaFileObject procedure = resource( "conflicting_mode/ConflictingMode.java" );
+        JavaFileObject procedure = JavaFileObjectUtils.INSTANCE.procedureSource(
+                "invalid/conflicting_mode/ConflictingMode.java" );
 
         assert_().about( javaSource() ).that( procedure ).processedWith( processor ).failsToCompile()
                 .withErrorCount( 1 )

@@ -49,7 +49,7 @@ public class RecordTypeVisitorTest
         Elements elements = compilation.getElements();
         TypeMirrorUtils typeMirrors = new TypeMirrorUtils( types, elements );
 
-        typeMirrorTestUtils = new TypeMirrorTestUtils( types, elements, typeMirrors );
+        typeMirrorTestUtils = new TypeMirrorTestUtils( compilation );
         visitor = new RecordTypeVisitor( types, typeMirrors );
     }
 

@@ -15,11 +15,10 @@
  */
 package net.biville.florent.sproccompiler.visitors;
 
-import net.biville.florent.sproccompiler.errors.CompilationError;
-import net.biville.florent.sproccompiler.errors.PerformsWriteMisuseError;
+import net.biville.florent.sproccompiler.messages.CompilationMessage;
+import net.biville.florent.sproccompiler.messages.PerformsWriteMisuseError;
 
 import java.util.stream.Stream;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.SimpleElementVisitor8;
 
@@ -27,11 +26,11 @@ import org.neo4j.procedure.Mode;
 import org.neo4j.procedure.PerformsWrites;
 import org.neo4j.procedure.Procedure;
 
-public class PerformsWriteMethodVisitor extends SimpleElementVisitor8<Stream<CompilationError>,Void>
+public class PerformsWriteMethodVisitor extends SimpleElementVisitor8<Stream<CompilationMessage>,Void>
 {
 
     @Override
-    public Stream<CompilationError> visitExecutable( ExecutableElement method, Void ignored )
+    public Stream<CompilationMessage> visitExecutable( ExecutableElement method, Void ignored )
     {
         Procedure procedure = method.getAnnotation( Procedure.class );
         if ( procedure == null )

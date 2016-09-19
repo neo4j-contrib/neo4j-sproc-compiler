@@ -13,38 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.biville.florent.sproccompiler.errors;
+package net.biville.florent.sproccompiler.messages;
 
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-public class PerformsWriteMisuseError implements CompilationError
+public class FunctionInRootNamespaceError implements CompilationMessage
 {
-    private final Element method;
-    private final String errorMessage;
+    private final Element element;
+    private final String contents;
 
-    public PerformsWriteMisuseError( Element method, String message, Object... args )
+    public FunctionInRootNamespaceError( Element element, String message, Object... args )
     {
-
-        this.method = method;
-        this.errorMessage = String.format( message, args );
+        this.element = element;
+        this.contents = String.format( message, args );
     }
 
     @Override
     public Element getElement()
     {
-        return method;
+        return element;
     }
 
     @Override
-    public AnnotationMirror getMirror()
+    public String getContents()
     {
-        return null;
-    }
-
-    @Override
-    public String getErrorMessage()
-    {
-        return errorMessage;
+        return contents;
     }
 }
