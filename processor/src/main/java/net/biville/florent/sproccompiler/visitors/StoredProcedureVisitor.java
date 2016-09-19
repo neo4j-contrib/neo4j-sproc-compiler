@@ -22,9 +22,11 @@ import net.biville.florent.sproccompiler.errors.ParameterTypeError;
 import net.biville.florent.sproccompiler.errors.ReturnTypeError;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementVisitor;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
@@ -41,6 +43,7 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
 
     private final Types typeUtils;
     private final Elements elementUtils;
+    private final ElementVisitor<Stream<CompilationError>, Void> classVisitor = new StoredProcedureClassVisitor();
     private final TypeVisitor<Stream<CompilationError>,Void> recordVisitor;
     private final TypeVisitor<Boolean,Void> parameterTypeVisitor;
 
@@ -59,8 +62,11 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
     @Override
     public Stream<CompilationError> visitExecutable( ExecutableElement executableElement, Void ignored )
     {
-        return Stream.concat( validateParameters( executableElement.getParameters(), ignored ),
-                validateReturnType( executableElement ) );
+        return Stream.of(
+                classVisitor.visit( executableElement.getEnclosingElement() ),
+                validateParameters( executableElement.getParameters(), ignored ),
+                validateReturnType( executableElement ) )
+                .flatMap(Function.identity());
     }
 
     /**

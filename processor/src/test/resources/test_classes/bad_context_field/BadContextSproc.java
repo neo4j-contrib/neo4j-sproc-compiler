@@ -17,6 +17,7 @@ package test_classes.bad_context_field;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.procedure.Context;
+import org.neo4j.procedure.Procedure;
 
 public class BadContextSproc
 {
@@ -29,4 +30,16 @@ public class BadContextSproc
     public GraphDatabaseService db;
     @Context
     protected GraphDatabaseService shouldBePublic;
+    String shouldBeStatic;
+    public static String value;
+
+    @Procedure
+    public void sproc1()
+    {
+    }
+
+    @Procedure
+    public void sproc2()
+    {
+    }
 }

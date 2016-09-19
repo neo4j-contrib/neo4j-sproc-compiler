@@ -166,4 +166,30 @@ public class StoredProcedureProcessorTest
                 .compilesWithoutError();
 
     }
+
+    @Test
+    public void fails_if_context_injected_fields_have_wrong_modifiers()
+    {
+        JavaFileObject sproc = JavaFileObjectUtils.resource( "bad_context_field/BadContextSproc.java" );
+
+        UnsuccessfulCompilationClause unsuccessfulCompilationClause =
+                assert_().about( javaSource() ).that( sproc ).processedWith( processor ).failsToCompile()
+                        .withErrorCount( 4 );
+
+        unsuccessfulCompilationClause.withErrorContaining(
+                "@org.neo4j.procedure.Context usage error: field BadContextSproc#shouldBeNonStatic should be public, non-static and non-final" )
+                .in( sproc ).onLine( 26 );
+
+        unsuccessfulCompilationClause.withErrorContaining(
+                "@org.neo4j.procedure.Context usage error: field BadContextSproc#shouldBeNonFinal should be public, non-static and non-final" )
+                .in( sproc ).onLine( 28 );
+
+        unsuccessfulCompilationClause.withErrorContaining(
+                "@org.neo4j.procedure.Context usage error: field BadContextSproc#shouldBePublic should be public, non-static and non-final" )
+                .in( sproc ).onLine( 32 );
+
+        unsuccessfulCompilationClause.withErrorContaining(
+                "Field BadContextSproc#shouldBeStatic should be static" )
+                .in( sproc ).onLine( 33 );
+    }
 }
