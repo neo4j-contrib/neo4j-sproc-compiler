@@ -13,24 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.biville.florent.sproccompiler.errors;
+package net.biville.florent.sproccompiler.messages;
 
-import javax.annotation.processing.Messager;
+import javax.lang.model.element.Element;
 
-import static javax.tools.Diagnostic.Kind.ERROR;
-
-public class ErrorPrinter
+public class ParameterTypeError implements CompilationMessage
 {
 
-    private final Messager messager;
+    private final Element element;
+    private final String errorMessage;
 
-    public ErrorPrinter( Messager messager )
+    public ParameterTypeError( Element element, String errorMessage, Object... args )
     {
-        this.messager = messager;
+        this.element = element;
+        this.errorMessage = String.format( errorMessage, args );
     }
 
-    public void print( CompilationError error )
+    @Override
+    public Element getElement()
     {
-        messager.printMessage( ERROR, error.getErrorMessage(), error.getElement(), error.getMirror() );
+        return element;
+    }
+
+    @Override
+    public String getContents()
+    {
+        return errorMessage;
     }
 }

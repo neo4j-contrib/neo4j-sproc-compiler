@@ -16,7 +16,7 @@
 package net.biville.florent.sproccompiler.validators;
 
 import com.google.testing.compile.CompilationRule;
-import net.biville.florent.sproccompiler.errors.CompilationError;
+import net.biville.florent.sproccompiler.messages.CompilationMessage;
 import net.biville.florent.sproccompiler.validators.examples.DefaultProcedureA;
 import net.biville.florent.sproccompiler.validators.examples.DefaultProcedureB;
 import net.biville.florent.sproccompiler.validators.examples.OverriddenProcedureB;
@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.tools.Diagnostic;
 
 import org.neo4j.procedure.Procedure;
 
@@ -46,7 +47,7 @@ public class DuplicatedStoredProcedureValidatorTest
     public CompilationRule compilation = new CompilationRule();
 
     private Elements elements;
-    private Function<Collection<Element>,Stream<CompilationError>> validator;
+    private Function<Collection<Element>,Stream<CompilationMessage>> validator;
 
     @Before
     public void prepare()
@@ -62,14 +63,14 @@ public class DuplicatedStoredProcedureValidatorTest
         Element procedureB = procedureMethod( DefaultProcedureB.class.getName() );
         Collection<Element> duplicates = asList( procedureA, procedureB );
 
-        Stream<CompilationError> errors = validator.apply( duplicates );
+        Stream<CompilationMessage> errors = validator.apply( duplicates );
 
         String procedureName = "net.biville.florent.sproccompiler.validators.examples#procedure";
-        assertThat( errors ).hasSize( 2 ).extracting( "element", "errorMessage" ).containsExactlyInAnyOrder(
-                tuple( procedureA, "Procedure name <" + procedureName +
-                        "> is already defined 2 times. It should be defined only once!" ), tuple( procedureB,
-                        "Procedure name <" + procedureName +
-                                "> is already defined 2 times. It should be defined only once!" ) );
+        assertThat( errors ).extracting( CompilationMessage::getCategory, CompilationMessage::getElement,
+                CompilationMessage::getContents ).containsExactlyInAnyOrder( tuple( Diagnostic.Kind.ERROR, procedureA,
+                "Procedure name <" + procedureName + "> is already defined 2 times. It should be defined only once!" ),
+                tuple( Diagnostic.Kind.ERROR, procedureB, "Procedure name <" + procedureName +
+                        "> is already defined 2 times. It should be defined only once!" ) );
     }
 
     @Test
@@ -79,12 +80,12 @@ public class DuplicatedStoredProcedureValidatorTest
         Element procedureB = procedureMethod( OverriddenProcedureB.class.getName() );
         Collection<Element> duplicates = asList( procedureA, procedureB );
 
-        Stream<CompilationError> errors = validator.apply( duplicates );
+        Stream<CompilationMessage> errors = validator.apply( duplicates );
 
-        assertThat( errors ).hasSize( 2 ).extracting( "element", "errorMessage" ).containsExactlyInAnyOrder(
-                tuple( procedureA,
-                        "Procedure name <override> is already defined 2 times. It should be defined only once!" ),
-                tuple( procedureB,
+        assertThat( errors ).extracting( CompilationMessage::getCategory, CompilationMessage::getElement,
+                CompilationMessage::getContents ).containsExactlyInAnyOrder( tuple( Diagnostic.Kind.ERROR, procedureA,
+                "Procedure name <override> is already defined 2 times. It should be defined only once!" ),
+                tuple( Diagnostic.Kind.ERROR, procedureB,
                         "Procedure name <override> is already defined 2 times. It should be defined only once!" ) );
     }
 
@@ -94,7 +95,7 @@ public class DuplicatedStoredProcedureValidatorTest
         Collection<Element> duplicates = asList( procedureMethod( DefaultProcedureA.class.getName() ),
                 procedureMethod( OverriddenProcedureB.class.getName() ) );
 
-        Stream<CompilationError> errors = validator.apply( duplicates );
+        Stream<CompilationMessage> errors = validator.apply( duplicates );
 
         assertThat( errors ).isEmpty();
     }

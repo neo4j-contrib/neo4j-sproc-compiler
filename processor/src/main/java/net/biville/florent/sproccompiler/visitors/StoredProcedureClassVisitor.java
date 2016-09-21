@@ -15,8 +15,8 @@
  */
 package net.biville.florent.sproccompiler.visitors;
 
-import net.biville.florent.sproccompiler.errors.CompilationError;
-import net.biville.florent.sproccompiler.errors.ProcedureMissingPublicNoArgConstructor;
+import net.biville.florent.sproccompiler.messages.CompilationMessage;
+import net.biville.florent.sproccompiler.messages.ProcedureMissingPublicNoArgConstructor;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -30,14 +30,14 @@ import javax.lang.model.util.SimpleElementVisitor8;
 
 import static javax.lang.model.util.ElementFilter.constructorsIn;
 
-public class StoredProcedureClassVisitor extends SimpleElementVisitor8<Stream<CompilationError>,Void>
+public class StoredProcedureClassVisitor extends SimpleElementVisitor8<Stream<CompilationMessage>,Void>
 {
 
     private final Set<TypeElement> visitedElements = new HashSet<>();
     private final FieldVisitor fieldVisitor = new FieldVisitor();
 
     @Override
-    public Stream<CompilationError> visitType( TypeElement procedureClass, Void ignored )
+    public Stream<CompilationMessage> visitType( TypeElement procedureClass, Void ignored )
     {
         if ( isFirstVisit( procedureClass ) )
         {
@@ -58,12 +58,12 @@ public class StoredProcedureClassVisitor extends SimpleElementVisitor8<Stream<Co
         return visitedElements.add( e );
     }
 
-    private Stream<CompilationError> validateFields( TypeElement e )
+    private Stream<CompilationMessage> validateFields( TypeElement e )
     {
         return e.getEnclosedElements().stream().flatMap( fieldVisitor::visit );
     }
 
-    private Stream<CompilationError> validateConstructor( Element procedureClass )
+    private Stream<CompilationMessage> validateConstructor( Element procedureClass )
     {
         Optional<ExecutableElement> publicNoArgConstructor =
                 constructorsIn( procedureClass.getEnclosedElements() ).stream()

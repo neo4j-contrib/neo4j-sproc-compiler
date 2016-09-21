@@ -13,17 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.biville.florent.sproccompiler.errors;
+package net.biville.florent.sproccompiler.messages;
 
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
+import javax.lang.model.element.VariableElement;
 
-public interface CompilationError
+public class FieldError implements CompilationMessage
 {
-    Element getElement();
 
-    AnnotationMirror getMirror();
+    private final VariableElement field;
+    private final String errorMessage;
 
-    String getErrorMessage();
+    public FieldError( VariableElement field, String errorMessage, Object... args )
+    {
+
+        this.field = field;
+        this.errorMessage = String.format( errorMessage, args );
+    }
+
+    @Override
+    public VariableElement getElement()
+    {
+        return field;
+    }
+
+    @Override
+    public String getContents()
+    {
+        return errorMessage;
+    }
 }
-

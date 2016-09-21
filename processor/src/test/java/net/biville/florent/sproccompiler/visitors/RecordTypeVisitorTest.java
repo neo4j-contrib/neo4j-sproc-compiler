@@ -17,6 +17,7 @@ package net.biville.florent.sproccompiler.visitors;
 
 import com.google.testing.compile.CompilationRule;
 import net.biville.florent.sproccompiler.compilerutils.TypeMirrorUtils;
+import net.biville.florent.sproccompiler.messages.CompilationMessage;
 import net.biville.florent.sproccompiler.testutils.TypeMirrorTestUtils;
 import net.biville.florent.sproccompiler.visitors.examples.InvalidRecord;
 import net.biville.florent.sproccompiler.visitors.examples.ValidRecord;
@@ -28,8 +29,10 @@ import java.util.stream.Stream;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 public class RecordTypeVisitorTest
 {
@@ -63,8 +66,10 @@ public class RecordTypeVisitorTest
     {
         TypeMirror recordStreamType = typeMirrorTestUtils.typeOf( Stream.class, InvalidRecord.class );
 
-        assertThat( visitor.visit( recordStreamType ) ).hasSize( 1 ).extracting( "errorMessage" )
-                .contains( "Record definition error: field InvalidRecord#foo must be public" );
+        assertThat( visitor.visit( recordStreamType ) ).hasSize( 1 )
+                .extracting( CompilationMessage::getCategory, CompilationMessage::getContents ).containsExactly(
+                tuple( Diagnostic.Kind.ERROR,
+                        "Record definition error: field InvalidRecord#foo must" + " be public" ) );
     }
 
 }
