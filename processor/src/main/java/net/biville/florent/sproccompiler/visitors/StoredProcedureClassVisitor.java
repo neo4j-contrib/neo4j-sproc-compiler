@@ -26,7 +26,9 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleElementVisitor8;
+import javax.lang.model.util.Types;
 
 import static javax.lang.model.util.ElementFilter.constructorsIn;
 
@@ -34,7 +36,12 @@ public class StoredProcedureClassVisitor extends SimpleElementVisitor8<Stream<Co
 {
 
     private final Set<TypeElement> visitedElements = new HashSet<>();
-    private final FieldVisitor fieldVisitor = new FieldVisitor();
+    private final FieldVisitor fieldVisitor;
+
+    public StoredProcedureClassVisitor( Types types, Elements elements )
+    {
+        fieldVisitor = new FieldVisitor( types, elements );
+    }
 
     @Override
     public Stream<CompilationMessage> visitType( TypeElement procedureClass, Void ignored )
