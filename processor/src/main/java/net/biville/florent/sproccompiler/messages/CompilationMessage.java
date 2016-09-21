@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.biville.florent.sproccompiler.errors;
+package net.biville.florent.sproccompiler.messages;
 
-import javax.annotation.processing.Messager;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.tools.Diagnostic;
 
-import static javax.tools.Diagnostic.Kind.ERROR;
-
-public class ErrorPrinter
+public interface CompilationMessage
 {
+    Element getElement();
 
-    private final Messager messager;
+    AnnotationMirror getMirror();
 
-    public ErrorPrinter( Messager messager )
+    String getContents();
+
+    default Diagnostic.Kind category()
     {
-        this.messager = messager;
-    }
-
-    public void print( CompilationError error )
-    {
-        messager.printMessage( ERROR, error.getErrorMessage(), error.getElement(), error.getMirror() );
+        return Diagnostic.Kind.ERROR;
     }
 }
+

@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.biville.florent.sproccompiler.errors;
+package net.biville.florent.sproccompiler.messages;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-public class ParameterTypeError implements CompilationError
+public class RecordTypeError implements CompilationMessage
 {
+
 
     private final Element element;
     private final String errorMessage;
 
-    public ParameterTypeError( Element element, String errorMessage, Object... args )
+    public RecordTypeError( Element element, String errorMessage, Object... args )
     {
         this.element = element;
         this.errorMessage = String.format( errorMessage, args );
@@ -43,7 +44,7 @@ public class ParameterTypeError implements CompilationError
     }
 
     @Override
-    public String getErrorMessage()
+    public String getContents()
     {
         return errorMessage;
     }

@@ -15,8 +15,8 @@
  */
 package net.biville.florent.sproccompiler.visitors;
 
-import net.biville.florent.sproccompiler.errors.CompilationError;
-import net.biville.florent.sproccompiler.errors.FieldError;
+import net.biville.florent.sproccompiler.messages.CompilationMessage;
+import net.biville.florent.sproccompiler.messages.FieldError;
 import org.neo4j.procedure.Context;
 
 import java.util.Set;
@@ -25,10 +25,10 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.SimpleElementVisitor8;
 
-public class FieldVisitor extends SimpleElementVisitor8<Stream<CompilationError>, Void>
+public class FieldVisitor extends SimpleElementVisitor8<Stream<CompilationMessage>, Void>
 {
     @Override
-    public Stream<CompilationError> visitVariable( VariableElement field, Void ignored )
+    public Stream<CompilationMessage> visitVariable( VariableElement field, Void ignored )
     {
         if ( field.getAnnotation( Context.class ) == null )
         {
@@ -41,7 +41,7 @@ public class FieldVisitor extends SimpleElementVisitor8<Stream<CompilationError>
 
     }
 
-    private static Stream<CompilationError> validateNonContextField( VariableElement field )
+    private static Stream<CompilationMessage> validateNonContextField( VariableElement field )
     {
         Set<Modifier> modifiers = field.getModifiers();
         if ( !modifiers.contains( Modifier.STATIC ) )
@@ -52,7 +52,7 @@ public class FieldVisitor extends SimpleElementVisitor8<Stream<CompilationError>
         return Stream.empty();
     }
 
-    private static Stream<CompilationError> validateContextField( VariableElement field )
+    private static Stream<CompilationMessage> validateContextField( VariableElement field )
     {
         Set<Modifier> modifiers = field.getModifiers();
         if ( !modifiers.contains( Modifier.PUBLIC ) || modifiers.contains( Modifier.STATIC ) ||

@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.biville.florent.sproccompiler.errors;
+package net.biville.florent.sproccompiler.messages;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-public class RecordTypeError implements CompilationError
+public class ParameterMissingAnnotationError implements CompilationMessage
 {
-
-
     private final Element element;
+    private final AnnotationMirror mirror;
     private final String errorMessage;
 
-    public RecordTypeError( Element element, String errorMessage, Object... args )
+    public ParameterMissingAnnotationError( Element element, AnnotationMirror mirror, String errorMessage,
+            Object... args )
     {
         this.element = element;
+        this.mirror = mirror;
         this.errorMessage = String.format( errorMessage, args );
     }
 
@@ -40,11 +41,11 @@ public class RecordTypeError implements CompilationError
     @Override
     public AnnotationMirror getMirror()
     {
-        return null;
+        return mirror;
     }
 
     @Override
-    public String getErrorMessage()
+    public String getContents()
     {
         return errorMessage;
     }

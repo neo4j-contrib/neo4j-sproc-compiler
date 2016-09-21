@@ -13,17 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.biville.florent.sproccompiler.errors;
+package net.biville.florent.sproccompiler.messages;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-public interface CompilationError
+public class ProcedureMissingPublicNoArgConstructor implements CompilationMessage
 {
-    Element getElement();
 
-    AnnotationMirror getMirror();
+    private final Element element;
+    private final String errorMessage;
 
-    String getErrorMessage();
+    public ProcedureMissingPublicNoArgConstructor( Element element, String message, Object... args )
+    {
+
+        this.element = element;
+        this.errorMessage = String.format( message, args );
+    }
+
+    @Override
+    public Element getElement()
+    {
+        return element;
+    }
+
+    @Override
+    public AnnotationMirror getMirror()
+    {
+        return null;
+    }
+
+    @Override
+    public String getContents()
+    {
+        return errorMessage;
+    }
 }
-

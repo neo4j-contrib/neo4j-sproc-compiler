@@ -15,8 +15,8 @@
  */
 package net.biville.florent.sproccompiler.validators;
 
-import net.biville.florent.sproccompiler.errors.CompilationError;
-import net.biville.florent.sproccompiler.errors.DuplicatedProcedureError;
+import net.biville.florent.sproccompiler.messages.CompilationMessage;
+import net.biville.florent.sproccompiler.messages.DuplicatedProcedureError;
 import net.biville.florent.sproccompiler.visitors.AnnotationTypeVisitor;
 
 import java.util.Collection;
@@ -33,7 +33,7 @@ import org.neo4j.procedure.Procedure;
 
 import static java.util.stream.Collectors.groupingBy;
 
-public class DuplicatedStoredProcedureValidator implements Function<Collection<Element>,Stream<CompilationError>>
+public class DuplicatedStoredProcedureValidator implements Function<Collection<Element>,Stream<CompilationMessage>>
 {
 
     private final Types types;
@@ -46,12 +46,12 @@ public class DuplicatedStoredProcedureValidator implements Function<Collection<E
     }
 
     @Override
-    public Stream<CompilationError> apply( Collection<Element> visitedProcedures )
+    public Stream<CompilationMessage> apply( Collection<Element> visitedProcedures )
     {
         return findDuplicates( visitedProcedures );
     }
 
-    private Stream<CompilationError> findDuplicates( Collection<Element> visitedProcedures )
+    private Stream<CompilationMessage> findDuplicates( Collection<Element> visitedProcedures )
     {
         return indexByName( visitedProcedures ).filter( index -> index.getValue().size() > 1 )
                 .flatMap( this::asErrors );
@@ -78,14 +78,14 @@ public class DuplicatedStoredProcedureValidator implements Function<Collection<E
         return String.format( "%s#%s", elements.getPackageOf( procedure ).toString(), procedure.getSimpleName() );
     }
 
-    private Stream<CompilationError> asErrors( Map.Entry<String,List<Element>> indexedProcedures )
+    private Stream<CompilationMessage> asErrors( Map.Entry<String,List<Element>> indexedProcedures )
     {
         String duplicatedName = indexedProcedures.getKey();
         return indexedProcedures.getValue().stream()
                 .map( procedure -> asError( procedure, duplicatedName, indexedProcedures.getValue().size() ) );
     }
 
-    private CompilationError asError( Element procedure, String duplicatedName, int duplicateCount )
+    private CompilationMessage asError( Element procedure, String duplicatedName, int duplicateCount )
     {
         return new DuplicatedProcedureError( procedure, getAnnotationMirror( procedure ),
                 "Procedure name <%s> is already defined %s times. It should be defined only once!", duplicatedName,

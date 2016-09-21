@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.biville.florent.sproccompiler.errors;
+package net.biville.florent.sproccompiler.messages;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-public class ReturnTypeError implements CompilationError
+public class ReturnTypeError implements CompilationMessage
 {
 
     private final Element element;
@@ -43,7 +43,7 @@ public class ReturnTypeError implements CompilationError
     }
 
     @Override
-    public String getErrorMessage()
+    public String getContents()
     {
         return errorMessage;
     }

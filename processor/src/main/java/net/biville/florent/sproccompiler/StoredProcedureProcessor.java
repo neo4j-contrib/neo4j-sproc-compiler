@@ -16,8 +16,8 @@
 package net.biville.florent.sproccompiler;
 
 import com.google.auto.service.AutoService;
-import net.biville.florent.sproccompiler.errors.CompilationError;
-import net.biville.florent.sproccompiler.errors.ErrorPrinter;
+import net.biville.florent.sproccompiler.messages.CompilationMessage;
+import net.biville.florent.sproccompiler.messages.MessagePrinter;
 import net.biville.florent.sproccompiler.validators.DuplicatedStoredProcedureValidator;
 import net.biville.florent.sproccompiler.visitors.StoredProcedureVisitor;
 
@@ -48,9 +48,9 @@ public class StoredProcedureProcessor extends AbstractProcessor
     private static final Class<? extends Annotation> sprocType = Procedure.class;
     private final Set<Element> visitedProcedures = new LinkedHashSet<>();
 
-    private Function<Collection<Element>,Stream<CompilationError>> duplicateProcedure;
-    private ElementVisitor<Stream<CompilationError>,Void> storedProcedureVisitor;
-    private ErrorPrinter errorPrinter;
+    private Function<Collection<Element>,Stream<CompilationMessage>> duplicateProcedure;
+    private ElementVisitor<Stream<CompilationMessage>,Void> storedProcedureVisitor;
+    private MessagePrinter messagePrinter;
 
     @Override
     public Set<String> getSupportedAnnotationTypes()
@@ -74,7 +74,7 @@ public class StoredProcedureProcessor extends AbstractProcessor
         Elements elementUtils = processingEnv.getElementUtils();
 
         visitedProcedures.clear();
-        errorPrinter = new ErrorPrinter( processingEnv.getMessager() );
+        messagePrinter = new MessagePrinter( processingEnv.getMessager() );
         storedProcedureVisitor = new StoredProcedureVisitor( typeUtils, elementUtils );
         duplicateProcedure = new DuplicatedStoredProcedureValidator( typeUtils, elementUtils );
     }
@@ -86,7 +86,7 @@ public class StoredProcedureProcessor extends AbstractProcessor
         processStoredProcedures( roundEnv );
         if ( roundEnv.processingOver() )
         {
-            duplicateProcedure.apply( visitedProcedures ).forEach( errorPrinter::print );
+            duplicateProcedure.apply( visitedProcedures ).forEach( messagePrinter::print );
         }
         return false;
     }
@@ -95,7 +95,7 @@ public class StoredProcedureProcessor extends AbstractProcessor
     {
         Set<? extends Element> procedures = roundEnv.getElementsAnnotatedWith( sprocType );
         visitedProcedures.addAll( procedures );
-        procedures.stream().flatMap( storedProcedureVisitor::visit ).forEachOrdered( errorPrinter::print );
+        procedures.stream().flatMap( storedProcedureVisitor::visit ).forEachOrdered( messagePrinter::print );
     }
 
 }

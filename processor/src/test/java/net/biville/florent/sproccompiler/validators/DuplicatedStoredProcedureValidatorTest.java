@@ -16,7 +16,7 @@
 package net.biville.florent.sproccompiler.validators;
 
 import com.google.testing.compile.CompilationRule;
-import net.biville.florent.sproccompiler.errors.CompilationError;
+import net.biville.florent.sproccompiler.messages.CompilationMessage;
 import net.biville.florent.sproccompiler.validators.examples.DefaultProcedureA;
 import net.biville.florent.sproccompiler.validators.examples.DefaultProcedureB;
 import net.biville.florent.sproccompiler.validators.examples.OverriddenProcedureB;
@@ -46,7 +46,7 @@ public class DuplicatedStoredProcedureValidatorTest
     public CompilationRule compilation = new CompilationRule();
 
     private Elements elements;
-    private Function<Collection<Element>,Stream<CompilationError>> validator;
+    private Function<Collection<Element>,Stream<CompilationMessage>> validator;
 
     @Before
     public void prepare()
@@ -62,7 +62,7 @@ public class DuplicatedStoredProcedureValidatorTest
         Element procedureB = procedureMethod( DefaultProcedureB.class.getName() );
         Collection<Element> duplicates = asList( procedureA, procedureB );
 
-        Stream<CompilationError> errors = validator.apply( duplicates );
+        Stream<CompilationMessage> errors = validator.apply( duplicates );
 
         String procedureName = "net.biville.florent.sproccompiler.validators.examples#procedure";
         assertThat( errors ).hasSize( 2 ).extracting( "element", "errorMessage" ).containsExactlyInAnyOrder(
@@ -79,7 +79,7 @@ public class DuplicatedStoredProcedureValidatorTest
         Element procedureB = procedureMethod( OverriddenProcedureB.class.getName() );
         Collection<Element> duplicates = asList( procedureA, procedureB );
 
-        Stream<CompilationError> errors = validator.apply( duplicates );
+        Stream<CompilationMessage> errors = validator.apply( duplicates );
 
         assertThat( errors ).hasSize( 2 ).extracting( "element", "errorMessage" ).containsExactlyInAnyOrder(
                 tuple( procedureA,
@@ -94,7 +94,7 @@ public class DuplicatedStoredProcedureValidatorTest
         Collection<Element> duplicates = asList( procedureMethod( DefaultProcedureA.class.getName() ),
                 procedureMethod( OverriddenProcedureB.class.getName() ) );
 
-        Stream<CompilationError> errors = validator.apply( duplicates );
+        Stream<CompilationMessage> errors = validator.apply( duplicates );
 
         assertThat( errors ).isEmpty();
     }
