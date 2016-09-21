@@ -16,10 +16,22 @@
 package net.biville.florent.sproccompiler.visitors.examples;
 
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.kernel.internal.GraphDatabaseAPI;
+import org.neo4j.logging.Log;
 import org.neo4j.procedure.Context;
 
-public class FinalContextMisuse
+public class UnsupportedInjectedContextTypes
 {
+
     @Context
-    public final GraphDatabaseService graphDatabaseService = null;
+    public String unsupportedType;
+
+    @Context
+    public GraphDatabaseAPI notOfficiallySupported;
+
+    @Context
+    public GraphDatabaseService graphDatabaseService;
+
+    @Context
+    public Log log;
 }

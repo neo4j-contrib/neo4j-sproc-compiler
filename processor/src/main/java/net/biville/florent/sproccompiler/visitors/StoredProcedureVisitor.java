@@ -43,7 +43,7 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
 
     private final Types typeUtils;
     private final Elements elementUtils;
-    private final ElementVisitor<Stream<CompilationMessage>,Void> classVisitor = new StoredProcedureClassVisitor();
+    private final ElementVisitor<Stream<CompilationMessage>,Void> classVisitor;
     private final TypeVisitor<Stream<CompilationMessage>,Void> recordVisitor;
     private final TypeVisitor<Boolean,Void> parameterTypeVisitor;
 
@@ -52,6 +52,7 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
         TypeMirrorUtils typeMirrors = new TypeMirrorUtils( typeUtils, elementUtils );
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
+        this.classVisitor = new StoredProcedureClassVisitor( typeUtils, elementUtils );
         this.recordVisitor = new RecordTypeVisitor( typeUtils, typeMirrors );
         this.parameterTypeVisitor = new ParameterTypeVisitor( typeUtils, typeMirrors );
     }
