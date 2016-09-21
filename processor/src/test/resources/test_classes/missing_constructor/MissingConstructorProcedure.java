@@ -20,7 +20,7 @@ import org.neo4j.procedure.Procedure;
 public class MissingConstructorProcedure
 {
     // should be no-arg
-    public MissingConstructorProcedure(String oopsAParameter)
+    public MissingConstructorProcedure( String oopsAParameter )
     {
     }
 

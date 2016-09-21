@@ -24,6 +24,7 @@ public class BadContextSproc
 
     @Context
     public static GraphDatabaseService shouldBeNonStatic;
+    public static String value;
     @Context
     public final GraphDatabaseService shouldBeNonFinal = null;
     @Context
@@ -31,7 +32,6 @@ public class BadContextSproc
     @Context
     protected GraphDatabaseService shouldBePublic;
     String shouldBeStatic;
-    public static String value;
 
     @Procedure
     public void sproc1()
