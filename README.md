@@ -16,6 +16,9 @@ instructions below), it will trigger compilation failures if any of the followin
 is not met:
 
  - `@Context` fields must be `public` and non-`final`
+ - all other fields must be `static`
+ - `Map` record fields/procedure parameters must define their key type as `String`
+ - `@Procedure` class must define a public constructor with no arguments
  - `@Procedure` method must return a Stream
  - `@Procedure` parameter and record types must be supported
  - `@Procedure` parameters must be annotated with `@Name`
