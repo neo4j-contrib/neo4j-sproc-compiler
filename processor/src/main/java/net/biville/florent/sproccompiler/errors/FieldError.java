@@ -24,7 +24,7 @@ public class FieldError implements CompilationError
     private final VariableElement field;
     private final String errorMessage;
 
-    public FieldError( VariableElement field, String errorMessage, CharSequence... args )
+    public FieldError( VariableElement field, String errorMessage, Object... args )
     {
 
         this.field = field;

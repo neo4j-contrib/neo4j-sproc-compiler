@@ -26,7 +26,7 @@ public class DuplicatedProcedureError implements CompilationError
     private final String errorMessage;
 
     public DuplicatedProcedureError( Element element, AnnotationMirror annotationMirror, String errorMessage,
-            CharSequence... args )
+            Object... args )
     {
         this.element = element;
         this.annotationMirror = annotationMirror;

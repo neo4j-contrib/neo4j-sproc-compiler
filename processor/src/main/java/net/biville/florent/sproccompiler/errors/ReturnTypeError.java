@@ -24,7 +24,7 @@ public class ReturnTypeError implements CompilationError
     private final Element element;
     private final String errorMessage;
 
-    public ReturnTypeError( Element element, String errorMessage, CharSequence... args )
+    public ReturnTypeError( Element element, String errorMessage, Object... args )
     {
         this.element = element;
         this.errorMessage = String.format( errorMessage, args );

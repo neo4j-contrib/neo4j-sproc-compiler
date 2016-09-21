@@ -24,7 +24,7 @@ public class ParameterTypeError implements CompilationError
     private final Element element;
     private final String errorMessage;
 
-    public ParameterTypeError( Element element, String errorMessage, CharSequence... args )
+    public ParameterTypeError( Element element, String errorMessage, Object... args )
     {
         this.element = element;
         this.errorMessage = String.format( errorMessage, args );

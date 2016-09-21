@@ -25,7 +25,7 @@ public class ParameterMissingAnnotationError implements CompilationError
     private final String errorMessage;
 
     public ParameterMissingAnnotationError( Element element, AnnotationMirror mirror, String errorMessage,
-            String... args )
+            Object... args )
     {
         this.element = element;
         this.mirror = mirror;
