@@ -160,11 +160,11 @@ public class StoredProcedureProcessorTest
     @Test
     public void fails_if_procedure_class_has_no_public_no_arg_constructor()
     {
-        JavaFileObject procedure = JavaFileObjectUtils.resource(
-                "missing_constructor/MissingConstructorProcedure.java" );
+        JavaFileObject procedure =
+                JavaFileObjectUtils.resource( "missing_constructor/MissingConstructorProcedure.java" );
 
-        assert_().about( javaSource() ).that( procedure )
-                .processedWith( processor ).failsToCompile().withErrorCount( 1 ).withErrorContaining(
+        assert_().about( javaSource() ).that( procedure ).processedWith( processor ).failsToCompile()
+                .withErrorCount( 1 ).withErrorContaining(
                 "Procedure class test_classes.duplicated.MissingConstructorProcedure should contain a public no-arg constructor, none found." )
                 .in( procedure ).onLine( 20 );
     }
@@ -194,14 +194,26 @@ public class StoredProcedureProcessorTest
 
         unsuccessfulCompilationClause.withErrorContaining(
                 "@org.neo4j.procedure.Context usage error: field BadContextSproc#shouldBeNonFinal should be public, non-static and non-final" )
-                .in( sproc ).onLine( 28 );
+                .in( sproc ).onLine( 29 );
 
         unsuccessfulCompilationClause.withErrorContaining(
                 "@org.neo4j.procedure.Context usage error: field BadContextSproc#shouldBePublic should be public, non-static and non-final" )
-                .in( sproc ).onLine( 32 );
-
-        unsuccessfulCompilationClause.withErrorContaining(
-                "Field BadContextSproc#shouldBeStatic should be static" )
                 .in( sproc ).onLine( 33 );
+
+        unsuccessfulCompilationClause.withErrorContaining( "Field BadContextSproc#shouldBeStatic should be static" )
+                .in( sproc ).onLine( 34 );
+    }
+
+    @Test
+    public void emits_warnings_if_context_injected_field_types_are_unsupported()
+    {
+        JavaFileObject sproc = JavaFileObjectUtils.resource( "bad_context_field/BadContextTypeSproc.java" );
+
+        assert_().about( javaSource() ).that( sproc ).processedWith( processor ).compilesWithoutError()
+                .withWarningContaining(
+                        "@org.neo4j.procedure.Context usage warning: found type: <org.neo4j.kernel.internal.GraphDatabaseAPI>, expected one of: <org.neo4j.graphdb.GraphDatabaseService>, <org.neo4j.logging.Log>" )
+                .in( sproc ).onLine( 26 );
+
+
     }
 }

@@ -13,23 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.biville.florent.sproccompiler.errors;
+package net.biville.florent.sproccompiler.messages;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-public class ParameterMissingAnnotationError implements CompilationError
+public class ProcedureMissingPublicNoArgConstructor implements CompilationMessage
 {
+
     private final Element element;
-    private final AnnotationMirror mirror;
     private final String errorMessage;
 
-    public ParameterMissingAnnotationError( Element element, AnnotationMirror mirror, String errorMessage,
-            String... args )
+    public ProcedureMissingPublicNoArgConstructor( Element element, String message, Object... args )
     {
+
         this.element = element;
-        this.mirror = mirror;
-        this.errorMessage = String.format( errorMessage, args );
+        this.errorMessage = String.format( message, args );
     }
 
     @Override
@@ -41,11 +40,11 @@ public class ParameterMissingAnnotationError implements CompilationError
     @Override
     public AnnotationMirror getMirror()
     {
-        return mirror;
+        return null;
     }
 
     @Override
-    public String getErrorMessage()
+    public String getContents()
     {
         return errorMessage;
     }

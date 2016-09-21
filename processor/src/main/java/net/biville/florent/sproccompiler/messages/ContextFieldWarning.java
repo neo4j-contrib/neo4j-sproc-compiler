@@ -13,28 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.biville.florent.sproccompiler.errors;
+package net.biville.florent.sproccompiler.messages;
 
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.VariableElement;
+import javax.tools.Diagnostic;
 
-public class FieldError implements CompilationError
+public class ContextFieldWarning implements CompilationMessage
 {
+    private final Element element;
+    private final String contents;
 
-    private final VariableElement field;
-    private final String errorMessage;
-
-    public FieldError( VariableElement field, String errorMessage, CharSequence... args )
+    public ContextFieldWarning( VariableElement element, String message, Object... args )
     {
-
-        this.field = field;
-        this.errorMessage = String.format( errorMessage, args );
+        this.element = element;
+        this.contents = String.format( message, args );
     }
 
     @Override
-    public VariableElement getElement()
+    public Element getElement()
     {
-        return field;
+        return element;
     }
 
     @Override
@@ -44,8 +44,14 @@ public class FieldError implements CompilationError
     }
 
     @Override
-    public String getErrorMessage()
+    public String getContents()
     {
-        return errorMessage;
+        return contents;
+    }
+
+    @Override
+    public Diagnostic.Kind category()
+    {
+        return Diagnostic.Kind.WARNING;
     }
 }

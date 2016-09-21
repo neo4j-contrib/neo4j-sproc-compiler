@@ -13,13 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.biville.florent.sproccompiler.visitors.examples;
+package net.biville.florent.sproccompiler.messages;
 
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.procedure.Context;
+import javax.annotation.processing.Messager;
 
-public class FinalContextMisuse
+public class MessagePrinter
 {
-    @Context
-    public final GraphDatabaseService graphDatabaseService = null;
+
+    private final Messager messager;
+
+    public MessagePrinter( Messager messager )
+    {
+        this.messager = messager;
+    }
+
+    public void print( CompilationMessage message )
+    {
+        messager.printMessage( message.category(), message.getContents(), message.getElement(), message.getMirror() );
+    }
 }

@@ -16,10 +16,10 @@
 package net.biville.florent.sproccompiler.visitors;
 
 import net.biville.florent.sproccompiler.compilerutils.TypeMirrorUtils;
-import net.biville.florent.sproccompiler.errors.CompilationError;
-import net.biville.florent.sproccompiler.errors.ParameterMissingAnnotationError;
-import net.biville.florent.sproccompiler.errors.ParameterTypeError;
-import net.biville.florent.sproccompiler.errors.ReturnTypeError;
+import net.biville.florent.sproccompiler.messages.CompilationMessage;
+import net.biville.florent.sproccompiler.messages.ParameterMissingAnnotationError;
+import net.biville.florent.sproccompiler.messages.ParameterTypeError;
+import net.biville.florent.sproccompiler.messages.ReturnTypeError;
 
 import java.util.List;
 import java.util.function.Function;
@@ -38,13 +38,13 @@ import javax.lang.model.util.Types;
 
 import org.neo4j.procedure.Name;
 
-public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<CompilationError>,Void>
+public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<CompilationMessage>,Void>
 {
 
     private final Types typeUtils;
     private final Elements elementUtils;
-    private final ElementVisitor<Stream<CompilationError>,Void> classVisitor = new StoredProcedureClassVisitor();
-    private final TypeVisitor<Stream<CompilationError>,Void> recordVisitor;
+    private final ElementVisitor<Stream<CompilationMessage>,Void> classVisitor;
+    private final TypeVisitor<Stream<CompilationMessage>,Void> recordVisitor;
     private final TypeVisitor<Boolean,Void> parameterTypeVisitor;
 
     public StoredProcedureVisitor( Types typeUtils, Elements elementUtils )
@@ -52,6 +52,7 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
         TypeMirrorUtils typeMirrors = new TypeMirrorUtils( typeUtils, elementUtils );
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
+        this.classVisitor = new StoredProcedureClassVisitor( typeUtils, elementUtils );
         this.recordVisitor = new RecordTypeVisitor( typeUtils, typeMirrors );
         this.parameterTypeVisitor = new ParameterTypeVisitor( typeUtils, typeMirrors );
     }
@@ -60,7 +61,7 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
      * Validates method parameters and return type
      */
     @Override
-    public Stream<CompilationError> visitExecutable( ExecutableElement executableElement, Void ignored )
+    public Stream<CompilationMessage> visitExecutable( ExecutableElement executableElement, Void ignored )
     {
         return Stream.of( classVisitor.visit( executableElement.getEnclosingElement() ),
                 validateParameters( executableElement.getParameters(), ignored ),
@@ -71,7 +72,7 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
      * Validates a method parameter
      */
     @Override
-    public Stream<CompilationError> visitVariable( VariableElement parameter, Void ignored )
+    public Stream<CompilationMessage> visitVariable( VariableElement parameter, Void ignored )
     {
 
         Name annotation = parameter.getAnnotation( Name.class );
@@ -93,12 +94,12 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
         return Stream.empty();
     }
 
-    private Stream<CompilationError> validateParameters( List<? extends VariableElement> parameters, Void ignored )
+    private Stream<CompilationMessage> validateParameters( List<? extends VariableElement> parameters, Void ignored )
     {
         return parameters.stream().flatMap( var -> visitVariable( var, ignored ) );
     }
 
-    private Stream<CompilationError> validateReturnType( ExecutableElement method )
+    private Stream<CompilationMessage> validateReturnType( ExecutableElement method )
     {
         String streamClassName = Stream.class.getCanonicalName();
 

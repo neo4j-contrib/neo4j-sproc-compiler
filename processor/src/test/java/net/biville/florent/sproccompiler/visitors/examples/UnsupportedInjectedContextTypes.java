@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.biville.florent.sproccompiler.errors;
+package net.biville.florent.sproccompiler.visitors.examples;
 
-import javax.annotation.processing.Messager;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.kernel.internal.GraphDatabaseAPI;
+import org.neo4j.logging.Log;
+import org.neo4j.procedure.Context;
 
-import static javax.tools.Diagnostic.Kind.ERROR;
-
-public class ErrorPrinter
+public class UnsupportedInjectedContextTypes
 {
 
-    private final Messager messager;
+    @Context
+    public String unsupportedType;
 
-    public ErrorPrinter( Messager messager )
-    {
-        this.messager = messager;
-    }
+    @Context
+    public GraphDatabaseAPI notOfficiallySupported;
 
-    public void print( CompilationError error )
-    {
-        messager.printMessage( ERROR, error.getErrorMessage(), error.getElement(), error.getMirror() );
-    }
+    @Context
+    public GraphDatabaseService graphDatabaseService;
+
+    @Context
+    public Log log;
 }

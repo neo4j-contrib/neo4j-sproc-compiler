@@ -13,17 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.biville.florent.sproccompiler.errors;
+package net.biville.florent.sproccompiler.messages;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-public interface CompilationError
+public class RecordTypeError implements CompilationMessage
 {
-    Element getElement();
 
-    AnnotationMirror getMirror();
 
-    String getErrorMessage();
+    private final Element element;
+    private final String errorMessage;
+
+    public RecordTypeError( Element element, String errorMessage, Object... args )
+    {
+        this.element = element;
+        this.errorMessage = String.format( errorMessage, args );
+    }
+
+    @Override
+    public Element getElement()
+    {
+        return element;
+    }
+
+    @Override
+    public AnnotationMirror getMirror()
+    {
+        return null;
+    }
+
+    @Override
+    public String getContents()
+    {
+        return errorMessage;
+    }
 }
-

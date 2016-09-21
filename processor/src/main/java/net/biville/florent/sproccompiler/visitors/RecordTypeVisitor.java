@@ -16,8 +16,8 @@
 package net.biville.florent.sproccompiler.visitors;
 
 import net.biville.florent.sproccompiler.compilerutils.TypeMirrorUtils;
-import net.biville.florent.sproccompiler.errors.CompilationError;
-import net.biville.florent.sproccompiler.errors.RecordTypeError;
+import net.biville.florent.sproccompiler.messages.CompilationMessage;
+import net.biville.florent.sproccompiler.messages.RecordTypeError;
 
 import java.util.Set;
 import java.util.stream.Stream;
@@ -33,7 +33,7 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.lang.model.element.Modifier.STATIC;
 import static javax.lang.model.util.ElementFilter.fieldsIn;
 
-class RecordTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationError>,Void>
+class RecordTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationMessage>,Void>
 {
 
     private final Types typeUtils;
@@ -46,18 +46,18 @@ class RecordTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationError>,Void
     }
 
     @Override
-    public Stream<CompilationError> visitDeclared( DeclaredType returnType, Void ignored )
+    public Stream<CompilationMessage> visitDeclared( DeclaredType returnType, Void ignored )
     {
         return returnType.getTypeArguments().stream().flatMap( this::validateRecord );
     }
 
-    private Stream<CompilationError> validateRecord( TypeMirror recordType )
+    private Stream<CompilationMessage> validateRecord( TypeMirror recordType )
     {
         Element recordElement = typeUtils.asElement( recordType );
         return Stream.concat( validateFieldModifiers( recordElement ), validateFieldType( recordElement ) );
     }
 
-    private Stream<CompilationError> validateFieldModifiers( Element recordElement )
+    private Stream<CompilationMessage> validateFieldModifiers( Element recordElement )
     {
         return fieldsIn( recordElement.getEnclosedElements() ).stream().filter( element ->
         {
@@ -67,7 +67,7 @@ class RecordTypeVisitor extends SimpleTypeVisitor8<Stream<CompilationError>,Void
                 recordElement.getSimpleName(), element.getSimpleName() ) );
     }
 
-    private Stream<CompilationError> validateFieldType( Element recordElement )
+    private Stream<CompilationMessage> validateFieldType( Element recordElement )
     {
         return fieldsIn( recordElement.getEnclosedElements() ).stream()
                 .filter( element -> !element.getModifiers().contains( STATIC ) )
