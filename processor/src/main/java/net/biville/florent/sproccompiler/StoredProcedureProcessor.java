@@ -23,6 +23,7 @@ import net.biville.florent.sproccompiler.visitors.StoredProcedureVisitor;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -46,11 +47,18 @@ public class StoredProcedureProcessor extends AbstractProcessor
 {
 
     private static final Class<? extends Annotation> sprocType = Procedure.class;
+    private static final String DISABLE_CONTEXT_WARNINGS = "DisableContextWarnings";
     private final Set<Element> visitedProcedures = new LinkedHashSet<>();
 
     private Function<Collection<Element>,Stream<CompilationMessage>> duplicateProcedure;
     private ElementVisitor<Stream<CompilationMessage>,Void> storedProcedureVisitor;
     private MessagePrinter messagePrinter;
+
+    @Override
+    public Set<String> getSupportedOptions()
+    {
+        return Collections.singleton( DISABLE_CONTEXT_WARNINGS );
+    }
 
     @Override
     public Set<String> getSupportedAnnotationTypes()
@@ -75,7 +83,7 @@ public class StoredProcedureProcessor extends AbstractProcessor
 
         visitedProcedures.clear();
         messagePrinter = new MessagePrinter( processingEnv.getMessager() );
-        storedProcedureVisitor = new StoredProcedureVisitor( typeUtils, elementUtils );
+        storedProcedureVisitor = new StoredProcedureVisitor( typeUtils, elementUtils, processingEnv.getOptions().containsKey( DISABLE_CONTEXT_WARNINGS ) );
         duplicateProcedure = new DuplicatedStoredProcedureValidator( typeUtils, elementUtils );
     }
 

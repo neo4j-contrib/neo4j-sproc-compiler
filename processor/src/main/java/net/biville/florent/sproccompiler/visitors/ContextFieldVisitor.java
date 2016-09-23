@@ -20,7 +20,6 @@ import net.biville.florent.sproccompiler.messages.ContextFieldWarning;
 import net.biville.florent.sproccompiler.messages.FieldError;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,11 +42,13 @@ class ContextFieldVisitor extends SimpleElementVisitor8<Stream<CompilationMessag
 
     private final Elements elements;
     private final Types types;
+    private final boolean skipContextWarnings;
 
-    public ContextFieldVisitor( Types types, Elements elements )
+    public ContextFieldVisitor( Types types, Elements elements, boolean skipContextWarnings )
     {
         this.elements = elements;
         this.types = types;
+        this.skipContextWarnings = skipContextWarnings;
     }
 
     private static String types( Set<Class<?>> supportedTypes )
@@ -75,6 +76,11 @@ class ContextFieldVisitor extends SimpleElementVisitor8<Stream<CompilationMessag
 
     private Stream<CompilationMessage> validateInjectedTypes( VariableElement field )
     {
+        if ( skipContextWarnings )
+        {
+            return Stream.empty();
+        }
+
         TypeMirror fieldType = field.asType();
         if ( !injectsAllowedTypes( fieldType ) )
         {

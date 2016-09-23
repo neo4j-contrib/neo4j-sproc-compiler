@@ -34,9 +34,9 @@ public class FieldVisitor extends SimpleElementVisitor8<Stream<CompilationMessag
 
     private final ElementVisitor<Stream<CompilationMessage>,Void> contextFieldVisitor;
 
-    public FieldVisitor( Types types, Elements elements )
+    public FieldVisitor( Types types, Elements elements, boolean skipContextWarnings )
     {
-        contextFieldVisitor = new ContextFieldVisitor( types, elements );
+        contextFieldVisitor = new ContextFieldVisitor( types, elements, skipContextWarnings );
     }
 
     private static Stream<CompilationMessage> validateNonContextField( VariableElement field )

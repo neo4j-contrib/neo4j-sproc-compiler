@@ -38,9 +38,9 @@ public class StoredProcedureClassVisitor extends SimpleElementVisitor8<Stream<Co
     private final Set<TypeElement> visitedElements = new HashSet<>();
     private final FieldVisitor fieldVisitor;
 
-    public StoredProcedureClassVisitor( Types types, Elements elements )
+    public StoredProcedureClassVisitor( Types types, Elements elements, boolean skipContextWarnings )
     {
-        fieldVisitor = new FieldVisitor( types, elements );
+        fieldVisitor = new FieldVisitor( types, elements, skipContextWarnings );
     }
 
     @Override

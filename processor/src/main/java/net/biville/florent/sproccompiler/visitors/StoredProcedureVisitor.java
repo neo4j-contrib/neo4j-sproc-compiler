@@ -47,12 +47,12 @@ public class StoredProcedureVisitor extends SimpleElementVisitor8<Stream<Compila
     private final TypeVisitor<Stream<CompilationMessage>,Void> recordVisitor;
     private final TypeVisitor<Boolean,Void> parameterTypeVisitor;
 
-    public StoredProcedureVisitor( Types typeUtils, Elements elementUtils )
+    public StoredProcedureVisitor( Types typeUtils, Elements elementUtils, boolean skipContextWarnings )
     {
         TypeMirrorUtils typeMirrors = new TypeMirrorUtils( typeUtils, elementUtils );
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
-        this.classVisitor = new StoredProcedureClassVisitor( typeUtils, elementUtils );
+        this.classVisitor = new StoredProcedureClassVisitor( typeUtils, elementUtils, skipContextWarnings );
         this.recordVisitor = new RecordTypeVisitor( typeUtils, typeMirrors );
         this.parameterTypeVisitor = new ParameterTypeVisitor( typeUtils, typeMirrors );
     }

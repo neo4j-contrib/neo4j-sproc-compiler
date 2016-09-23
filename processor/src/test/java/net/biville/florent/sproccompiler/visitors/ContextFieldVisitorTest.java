@@ -46,7 +46,8 @@ public class ContextFieldVisitorTest
     public void prepare()
     {
         elementTestUtils = new ElementTestUtils( compilationRule );
-        contextFieldVisitor = new ContextFieldVisitor( compilationRule.getTypes(), compilationRule.getElements() );
+        contextFieldVisitor =
+                new ContextFieldVisitor( compilationRule.getTypes(), compilationRule.getElements(), false );
     }
 
     @Test
@@ -89,7 +90,7 @@ public class ContextFieldVisitorTest
     }
 
     @Test
-    public void warns_against_unsupported_injected_types()
+    public void warns_against_unsupported_injected_types_when_warnings_enabled()
     {
         Stream<VariableElement> fields = elementTestUtils.getFields( UnsupportedInjectedContextTypes.class );
 
@@ -100,6 +101,18 @@ public class ContextFieldVisitorTest
                         "@org.neo4j.procedure.Context usage warning: found type: <java.lang.String>, expected one of: <org.neo4j.graphdb.GraphDatabaseService>, <org.neo4j.logging.Log>" ),
                         tuple( Diagnostic.Kind.WARNING,
                                 "@org.neo4j.procedure.Context usage warning: found type: <org.neo4j.kernel.internal.GraphDatabaseAPI>, expected one of: <org.neo4j.graphdb.GraphDatabaseService>, <org.neo4j.logging.Log>" ) );
+    }
+
+    @Test
+    public void does_not_warn_against_unsupported_injected_types_when_warnings_disabled()
+    {
+        ContextFieldVisitor contextFieldVisitor =
+                new ContextFieldVisitor( compilationRule.getTypes(), compilationRule.getElements(), true );
+        Stream<VariableElement> fields = elementTestUtils.getFields( UnsupportedInjectedContextTypes.class );
+
+        Stream<CompilationMessage> result = fields.flatMap( contextFieldVisitor::visit );
+
+        assertThat( result ).isEmpty();
     }
 
 }
