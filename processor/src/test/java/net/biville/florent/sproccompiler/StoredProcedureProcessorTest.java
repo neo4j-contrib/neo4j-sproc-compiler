@@ -224,7 +224,7 @@ public class StoredProcedureProcessorTest
         JavaFileObject sproc = JavaFileObjectUtils.resource( "bad_context_field/BadContextTypeSproc.java" );
 
         assert_().about( javaSource() ).that( sproc )
-                .withCompilerOptions( "-ADisableContextWarnings" )
+                .withCompilerOptions( "-AIgnoreContextWarnings" )
                 .processedWith( processor ).compilesWithoutError().withWarningCount( 1 );
 
 

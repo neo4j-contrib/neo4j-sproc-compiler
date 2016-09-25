@@ -47,7 +47,7 @@ public class StoredProcedureProcessor extends AbstractProcessor
 {
 
     private static final Class<? extends Annotation> sprocType = Procedure.class;
-    private static final String DISABLE_CONTEXT_WARNINGS = "DisableContextWarnings";
+    private static final String IGNORE_CONTEXT_WARNINGS = "IgnoreContextWarnings";
     private final Set<Element> visitedProcedures = new LinkedHashSet<>();
 
     private Function<Collection<Element>,Stream<CompilationMessage>> duplicateProcedure;
@@ -57,7 +57,7 @@ public class StoredProcedureProcessor extends AbstractProcessor
     @Override
     public Set<String> getSupportedOptions()
     {
-        return Collections.singleton( DISABLE_CONTEXT_WARNINGS );
+        return Collections.singleton( IGNORE_CONTEXT_WARNINGS );
     }
 
     @Override
@@ -83,7 +83,8 @@ public class StoredProcedureProcessor extends AbstractProcessor
 
         visitedProcedures.clear();
         messagePrinter = new MessagePrinter( processingEnv.getMessager() );
-        storedProcedureVisitor = new StoredProcedureVisitor( typeUtils, elementUtils, processingEnv.getOptions().containsKey( DISABLE_CONTEXT_WARNINGS ) );
+        storedProcedureVisitor = new StoredProcedureVisitor( typeUtils, elementUtils, processingEnv.getOptions().containsKey(
+                IGNORE_CONTEXT_WARNINGS ) );
         duplicateProcedure = new DuplicatedStoredProcedureValidator( typeUtils, elementUtils );
     }
 
