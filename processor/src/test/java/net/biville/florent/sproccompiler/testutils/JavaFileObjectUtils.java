@@ -16,21 +16,58 @@
 package net.biville.florent.sproccompiler.testutils;
 
 import com.google.testing.compile.JavaFileObjects;
-import net.biville.florent.sproccompiler.StoredProcedureProcessorTest;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Properties;
 import javax.tools.JavaFileObject;
 
-public class JavaFileObjectUtils
-{
+import static org.assertj.core.api.Assertions.assertThat;
 
-    public static JavaFileObject resource( String url )
+public enum JavaFileObjectUtils
+{
+    INSTANCE;
+
+    private final String baseDirectory;
+
+    JavaFileObjectUtils()
     {
-        return JavaFileObjects.forResource( at( url ) );
+        Properties properties = loadProperties( "/procedures.properties" );
+        baseDirectory = properties.getProperty( "base_directory" );
+        assertThat( new File( baseDirectory ) ).exists();
     }
 
-    private static URL at( String resource )
+    public JavaFileObject procedureSource( String relativePath )
     {
-        return StoredProcedureProcessorTest.class.getResource( String.format( "/test_classes/%s", resource ) );
+        return JavaFileObjects.forResource( resolveUrl( relativePath ) );
+    }
+
+    private final Properties loadProperties( String name )
+    {
+        try ( InputStream paths = this.getClass().getResourceAsStream( name ) )
+        {
+            Properties properties = new Properties();
+            properties.load( paths );
+            return properties;
+        }
+        catch ( IOException e )
+        {
+            throw new RuntimeException( e );
+        }
+    }
+
+    private URL resolveUrl( String relativePath )
+    {
+        try
+        {
+            return new File( baseDirectory, relativePath ).toURI().toURL();
+        }
+        catch ( MalformedURLException e )
+        {
+            throw new RuntimeException( e.getMessage(), e );
+        }
     }
 }

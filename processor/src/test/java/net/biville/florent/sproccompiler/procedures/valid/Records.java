@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test_classes.working_procedures;
+package net.biville.florent.sproccompiler.procedures.valid;
 
 import java.util.List;
 import java.util.Map;

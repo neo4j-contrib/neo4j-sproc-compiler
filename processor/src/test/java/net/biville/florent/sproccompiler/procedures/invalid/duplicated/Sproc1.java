@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test_classes.bad_record_type;
+package net.biville.florent.sproccompiler.procedures.invalid.duplicated;
 
-public class BadRecord
+import org.neo4j.procedure.Procedure;
+
+public class Sproc1
 {
 
-    private static final int DEFAULT_AGE = 42;
-    private final String label; /* nonstatic fields should be public */
-    private final int age;
-
-    public BadRecord( String label, int age )
+    @Procedure
+    public void foobar()
     {
-        this.label = label;
-        this.age = age < 0 ? DEFAULT_AGE : age;
+
+    }
+
+    @Procedure
+    public void foobarbaz()
+    {
+
     }
 }

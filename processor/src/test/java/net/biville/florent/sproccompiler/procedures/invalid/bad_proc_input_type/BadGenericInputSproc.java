@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test_classes.bad_proc_input_type;
+package net.biville.florent.sproccompiler.procedures.invalid.bad_proc_input_type;
 
 import java.util.List;
 import java.util.Map;

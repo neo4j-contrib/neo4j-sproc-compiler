@@ -44,8 +44,7 @@ public class FieldVisitorTest
     public void prepare()
     {
         elementTestUtils = new ElementTestUtils( compilationRule );
-        fieldVisitor = new FieldVisitor( compilationRule.getTypes(), compilationRule.getElements(),
-                false );
+        fieldVisitor = new FieldVisitor( compilationRule.getTypes(), compilationRule.getElements(), false );
     }
 
     @Test

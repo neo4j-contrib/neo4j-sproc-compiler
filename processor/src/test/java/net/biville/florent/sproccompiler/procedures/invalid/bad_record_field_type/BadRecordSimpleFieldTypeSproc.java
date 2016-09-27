@@ -13,26 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test_classes.bad_record_field_type;
+package net.biville.florent.sproccompiler.procedures.invalid.bad_record_field_type;
 
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Path;
-import org.neo4j.graphdb.Relationship;
+import java.util.stream.Stream;
 
-public class BadRecordSimpleFieldType
+import org.neo4j.procedure.Procedure;
+
+public class BadRecordSimpleFieldTypeSproc
 {
 
-    public Integer wrongType;
-    public String okType1;
-    public Long okType2;
-    public long okType3;
-    public Double okType4;
-    public double okType5;
-    public Number okType6;
-    public Boolean okType7;
-    public boolean okType8;
-    public Path okType9;
-    public Node okType10;
-    public Relationship okType11;
-    public Object okType12;
+    @Procedure
+    public Stream<BadRecordSimpleFieldType> doSomething()
+    {
+        return Stream.empty();
+    }
 }

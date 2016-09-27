@@ -13,12 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test_classes.duplicated;
+package net.biville.florent.sproccompiler.procedures.invalid.missing_constructor;
 
 import org.neo4j.procedure.Procedure;
 
-public class Sproc2
+public class MissingConstructorProcedure
 {
+    // should be no-arg
+    public MissingConstructorProcedure( String oopsAParameter )
+    {
+    }
+
+    // should be public
+    private MissingConstructorProcedure()
+    {
+
+    }
 
     @Procedure
     public void foobar()

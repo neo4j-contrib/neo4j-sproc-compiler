@@ -13,22 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test_classes.duplicated;
+package net.biville.florent.sproccompiler.procedures.invalid.bad_return_type;
 
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.procedure.Context;
+import org.neo4j.procedure.Name;
 import org.neo4j.procedure.Procedure;
 
-public class Sproc1
+public class BadReturnTypeSproc
 {
 
-    @Procedure
-    public void foobar()
-    {
+    @Context
+    public GraphDatabaseService db;
 
+    @Procedure
+    public Long niceSproc( @Name( "foo" ) String parameter )
+    {
+        return 42L;
     }
 
     @Procedure
-    public void foobarbaz()
+    public void niceSproc2( @Name( "foo" ) String parameter )
     {
-
     }
 }

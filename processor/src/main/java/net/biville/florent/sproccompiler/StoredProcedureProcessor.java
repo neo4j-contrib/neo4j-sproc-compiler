@@ -83,8 +83,8 @@ public class StoredProcedureProcessor extends AbstractProcessor
 
         visitedProcedures.clear();
         messagePrinter = new MessagePrinter( processingEnv.getMessager() );
-        storedProcedureVisitor = new StoredProcedureVisitor( typeUtils, elementUtils, processingEnv.getOptions().containsKey(
-                IGNORE_CONTEXT_WARNINGS ) );
+        storedProcedureVisitor = new StoredProcedureVisitor( typeUtils, elementUtils,
+                processingEnv.getOptions().containsKey( IGNORE_CONTEXT_WARNINGS ) );
         duplicateProcedure = new DuplicatedStoredProcedureValidator( typeUtils, elementUtils );
     }
 

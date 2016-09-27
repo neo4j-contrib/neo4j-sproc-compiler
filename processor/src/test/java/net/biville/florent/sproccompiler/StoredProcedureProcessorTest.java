@@ -25,7 +25,6 @@ import javax.annotation.processing.Processor;
 import javax.tools.JavaFileObject;
 
 import static com.google.common.truth.Truth.assert_;
-import static com.google.testing.compile.JavaFileObjects.forResource;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 import static com.google.testing.compile.JavaSourcesSubjectFactory.javaSources;
 import static java.util.Arrays.asList;
@@ -41,7 +40,8 @@ public class StoredProcedureProcessorTest
     @Test
     public void fails_if_parameters_are_not_properly_annotated()
     {
-        JavaFileObject sproc = JavaFileObjectUtils.resource( "missing_name/MissingNameSproc.java" );
+        JavaFileObject sproc =
+                JavaFileObjectUtils.INSTANCE.procedureSource( "invalid/missing_name/MissingNameSproc.java" );
 
         UnsuccessfulCompilationClause compilation =
                 assert_().about( javaSource() ).that( sproc ).processedWith( processor ).failsToCompile()
@@ -57,7 +57,8 @@ public class StoredProcedureProcessorTest
     @Test
     public void fails_if_return_type_is_not_stream()
     {
-        JavaFileObject sproc = JavaFileObjectUtils.resource( "bad_return_type/BadReturnTypeSproc.java" );
+        JavaFileObject sproc =
+                JavaFileObjectUtils.INSTANCE.procedureSource( "invalid/bad_return_type/BadReturnTypeSproc.java" );
 
         assert_().about( javaSource() ).that( sproc ).processedWith( processor ).failsToCompile().withErrorCount( 1 )
                 .withErrorContaining( "Return type of BadReturnTypeSproc#niceSproc must be java.util.stream.Stream" )
@@ -67,11 +68,12 @@ public class StoredProcedureProcessorTest
     @Test
     public void fails_if_record_type_has_nonpublic_fields()
     {
-        JavaFileObject record = JavaFileObjectUtils.resource( "bad_record_type/BadRecord.java" );
+        JavaFileObject record =
+                JavaFileObjectUtils.INSTANCE.procedureSource( "invalid/bad_record_type/BadRecord.java" );
 
-        UnsuccessfulCompilationClause compilation = assert_().about( javaSources() )
-                .that( asList( forResource( "test_classes/bad_record_type/BadRecordTypeSproc.java" ), record ) )
-                .processedWith( processor ).failsToCompile().withErrorCount( 2 );
+        UnsuccessfulCompilationClause compilation = assert_().about( javaSources() ).that( asList(
+                JavaFileObjectUtils.INSTANCE.procedureSource( "invalid/bad_record_type/BadRecordTypeSproc.java" ),
+                record ) ).processedWith( processor ).failsToCompile().withErrorCount( 2 );
 
         compilation.withErrorContaining( "Record definition error: field BadRecord#label must be public" ).in( record )
                 .onLine( 22 );
@@ -83,7 +85,8 @@ public class StoredProcedureProcessorTest
     @Test
     public void fails_if_procedure_primitive_input_type_is_not_supported()
     {
-        JavaFileObject sproc = JavaFileObjectUtils.resource( "bad_proc_input_type/BadPrimitiveInputSproc.java" );
+        JavaFileObject sproc = JavaFileObjectUtils.INSTANCE
+                .procedureSource( "invalid/bad_proc_input_type/BadPrimitiveInputSproc.java" );
 
         assert_().about( javaSource() ).that( sproc ).processedWith( processor ).failsToCompile().withErrorCount( 1 )
                 .withErrorContaining(
@@ -94,7 +97,8 @@ public class StoredProcedureProcessorTest
     @Test
     public void fails_if_procedure_generic_input_type_is_not_supported()
     {
-        JavaFileObject sproc = JavaFileObjectUtils.resource( "bad_proc_input_type/BadGenericInputSproc.java" );
+        JavaFileObject sproc =
+                JavaFileObjectUtils.INSTANCE.procedureSource( "invalid/bad_proc_input_type/BadGenericInputSproc.java" );
 
         UnsuccessfulCompilationClause compilation =
                 assert_().about( javaSource() ).that( sproc ).processedWith( processor ).failsToCompile()
@@ -116,10 +120,11 @@ public class StoredProcedureProcessorTest
     @Test
     public void fails_if_procedure_primitive_record_field_type_is_not_supported()
     {
-        JavaFileObject record = JavaFileObjectUtils.resource( "bad_record_field_type/BadRecordSimpleFieldType.java" );
+        JavaFileObject record = JavaFileObjectUtils.INSTANCE
+                .procedureSource( "invalid/bad_record_field_type/BadRecordSimpleFieldType.java" );
 
-        assert_().about( javaSources() ).that( asList(
-                JavaFileObjectUtils.resource( "bad_record_field_type/BadRecordSimpleFieldTypeSproc.java" ), record ) )
+        assert_().about( javaSources() ).that( asList( JavaFileObjectUtils.INSTANCE
+                .procedureSource( "invalid/bad_record_field_type/BadRecordSimpleFieldTypeSproc.java" ), record ) )
                 .processedWith( processor ).failsToCompile().withErrorCount( 1 ).withErrorContaining(
                 "Record definition error: type of field BadRecordSimpleFieldType#wrongType is not supported" )
                 .in( record ).onLine( 25 );
@@ -128,11 +133,13 @@ public class StoredProcedureProcessorTest
     @Test
     public void fails_if_procedure_generic_record_field_type_is_not_supported()
     {
-        JavaFileObject record = JavaFileObjectUtils.resource( "bad_record_field_type/BadRecordGenericFieldType.java" );
+        JavaFileObject record = JavaFileObjectUtils.INSTANCE
+                .procedureSource( "invalid/bad_record_field_type/BadRecordGenericFieldType.java" );
 
         UnsuccessfulCompilationClause compilation = assert_().about( javaSources() ).that( asList(
-                JavaFileObjectUtils.resource( "bad_record_field_type/BadRecordGenericFieldTypeSproc.java" ), record ) )
-                .processedWith( processor ).failsToCompile().withErrorCount( 3 );
+                JavaFileObjectUtils.INSTANCE
+                        .procedureSource( "invalid/bad_record_field_type/BadRecordGenericFieldTypeSproc.java" ),
+                record ) ).processedWith( processor ).failsToCompile().withErrorCount( 3 );
 
         compilation.withErrorContaining(
                 "Record definition error: type of field BadRecordGenericFieldType#wrongType1 is not supported" )
@@ -148,24 +155,26 @@ public class StoredProcedureProcessorTest
     @Test
     public void fails_if_duplicate_procedures_are_declared()
     {
-        JavaFileObject firstDuplicate = JavaFileObjectUtils.resource( "duplicated/Sproc1.java" );
-        JavaFileObject secondDuplicate = JavaFileObjectUtils.resource( "duplicated/Sproc2.java" );
+        JavaFileObject firstDuplicate =
+                JavaFileObjectUtils.INSTANCE.procedureSource( "invalid/duplicated/Sproc1.java" );
+        JavaFileObject secondDuplicate =
+                JavaFileObjectUtils.INSTANCE.procedureSource( "invalid/duplicated/Sproc2.java" );
 
         assert_().about( javaSources() ).that( asList( firstDuplicate, secondDuplicate ) ).processedWith( processor )
                 .failsToCompile().withErrorCount( 2 ).withErrorContaining(
-                "Procedure name <test_classes.duplicated#foobar> is already defined 2 times. " +
+                "Procedure name <net.biville.florent.sproccompiler.procedures.invalid.duplicated#foobar> is already defined 2 times. " +
                         "It should be defined only once!" );
     }
 
     @Test
     public void fails_if_procedure_class_has_no_public_no_arg_constructor()
     {
-        JavaFileObject procedure =
-                JavaFileObjectUtils.resource( "missing_constructor/MissingConstructorProcedure.java" );
+        JavaFileObject procedure = JavaFileObjectUtils.INSTANCE
+                .procedureSource( "invalid/missing_constructor/MissingConstructorProcedure.java" );
 
         assert_().about( javaSource() ).that( procedure ).processedWith( processor ).failsToCompile()
                 .withErrorCount( 1 ).withErrorContaining(
-                "Procedure class test_classes.duplicated.MissingConstructorProcedure should contain a public no-arg constructor, none found." )
+                "Procedure class net.biville.florent.sproccompiler.procedures.invalid.missing_constructor.MissingConstructorProcedure should contain a public no-arg constructor, none found." )
                 .in( procedure ).onLine( 20 );
     }
 
@@ -173,16 +182,17 @@ public class StoredProcedureProcessorTest
     public void succeeds_to_process_valid_stored_procedures()
     {
         assert_().about( javaSources() )
-                .that( asList( JavaFileObjectUtils.resource( "working_procedures/Procedures.java" ),
-                        JavaFileObjectUtils.resource( "working_procedures/Records.java" ) ) ).processedWith( processor )
-                .compilesWithoutError();
+                .that( asList( JavaFileObjectUtils.INSTANCE.procedureSource( "valid/Procedures.java" ),
+                        JavaFileObjectUtils.INSTANCE.procedureSource( "valid/Records.java" ) ) )
+                .processedWith( processor ).compilesWithoutError();
 
     }
 
     @Test
     public void fails_if_context_injected_fields_have_wrong_modifiers()
     {
-        JavaFileObject sproc = JavaFileObjectUtils.resource( "bad_context_field/BadContextSproc.java" );
+        JavaFileObject sproc =
+                JavaFileObjectUtils.INSTANCE.procedureSource( "invalid/bad_context_field/BadContextSproc.java" );
 
         UnsuccessfulCompilationClause unsuccessfulCompilationClause =
                 assert_().about( javaSource() ).that( sproc ).processedWith( processor ).failsToCompile()
@@ -207,12 +217,12 @@ public class StoredProcedureProcessorTest
     @Test
     public void emits_warnings_if_context_injected_field_types_are_unsupported()
     {
-        JavaFileObject sproc = JavaFileObjectUtils.resource( "bad_context_field/BadContextTypeSproc.java" );
+        JavaFileObject sproc =
+                JavaFileObjectUtils.INSTANCE.procedureSource( "invalid/bad_context_field/BadContextTypeSproc.java" );
 
         assert_().about( javaSource() ).that( sproc ).processedWith( processor ).compilesWithoutError()
-                .withWarningCount( 2 )
-                .withWarningContaining(
-                        "@org.neo4j.procedure.Context usage warning: found type: <org.neo4j.kernel.internal.GraphDatabaseAPI>, expected one of: <org.neo4j.graphdb.GraphDatabaseService>, <org.neo4j.logging.Log>" )
+                .withWarningCount( 2 ).withWarningContaining(
+                "@org.neo4j.procedure.Context usage warning: found type: <org.neo4j.kernel.internal.GraphDatabaseAPI>, expected one of: <org.neo4j.graphdb.GraphDatabaseService>, <org.neo4j.logging.Log>" )
                 .in( sproc ).onLine( 26 );
 
 
@@ -221,10 +231,10 @@ public class StoredProcedureProcessorTest
     @Test
     public void does_not_emit_warnings_if_context_injected_field_types_are_unsupported_when_context_warnings_disabled()
     {
-        JavaFileObject sproc = JavaFileObjectUtils.resource( "bad_context_field/BadContextTypeSproc.java" );
+        JavaFileObject sproc =
+                JavaFileObjectUtils.INSTANCE.procedureSource( "invalid/bad_context_field/BadContextTypeSproc.java" );
 
-        assert_().about( javaSource() ).that( sproc )
-                .withCompilerOptions( "-AIgnoreContextWarnings" )
+        assert_().about( javaSource() ).that( sproc ).withCompilerOptions( "-AIgnoreContextWarnings" )
                 .processedWith( processor ).compilesWithoutError().withWarningCount( 1 );
 
 

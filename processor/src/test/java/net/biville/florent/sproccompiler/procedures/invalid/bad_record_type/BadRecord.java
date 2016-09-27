@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test_classes.bad_record_field_type;
+package net.biville.florent.sproccompiler.procedures.invalid.bad_record_type;
 
-import java.util.stream.Stream;
-
-import org.neo4j.procedure.Procedure;
-
-public class BadRecordGenericFieldTypeSproc
+public class BadRecord
 {
 
-    @Procedure
-    public Stream<BadRecordGenericFieldType> doSomething()
+    private static final int DEFAULT_AGE = 42;
+    private final String label; /* nonstatic fields should be public */
+    private final int age;
+
+    public BadRecord( String label, int age )
     {
-        return Stream.empty();
+        this.label = label;
+        this.age = age < 0 ? DEFAULT_AGE : age;
     }
 }

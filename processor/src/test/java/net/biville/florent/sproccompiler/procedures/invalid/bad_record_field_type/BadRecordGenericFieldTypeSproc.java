@@ -13,28 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test_classes.missing_name;
+package net.biville.florent.sproccompiler.procedures.invalid.bad_record_field_type;
 
 import java.util.stream.Stream;
 
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.procedure.Context;
 import org.neo4j.procedure.Procedure;
 
-public class MissingNameSproc
+public class BadRecordGenericFieldTypeSproc
 {
 
-    @Context
-    public GraphDatabaseService db;
-
     @Procedure
-    public Stream<GoodRecord> niceSproc( String parameter, String otherParam )
+    public Stream<BadRecordGenericFieldType> doSomething()
     {
         return Stream.empty();
-    }
-
-    public static class GoodRecord
-    {
-        public long age;
     }
 }
