@@ -1,10 +1,9 @@
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.biville.florent</groupId>
     <artifactId>neo4j-sproc-compiler-parent</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.0.4</version>
     <packaging>pom</packaging>
 
     <name>Parent POM</name>
@@ -184,7 +183,7 @@
         <url>https://github.com/fbiville/liquigraph</url>
         <connection>scm:git:git@github.com:fbiville/neo4j-sproc-compiler.git</connection>
         <developerConnection>scm:git:git@github.com:fbiville/neo4j-sproc-compiler.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v1.0.4</tag>
     </scm>
 
     <licenses>
