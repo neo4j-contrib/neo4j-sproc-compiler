@@ -10,4 +10,4 @@ os:
 script: mvn clean package
 install: true
 after_success:
-  - "[ ${TRAVIS_PULL_REQUEST} = 'false' ] && [ ${TRAVIS_BRANCH} = 'master' ] && mvn -s ./deploy-settings.xml clean package -DskipTests nexus-staging:deploy"
+  - "[ ${TRAVIS_PULL_REQUEST} = 'false' ] && [ ${TRAVIS_BRANCH} = 'master' ] && mvn -s ./deploy-settings.xml clean package -DskipTests deploy"
