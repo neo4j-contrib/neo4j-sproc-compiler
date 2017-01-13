@@ -17,26 +17,29 @@ package net.biville.florent.sproccompiler.visitors;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementVisitor;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.SimpleElementVisitor8;
 import javax.tools.Diagnostic;
 
-public class ExecutableElementVisitor extends SimpleElementVisitor8<ExecutableElement, Void> {
+public class ExecutableElementVisitor extends SimpleElementVisitor8<ExecutableElement,Void>
+{
     private final Messager messager;
 
-    public ExecutableElementVisitor(Messager messager) {
+    public ExecutableElementVisitor( Messager messager )
+    {
         this.messager = messager;
     }
 
     @Override
-    public ExecutableElement visitExecutable(ExecutableElement method, Void ignored) {
+    public ExecutableElement visitExecutable( ExecutableElement method, Void ignored )
+    {
         return method;
     }
 
     @Override
-    public ExecutableElement visitUnknown(Element e, Void aVoid) {
-        messager.printMessage(Diagnostic.Kind.ERROR, "Unexpected @Procedure|@UserFunction on element", e);
+    public ExecutableElement visitUnknown( Element e, Void aVoid )
+    {
+        messager.printMessage( Diagnostic.Kind.ERROR, "Unexpected @Procedure|@UserFunction on element", e );
         return null;
     }
 }

@@ -36,8 +36,8 @@ public class PerformsWriteProcessorTest
     @Test
     public void fails_with_conflicting_mode() throws Exception
     {
-        JavaFileObject procedure = JavaFileObjectUtils.INSTANCE.procedureSource(
-                "invalid/conflicting_mode/ConflictingMode.java" );
+        JavaFileObject procedure =
+                JavaFileObjectUtils.INSTANCE.procedureSource( "invalid/conflicting_mode/ConflictingMode.java" );
 
         assert_().about( javaSource() ).that( procedure ).processedWith( processor ).failsToCompile()
                 .withErrorCount( 1 )

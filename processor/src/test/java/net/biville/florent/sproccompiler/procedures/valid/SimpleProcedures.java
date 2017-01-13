@@ -15,19 +15,33 @@
  */
 package net.biville.florent.sproccompiler.procedures.valid;
 
-import org.neo4j.procedure.*;
+import org.neo4j.procedure.Description;
+import org.neo4j.procedure.Mode;
+import org.neo4j.procedure.Name;
+import org.neo4j.procedure.PerformsWrites;
+import org.neo4j.procedure.Procedure;
 
-public class SimpleProcedures {
+public class SimpleProcedures
+{
 
-    @Procedure(deprecatedBy = "doSomething2")
+    @Procedure( deprecatedBy = "doSomething2" )
     @PerformsWrites
-    public void doSomething(@Name("foo") int foo) {
+    public void doSomething( @Name( "foo" ) int foo )
+    {
 
     }
 
-    @Procedure(mode = Mode.SCHEMA)
-    @Description("Much better than the former version")
-    public void doSomething2(@Name("bar") long bar) {
+    @Procedure( mode = Mode.SCHEMA )
+    @Description( "Much better than the former version" )
+    public void doSomething2( @Name( "bar" ) long bar )
+    {
+
+    }
+
+    @Procedure( mode = Mode.SCHEMA )
+    @Description( "Much better with records" )
+    public void doSomething3( @Name( "bar" ) Records.LongWrapper bar )
+    {
 
     }
 }

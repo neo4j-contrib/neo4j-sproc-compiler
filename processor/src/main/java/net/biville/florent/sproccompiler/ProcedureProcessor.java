@@ -98,8 +98,8 @@ public class ProcedureProcessor extends AbstractProcessor
 
         visitedProcedures.clear();
         messagePrinter = new MessagePrinter( processingEnv.getMessager() );
-        visitor = new StoredProcedureVisitor( typeUtils, elementUtils, processingEnv.getOptions().containsKey(
-                IGNORE_CONTEXT_WARNINGS) );
+        visitor = new StoredProcedureVisitor( typeUtils, elementUtils,
+                processingEnv.getOptions().containsKey( IGNORE_CONTEXT_WARNINGS ) );
         duplicationPredicate =
                 new DuplicatedProcedureValidator<>( elementUtils, sprocType, ProcedureProcessor::getCustomName );
     }

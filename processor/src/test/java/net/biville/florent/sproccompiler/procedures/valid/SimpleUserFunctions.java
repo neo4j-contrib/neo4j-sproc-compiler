@@ -19,11 +19,13 @@ import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
 import org.neo4j.procedure.UserFunction;
 
-public class SimpleUserFunctions {
+public class SimpleUserFunctions
+{
 
     @UserFunction
-    @Description("Performs super complex maths")
-    public long sum(@Name("a") int operand1, @Name("b") int operand2) {
-        return operand1+operand2;
+    @Description( "Performs super complex maths" )
+    public long sum( @Name( "a" ) int operand1, @Name( "b" ) int operand2 )
+    {
+        return operand1 + operand2;
     }
 }
