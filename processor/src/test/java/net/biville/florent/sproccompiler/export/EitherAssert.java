@@ -19,14 +19,14 @@ import org.assertj.core.api.AbstractAssert;
 
 import java.util.function.Consumer;
 
-public class EitherAssert<L,R> extends AbstractAssert<EitherAssert<L,R>, Either<L,R>>
+public class EitherAssert<L, R> extends AbstractAssert<EitherAssert<L,R>,Either<L,R>>
 {
     private EitherAssert( Either<L,R> actual )
     {
         super( actual, EitherAssert.class );
     }
 
-    public static <L,R> EitherAssert<L,R> assertThat(Either<L,R> actual)
+    public static <L, R> EitherAssert<L,R> assertThat( Either<L,R> actual )
     {
         return new EitherAssert<>( actual );
     }
@@ -35,7 +35,10 @@ public class EitherAssert<L,R> extends AbstractAssert<EitherAssert<L,R>, Either<
     {
         isNotNull();
 
-        actual.consume( (L left) -> {}, (R right) -> {
+        actual.consume( ( L left ) ->
+        {
+        }, ( R right ) ->
+        {
             failWithMessage( "Expected Either to be left, but right is defined: %s", right );
         } );
 
@@ -46,27 +49,34 @@ public class EitherAssert<L,R> extends AbstractAssert<EitherAssert<L,R>, Either<
     {
         isNotNull();
 
-        actual.consume( (L left) -> {
+        actual.consume( ( L left ) ->
+        {
             failWithMessage( "Expected Either to be right, but left is defined: %s", left );
-        }, (R right) -> {} );
+        }, ( R right ) ->
+        {
+        } );
 
         return this;
     }
 
-    public EitherAssert<L,R> verifiesLeft(Consumer<L> leftConsumer)
+    public EitherAssert<L,R> verifiesLeft( Consumer<L> leftConsumer )
     {
         isLeft();
 
-        actual.consume( leftConsumer, (right) -> {} );
+        actual.consume( leftConsumer, ( right ) ->
+        {
+        } );
 
         return this;
     }
 
-    public EitherAssert<L,R> verifiesRight(Consumer<R> rightConsumer)
+    public EitherAssert<L,R> verifiesRight( Consumer<R> rightConsumer )
     {
         isRight();
 
-        actual.consume( (left) -> {}, rightConsumer );
+        actual.consume( ( left ) ->
+        {
+        }, rightConsumer );
 
         return this;
     }

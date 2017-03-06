@@ -16,32 +16,24 @@
 package net.biville.florent.sproccompiler.export;
 
 import com.google.auto.service.AutoService;
-import net.biville.florent.sproccompiler.export.messages.DsvExportError;
+import net.biville.florent.sproccompiler.export.io.DsvSerializer;
 import net.biville.florent.sproccompiler.messages.MessagePrinter;
 import net.biville.florent.sproccompiler.visitors.ExecutableElementVisitor;
+import net.biville.florent.sproccompiler.visitors.TypeElementVisitor;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Stream;
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementVisitor;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
 
 import org.neo4j.procedure.Procedure;
 import org.neo4j.procedure.UserFunction;
@@ -52,12 +44,12 @@ import static java.util.Arrays.asList;
 public class DsvProcessor extends AbstractProcessor
 {
 
-    private final Map<PackageElement,Collection<ExecutableElement>> visitedMethods = new HashMap<>();
-    private Elements elementUtils;
-    private ElementVisitor<ExecutableElement,Void> methodVisitor;
-    private DsvConfiguration dsvConfiguration;
-    private DsvFieldExporter fieldExporter;
-    private MessagePrinter messagePrinter;
+    private final Collection<ExecutableElement> visitedProcedures = new LinkedHashSet<>();
+    private final Collection<ExecutableElement> visitedFunctions = new LinkedHashSet<>();
+
+    private ExecutableElementVisitor methodVisitor;
+    private DsvConfiguration configuration;
+    private DsvSerializer serializer;
 
     @Override
     public Set<String> getSupportedAnnotationTypes()
@@ -80,81 +72,44 @@ public class DsvProcessor extends AbstractProcessor
     @Override
     public synchronized void init( ProcessingEnvironment processingEnv )
     {
-        visitedMethods.clear();
-        elementUtils = processingEnv.getElementUtils();
-        methodVisitor = new ExecutableElementVisitor( processingEnv.getMessager() );
-        messagePrinter = new MessagePrinter( processingEnv.getMessager() );
-        fieldExporter = new DsvFieldExporter( elementUtils );
-        dsvConfiguration = new DsvConfiguration( processingEnv.getOptions() );
+        visitedProcedures.clear();
+        visitedFunctions.clear();
+
+        Messager messager = processingEnv.getMessager();
+        methodVisitor = new ExecutableElementVisitor( messager );
+        configuration = new DsvConfiguration( processingEnv.getOptions() );
+        serializer = new DsvSerializer( processingEnv.getElementUtils(), new TypeElementVisitor( messager ),
+                new MessagePrinter( messager ) );
     }
 
     @Override
     public boolean process( Set<? extends TypeElement> annotations, RoundEnvironment roundEnv )
     {
-        dsvConfiguration.getRootPath().ifPresent( ( root ) ->
+        configuration.getRootPath().ifPresent( ( root ) ->
         {
-            if ( !roundEnv.processingOver() )
+            if ( roundEnv.processingOver() )
             {
-                roundEnv.getElementsAnnotatedWith( Procedure.class ).forEach( this::index );
-                roundEnv.getElementsAnnotatedWith( UserFunction.class ).forEach( this::index );
+                serializer.serialize( root, configuration, visitedProcedures, visitedFunctions );
             }
             else
             {
-                generateDocumentation( root );
+                roundEnv.getElementsAnnotatedWith( Procedure.class ).forEach( this::visitProcedure );
+                roundEnv.getElementsAnnotatedWith( UserFunction.class ).forEach( this::visitFunction );
             }
         } );
 
         return false;
     }
 
-    private void index( Element el )
+    private void visitFunction( Element el )
     {
-        ExecutableElement method = methodVisitor.visit( el );
-        visitedMethods.computeIfAbsent( elementUtils.getPackageOf( method ), ( k ) -> new ArrayList<>() ).add( method );
+        visitedFunctions.add( methodVisitor.visit( el ) );
     }
 
-    private void generateDocumentation( Path root )
+    private void visitProcedure( Element el )
     {
-        visitedMethods.entrySet().forEach( kv ->
-        {
-            serialize( root, kv );
-        } );
+        visitedProcedures.add( methodVisitor.visit( el ) );
     }
 
-    private void serialize( Path root, Map.Entry<PackageElement,Collection<ExecutableElement>> kv )
-    {
-        PackageElement packageElement = kv.getKey();
-        File file = new File( root.toFile(), packageElement.getQualifiedName() + ".csv" );
-
-        Either<DsvExportError,List<String>> parsingResult =
-                fieldExporter.exportHeaders( dsvConfiguration.getFieldDelimiter(), dsvConfiguration.getRawHeaders() );
-
-        parsingResult.consume(
-               messagePrinter::print,
-                (headers) -> serialize( kv, file, headers )
-        );
-    }
-
-    private void serialize( Map.Entry<PackageElement,Collection<ExecutableElement>> kv, File file,
-            Collection<String> headers )
-    {
-        try ( FileWriter resource = new FileWriter( file );
-                DsvWriter writer = new DsvWriter( headers, resource, dsvConfiguration.getFieldDelimiter() ) )
-        {
-            writer.write(
-                    kv.getValue().stream(),
-                    ( method ) -> serializeFields( method, headers ),
-                    messagePrinter::print);
-        }
-        catch ( Exception e )
-        {
-            throw new RuntimeException( e.getMessage(), e );
-        }
-    }
-
-    private Stream<Either<DsvExportError,String>> serializeFields( ExecutableElement method, Collection<String> headers )
-    {
-        return fieldExporter.exportFields( method, headers );
-    }
 
 }

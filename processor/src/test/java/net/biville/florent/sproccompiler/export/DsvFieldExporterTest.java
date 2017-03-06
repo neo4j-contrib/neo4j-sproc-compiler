@@ -15,6 +15,7 @@
  */
 package net.biville.florent.sproccompiler.export;
 
+import net.biville.florent.sproccompiler.export.io.DsvFieldExporter;
 import net.biville.florent.sproccompiler.export.messages.DsvExportError;
 import org.junit.Test;
 
@@ -33,61 +34,46 @@ public class DsvFieldExporterTest
     @Test
     public void parses_wildcard_as_all_header_values()
     {
-        Either<DsvExportError, List<String>> headers = parser.exportHeaders( "$", "*" );
+        Either<DsvExportError,List<String>> headers = parser.exportHeaders( "$", "*" );
 
-        assertThat( headers )
-                .isRight()
-                .verifiesRight( (right) -> {
-                    assertThat(right).containsExactly(
-                            "type",
-                            "name",
-                            "description",
-                            "execution mode",
-                            "location",
-                            "deprecated by");
-                });
+        assertThat( headers ).isRight().verifiesRight( ( right ) ->
+        {
+            assertThat( right )
+                    .containsExactly( "type", "name", "description", "execution mode", "location", "deprecated by" );
+        } );
     }
 
     @Test
     public void parses_exported_headers_in_order()
     {
-        Either<DsvExportError, List<String>> headers = parser.exportHeaders( "$", "type$deprecated by" );
+        Either<DsvExportError,List<String>> headers = parser.exportHeaders( "$", "type$deprecated by" );
 
-        assertThat( headers )
-                .isRight()
-                .verifiesRight( (right) -> {
-                    assertThat(right).containsExactly(
-                            "type",
-                            "deprecated by");
-                });
+        assertThat( headers ).isRight().verifiesRight( ( right ) ->
+        {
+            assertThat( right ).containsExactly( "type", "deprecated by" );
+        } );
     }
 
     @Test
     public void parses_exported_headers_in_order_after_trimming()
     {
-        Either<DsvExportError, List<String>> headers = parser.exportHeaders( "$", "    description  $   location   " );
+        Either<DsvExportError,List<String>> headers = parser.exportHeaders( "$", "    description  $   location   " );
 
-        assertThat( headers )
-                .isRight()
-                .verifiesRight( (right) -> {
-                    assertThat(right).containsExactly(
-                            "description",
-                            "location");
-                });
+        assertThat( headers ).isRight().verifiesRight( ( right ) ->
+        {
+            assertThat( right ).containsExactly( "description", "location" );
+        } );
     }
 
     @Test
     public void can_split_by_characters_reserved_for_regexes()
     {
-        Either<DsvExportError, List<String>> headers = parser.exportHeaders( "[", "description[execution mode" );
+        Either<DsvExportError,List<String>> headers = parser.exportHeaders( "[", "description[execution mode" );
 
-        assertThat( headers )
-                .isRight()
-                .verifiesRight( (right) -> {
-                    assertThat(right).containsExactly(
-                            "description",
-                            "execution mode");
-                });
+        assertThat( headers ).isRight().verifiesRight( ( right ) ->
+        {
+            assertThat( right ).containsExactly( "description", "execution mode" );
+        } );
     }
 
     @Test
@@ -96,13 +82,12 @@ public class DsvFieldExporterTest
         Either<DsvExportError,List<String>> headers =
                 parser.exportHeaders( "$", "    made-up-field  $   what-am-i-doing   " );
 
-        assertThat( headers )
-                .isLeft()
-                .verifiesLeft( (left) -> {
-                    assertThat(left).isEqualTo(new DsvExportError( null,
-                            "%n" + "Exported comma-separated header contains invalid values: [made-up-field, what-am-i-doing]. %n" +
-                                    "\tDelimiter should be: $ %n" +
-                                    "\tValid values are '*' or 'type$name$description$execution mode$location$deprecated by'"));
-                });
+        assertThat( headers ).isLeft().verifiesLeft( ( left ) ->
+        {
+            assertThat( left ).isEqualTo( new DsvExportError( null, "%n" +
+                    "Exported comma-separated header contains invalid values: [made-up-field, what-am-i-doing]. %n" +
+                    "\tDelimiter should be: $ %n" +
+                    "\tValid values are '*' or 'type$name$description$execution mode$location$deprecated by'" ) );
+        } );
     }
 }

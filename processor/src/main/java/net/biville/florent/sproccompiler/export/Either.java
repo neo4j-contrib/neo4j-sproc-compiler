@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 
 import static java.lang.String.format;
 
-public class Either<L,R>
+public class Either<L, R>
 {
 
     private final Optional<L> left;
@@ -37,54 +37,52 @@ public class Either<L,R>
         if ( left.isPresent() == right.isPresent() )
         {
             throw new IllegalStateException(
-                    format("Either left or right should be defined. Currently: [left: %s], [right: %s]", left, right ));
+                    format( "Either left or right should be defined. Currently: [left: %s], [right: %s]", left,
+                            right ) );
         }
     }
 
-    public <T> T map(Function<L,T> leftMapper, Function<R,T> rightMapper)
+    public static <L, R> Either<L,R> left( L value )
     {
-        return left.map( leftMapper )
-                .orElseGet( () -> right.map( rightMapper ).get() );
+        return new Either<L,R>( Optional.of( value ), Optional.empty() );
     }
 
-    public <T> Either<T,R> mapLeft(Function<L,T> leftMapper)
+    public static <L, R> Either<L,R> right( R value )
     {
-        return new Either<T,R>( left.map( leftMapper ), right);
+        return new Either<L,R>( Optional.empty(), Optional.of( value ) );
     }
 
-    public <T> Either<L,T> mapRight(Function<R,T> rightMapper)
+    public static <L, R> Either<Stream<L>,Stream<R>> combine( Stream<Either<L,R>> either )
     {
-        return new Either<L,T>( left, right.map( rightMapper ));
-    }
-
-    public void consume(Consumer<L> leftConsumer, Consumer<R> rightConsumer)
-    {
-        left.ifPresent( leftConsumer );
-        right.ifPresent( rightConsumer );
-    }
-
-    public static <L,R> Either<L,R> left(L value)
-    {
-        return new Either<L,R>(Optional.of(value), Optional.empty());
-    }
-
-    public static <L,R> Either<L,R> right(R value)
-    {
-        return new Either<L,R>(Optional.empty(), Optional.of(value));
-    }
-
-    public static <L,R> Either<Stream<L>, Stream<R>> combine(Stream<Either<L,R>> either)
-    {
-        Collection<L> errors = new ArrayList<>(  );
-        Collection<R> results = new ArrayList<>(  );
-        either.forEach(
-                (x) -> x.consume( errors::add, results::add )
-        );
-        if (!errors.isEmpty())
+        Collection<L> errors = new ArrayList<>();
+        Collection<R> results = new ArrayList<>();
+        either.forEach( ( x ) -> x.consume( errors::add, results::add ) );
+        if ( !errors.isEmpty() )
         {
             return Either.left( errors.stream() );
         }
         return Either.right( results.stream() );
+    }
+
+    public <T> T map( Function<L,T> leftMapper, Function<R,T> rightMapper )
+    {
+        return left.map( leftMapper ).orElseGet( () -> right.map( rightMapper ).get() );
+    }
+
+    public <T> Either<T,R> mapLeft( Function<L,T> leftMapper )
+    {
+        return new Either<T,R>( left.map( leftMapper ), right );
+    }
+
+    public <T> Either<L,T> mapRight( Function<R,T> rightMapper )
+    {
+        return new Either<L,T>( left, right.map( rightMapper ) );
+    }
+
+    public void consume( Consumer<L> leftConsumer, Consumer<R> rightConsumer )
+    {
+        left.ifPresent( leftConsumer );
+        right.ifPresent( rightConsumer );
     }
 
     @Override

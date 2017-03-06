@@ -17,36 +17,59 @@ package net.biville.florent.sproccompiler.export;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-class DsvConfiguration
+public class DsvConfiguration
 {
 
     private static final String DOCUMENTATION_ROOT_PATH = "GeneratedDocumentationPath";
     private static final String DOCUMENTATION_FIELD_DELIMITER = "Documentation.FieldDelimiter";
     private static final String DOCUMENTATION_EXPORTED_HEADERS = "Documentation.ExportedHeaders";
+    private static final String DOCUMENTATION_EXPORT_GROUPING = "Documentation.ExportGrouping";
+    private static final String DOCUMENTATION_EXPORT_SPLIT = "Documentation.ExportSplit";
 
     private final Optional<Path> rootPath;
     private final String fieldDelimiter;
     private final String rawHeaders;
+    private final EnumSet<DsvGroupingStrategy> groupingStrategy;
+    private final DsvSplitStrategy splitStrategy;
 
     public DsvConfiguration( Map<String,String> actualOptions )
     {
-        rootPath = Optional.ofNullable( actualOptions.getOrDefault( DOCUMENTATION_ROOT_PATH, null ) ).map( Paths::get );
+        rootPath = Optional.ofNullable( actualOptions.getOrDefault( DOCUMENTATION_ROOT_PATH, null ) ).map( Paths::get )
+                .filter( p -> p.toFile().exists() );
         fieldDelimiter = actualOptions.getOrDefault( DOCUMENTATION_FIELD_DELIMITER, "," );
         rawHeaders = actualOptions.getOrDefault( DOCUMENTATION_EXPORTED_HEADERS, "*" );
+        groupingStrategy = parseGroupingStrategy(
+                actualOptions.getOrDefault( DOCUMENTATION_EXPORT_GROUPING, "SINGLE" ).toUpperCase( Locale.ENGLISH ),
+                "," );
+        splitStrategy = DsvSplitStrategy.valueOf(
+                actualOptions.getOrDefault( DOCUMENTATION_EXPORT_SPLIT, "NONE" ).toUpperCase( Locale.ENGLISH ) );
     }
 
     public static Set<String> getSupportedOptions()
     {
-        Set<String> options = new HashSet<>( 3 );
+        Set<String> options = new HashSet<>( 5 );
         options.add( DOCUMENTATION_ROOT_PATH );
         options.add( DOCUMENTATION_EXPORTED_HEADERS );
         options.add( DOCUMENTATION_FIELD_DELIMITER );
+        options.add( DOCUMENTATION_EXPORT_GROUPING );
+        options.add( DOCUMENTATION_EXPORT_SPLIT );
         return options;
+    }
+
+    private static EnumSet<DsvGroupingStrategy> parseGroupingStrategy( String rawOption, String delimiter )
+    {
+        return EnumSet.copyOf(
+                Arrays.stream( rawOption.split( delimiter ) ).map( String::trim ).map( DsvGroupingStrategy::valueOf )
+                        .collect( Collectors.toList() ) );
     }
 
     public Optional<Path> getRootPath()
@@ -62,5 +85,15 @@ class DsvConfiguration
     public String getRawHeaders()
     {
         return rawHeaders;
+    }
+
+    public EnumSet<DsvGroupingStrategy> getGroupingStrategies()
+    {
+        return groupingStrategy;
+    }
+
+    public DsvSplitStrategy getSplitStrategy()
+    {
+        return splitStrategy;
     }
 }

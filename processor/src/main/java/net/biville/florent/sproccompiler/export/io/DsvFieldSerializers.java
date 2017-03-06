@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.biville.florent.sproccompiler.export;
+package net.biville.florent.sproccompiler.export.io;
 
 import net.biville.florent.sproccompiler.ProcedureProcessor;
 import net.biville.florent.sproccompiler.UserFunctionProcessor;
+import net.biville.florent.sproccompiler.export.Either;
 import net.biville.florent.sproccompiler.export.messages.DsvExportError;
 
 import java.util.ArrayList;
@@ -41,10 +42,11 @@ import org.neo4j.procedure.UserFunction;
 /**
  * All possible DSV header values: this declaration order is the default one
  */
-class DsvFieldSerializers
+public class DsvFieldSerializers
 {
 
-    private final Map<String,Function<ExecutableElement,Either<DsvExportError, String>>> headerSerializers = new LinkedHashMap<>( 6 );
+    private final Map<String,Function<ExecutableElement,Either<DsvExportError,String>>> headerSerializers =
+            new LinkedHashMap<>( 6 );
 
     DsvFieldSerializers( Elements elementUtils )
     {
@@ -64,10 +66,10 @@ class DsvFieldSerializers
         return result;
     }
 
-    public Either<DsvExportError, String> serializeField( ExecutableElement method, String field )
+    public Either<DsvExportError,String> serializeField( ExecutableElement method, String field )
     {
-        return headerSerializers
-                .getOrDefault( field, ( ignored ) -> Either.left(new DsvExportError(  method, "Unsupported field name: " + field ) ) )
+        return headerSerializers.getOrDefault( field,
+                ( ignored ) -> Either.left( new DsvExportError( method, "Unsupported field name: " + field ) ) )
                 .apply( method );
     }
 
@@ -81,7 +83,7 @@ class DsvFieldSerializers
             this.elementUtils = elementUtils;
         }
 
-        public Either<DsvExportError, String> type( ExecutableElement method )
+        public Either<DsvExportError,String> type( ExecutableElement method )
         {
             if ( method.getAnnotation( UserFunction.class ) != null )
             {
@@ -91,17 +93,16 @@ class DsvFieldSerializers
             {
                 return Either.right( "procedure" );
             }
-            return Either.left( new DsvExportError(
-                    method,
+            return Either.left( new DsvExportError( method,
                     "Method %s is neither annotated with @UserFunction or @Procedure. Exiting now...", method ) );
         }
 
-        public Either<DsvExportError, String> name( ExecutableElement method )
+        public Either<DsvExportError,String> name( ExecutableElement method )
         {
-            return Either.right( String.format( "%s(%s)", callableName( method ), parameters( method ) ));
+            return Either.right( String.format( "%s(%s)", callableName( method ), parameters( method ) ) );
         }
 
-        public Either<DsvExportError, String> description( ExecutableElement method )
+        public Either<DsvExportError,String> description( ExecutableElement method )
         {
             Description description = method.getAnnotation( Description.class );
             if ( description == null )
@@ -111,7 +112,7 @@ class DsvFieldSerializers
             return Either.right( description.value() );
         }
 
-        public Either<DsvExportError, String> executionMode( ExecutableElement method )
+        public Either<DsvExportError,String> executionMode( ExecutableElement method )
         {
             PerformsWrites performsWrites = method.getAnnotation( PerformsWrites.class );
             if ( performsWrites != null )
@@ -126,13 +127,13 @@ class DsvFieldSerializers
             return Either.right( "" );
         }
 
-        public Either<DsvExportError, String> location( ExecutableElement method )
+        public Either<DsvExportError,String> location( ExecutableElement method )
         {
             return Either.right( String.format( "%s.%s", elementUtils.getPackageOf( method ).getQualifiedName(),
-                    method.getEnclosingElement().getSimpleName() ));
+                    method.getEnclosingElement().getSimpleName() ) );
         }
 
-        public Either<DsvExportError, String> deprecatedBy( ExecutableElement method )
+        public Either<DsvExportError,String> deprecatedBy( ExecutableElement method )
         {
             UserFunction function = method.getAnnotation( UserFunction.class );
             if ( function != null )

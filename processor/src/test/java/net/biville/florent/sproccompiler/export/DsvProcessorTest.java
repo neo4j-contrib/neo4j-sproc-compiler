@@ -54,7 +54,7 @@ public class DsvProcessorTest
     }
 
     @Test
-    public void dumps_procedure_definition_to_dsv_with_custom_delimiter() throws IOException
+    public void dumps_procedure_definition_to_dsv_with_custom_delimiter_and_package_grouping() throws IOException
     {
         Iterable<JavaFileObject> sources =
                 asList( JavaFileObjectUtils.INSTANCE.procedureSource( "valid/SimpleProcedures.java" ),
@@ -62,7 +62,8 @@ public class DsvProcessorTest
 
         assert_().about( javaSources() ).that( sources )
                 .withCompilerOptions( "-AGeneratedDocumentationPath=" + folder.getAbsolutePath(),
-                        "-ADocumentation.FieldDelimiter=|" ).processedWith( processor ).compilesWithoutError();
+                        "-ADocumentation.FieldDelimiter=|", "-ADocumentation.ExportGrouping=PACKAGE" )
+                .processedWith( processor ).compilesWithoutError();
 
         String namespace = "net.biville.florent.sproccompiler.procedures.valid";
         String generatedCsv = readContents( Paths.get( folder.getAbsolutePath(), namespace + ".csv" ) );
@@ -79,7 +80,7 @@ public class DsvProcessorTest
     }
 
     @Test
-    public void dumps_only_exported_fields_with_default_delimiter() throws IOException
+    public void dumps_only_exported_fields_with_default_delimiter_and_package_grouping() throws IOException
     {
         Iterable<JavaFileObject> sources =
                 asList( JavaFileObjectUtils.INSTANCE.procedureSource( "valid/SimpleProcedures.java" ),
@@ -87,14 +88,35 @@ public class DsvProcessorTest
 
         assert_().about( javaSources() ).that( sources )
                 .withCompilerOptions( "-AGeneratedDocumentationPath=" + folder.getAbsolutePath(),
-                        "-ADocumentation.ExportedHeaders=execution mode,type" ).processedWith( processor )
-                .compilesWithoutError();
+                        "-ADocumentation.ExportedHeaders=execution mode,type",
+                        "-ADocumentation.ExportGrouping=PACKAGE" ).processedWith( processor ).compilesWithoutError();
 
         String namespace = "net.biville.florent.sproccompiler.procedures.valid";
         String generatedCsv = readContents( Paths.get( folder.getAbsolutePath(), namespace + ".csv" ) );
         assertThat( generatedCsv ).isEqualTo(
                 "" + "\"execution mode\",\"type\"\n" + "\"PERFORMS_WRITE\",\"procedure\"\n" +
                         "\"SCHEMA\",\"procedure\"\n" + "\"SCHEMA\",\"procedure\"\n" + "\"\",\"function\"" );
+    }
+
+    @Test
+    public void dumps_only_exported_fields_with_default_delimiter_and_global_grouping_and_splitting_by_kind()
+            throws IOException
+    {
+        Iterable<JavaFileObject> sources =
+                asList( JavaFileObjectUtils.INSTANCE.procedureSource( "valid/SimpleProcedures.java" ),
+                        JavaFileObjectUtils.INSTANCE.procedureSource( "valid/SimpleUserFunctions.java" ) );
+
+        assert_().about( javaSources() ).that( sources )
+                .withCompilerOptions( "-AGeneratedDocumentationPath=" + folder.getAbsolutePath(),
+                        "-ADocumentation.ExportGrouping=SINGLE", "-ADocumentation.ExportSplit=KIND",
+                        "-ADocumentation.ExportedHeaders=execution mode,type" ).processedWith( processor )
+                .compilesWithoutError();
+
+        assertThat( readContents( Paths.get( folder.getAbsolutePath(), "documentation-procedures.csv" ) ) ).isEqualTo(
+                "\"execution mode\",\"type\"\n" + "\"PERFORMS_WRITE\",\"procedure\"\n" + "\"SCHEMA\",\"procedure\"\n" +
+                        "\"SCHEMA\",\"procedure\"" );
+        assertThat( readContents( Paths.get( folder.getAbsolutePath(), "documentation-functions.csv" ) ) )
+                .isEqualTo( "\"execution mode\",\"type\"\n" + "\"\",\"function\"" );
     }
 
     private String readContents( Path path ) throws IOException

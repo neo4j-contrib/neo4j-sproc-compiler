@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.biville.florent.sproccompiler.export;
+package net.biville.florent.sproccompiler.export.io;
 
+import net.biville.florent.sproccompiler.export.Either;
 import net.biville.florent.sproccompiler.export.messages.DsvExportError;
 
 import java.util.Arrays;
@@ -26,7 +27,7 @@ import javax.lang.model.util.Elements;
 
 import static java.util.stream.Collectors.toList;
 
-class DsvFieldExporter
+public class DsvFieldExporter
 {
 
     private final DsvFieldSerializers serializers;
@@ -36,7 +37,7 @@ class DsvFieldExporter
         this.serializers = new DsvFieldSerializers( elementUtils );
     }
 
-    public Either<DsvExportError, List<String>> exportHeaders( String delimiter, String headerInput )
+    public Either<DsvExportError,List<String>> exportHeaders( String delimiter, String headerInput )
     {
         String inputOption = headerInput.trim();
 
@@ -50,8 +51,8 @@ class DsvFieldExporter
         return validateHeaders( delimiter, allFields, result );
     }
 
-    public Stream<Either<DsvExportError, String>> exportFields( ExecutableElement method, Collection<String>
-            exportedHeaders )
+    public Stream<Either<DsvExportError,String>> exportFields( ExecutableElement method,
+            Collection<String> exportedHeaders )
     {
         return exportedHeaders.stream().map( f -> serializers.serializeField( method, f ) );
     }
@@ -62,7 +63,7 @@ class DsvFieldExporter
                 .distinct().collect( toList() );
     }
 
-    private Either<DsvExportError, List<String>> validateHeaders( String delimiter, List<String> allFields,
+    private Either<DsvExportError,List<String>> validateHeaders( String delimiter, List<String> allFields,
             List<String> result )
     {
         List<String> faultyHeaders = validate( allFields, result );
@@ -72,8 +73,8 @@ class DsvFieldExporter
         }
 
         return Either.left( new DsvExportError( null,
-                "%nExported comma-separated header contains invalid values: %s. %n" +
-                        "\tDelimiter should be: %s %n" + "\tValid values are '*' or '%s'", faultyHeaders, delimiter,
+                "%nExported comma-separated header contains invalid values: %s. %n" + "\tDelimiter should be: %s %n" +
+                        "\tValid values are '*' or '%s'", faultyHeaders, delimiter,
                 String.join( delimiter, allFields ) ) );
 
     }

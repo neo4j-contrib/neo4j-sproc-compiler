@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.biville.florent.sproccompiler.export;
+package net.biville.florent.sproccompiler.export.io;
 
+import net.biville.florent.sproccompiler.export.Either;
 import net.biville.florent.sproccompiler.export.messages.DsvExportError;
 
 import java.io.IOException;
@@ -26,39 +27,36 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
-public class DsvWriter implements AutoCloseable
+public class DsvFileWriter implements AutoCloseable
 {
 
     private final Collection<String> header;
     private final Writer writer;
     private final String separator;
 
-    public DsvWriter( Collection<String> header, Writer writer )
+    public DsvFileWriter( Collection<String> header, Writer writer )
     {
         this( header, writer, "," );
     }
 
-    public DsvWriter( Collection<String> header, Writer writer, String separator )
+    public DsvFileWriter( Collection<String> header, Writer writer, String separator )
     {
         this.header = header;
         this.writer = writer;
         this.separator = separator;
     }
 
-    public <T> void write( Stream<T> records,
-            Function<T, Stream<Either<DsvExportError,String>>> rowFunction,
-            Consumer<DsvExportError> onError)
+    public <T> void write( Stream<T> records, Function<T,Stream<Either<DsvExportError,String>>> rowFunction,
+            Consumer<DsvExportError> onError )
     {
 
         writeRow( joinFields( header.stream() ) );
-        records.forEach(
-                record -> {
-                    Stream<Either<DsvExportError,String>> parsingResult = rowFunction.apply( record );
-                    Either.combine(  parsingResult ).consume(
-                            errors -> errors.forEach( onError ),
-                            result -> writeRow( joinFields( result ) ));
-                }
-        );
+        records.forEach( record ->
+        {
+            Stream<Either<DsvExportError,String>> parsingResult = rowFunction.apply( record );
+            Either.combine( parsingResult )
+                    .consume( errors -> errors.forEach( onError ), result -> writeRow( joinFields( result ) ) );
+        } );
     }
 
     @Override

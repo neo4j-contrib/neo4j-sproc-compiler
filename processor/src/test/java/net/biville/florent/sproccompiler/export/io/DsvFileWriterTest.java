@@ -13,42 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.biville.florent.sproccompiler.export;
+package net.biville.florent.sproccompiler.export.io;
 
+import net.biville.florent.sproccompiler.export.Either;
 import net.biville.florent.sproccompiler.export.messages.DsvExportError;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.io.StringWriter;
 import java.util.Arrays;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-public class DsvWriterTest
+public class DsvFileWriterTest
 {
 
     @Test
     public void writes_csv_records()
     {
         StringWriter writer = new StringWriter();
-        try ( DsvWriter dsvWriter = new DsvWriter( Arrays.asList( "first header", "second header" ), writer ) )
+        try ( DsvFileWriter dsvFileWriter = new DsvFileWriter( Arrays.asList( "first header", "second header" ),
+                writer ) )
         {
-            dsvWriter.write(
-                    Stream.of( "haha_this is", "so much_fun" ),
-                    this::parseRow,
-                    (error) -> fail("Unexpected export error: " + error)
-            );
+            dsvFileWriter.write( Stream.of( "haha_this is", "so much_fun" ), this::parseRow,
+                    ( error ) -> fail( "Unexpected export error: " + error ) );
             String result = writer.toString();
             assertThat( result ).isEqualTo(
                     "\"first header\",\"second header\"\n" + "\"haha\",\"this is\"\n" + "\"so much\",\"fun\"\n" );
         }
     }
 
-    private Stream<Either<DsvExportError,String>> parseRow(String input)
+    private Stream<Either<DsvExportError,String>> parseRow( String input )
     {
-        return Arrays.stream( input.split( "_" )).map( Either::right );
+        return Arrays.stream( input.split( "_" ) ).map( Either::right );
     }
 }
