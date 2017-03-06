@@ -65,7 +65,7 @@ public class DsvProcessorTest
                         "-ADocumentation.FieldDelimiter=|" ).processedWith( processor ).compilesWithoutError();
 
         String namespace = "net.biville.florent.sproccompiler.procedures.valid";
-        String generatedCsv = readContents( Paths.get( folder.getAbsolutePath(), "valid.csv" ) );
+        String generatedCsv = readContents( Paths.get( folder.getAbsolutePath(), namespace + ".csv" ) );
         assertThat( generatedCsv ).isEqualTo(
                 "" + "\"type\"|\"name\"|\"description\"|\"execution mode\"|\"location\"|\"deprecated by\"\n" +
                         "\"procedure\"|\"" + namespace + ".doSomething(int foo)\"|\"\"|\"PERFORMS_WRITE\"|\"" +
@@ -90,7 +90,8 @@ public class DsvProcessorTest
                         "-ADocumentation.ExportedHeaders=execution mode,type" ).processedWith( processor )
                 .compilesWithoutError();
 
-        String generatedCsv = readContents( Paths.get( folder.getAbsolutePath(), "valid.csv" ) );
+        String namespace = "net.biville.florent.sproccompiler.procedures.valid";
+        String generatedCsv = readContents( Paths.get( folder.getAbsolutePath(), namespace + ".csv" ) );
         assertThat( generatedCsv ).isEqualTo(
                 "" + "\"execution mode\",\"type\"\n" + "\"PERFORMS_WRITE\",\"procedure\"\n" +
                         "\"SCHEMA\",\"procedure\"\n" + "\"SCHEMA\",\"procedure\"\n" + "\"\",\"function\"" );

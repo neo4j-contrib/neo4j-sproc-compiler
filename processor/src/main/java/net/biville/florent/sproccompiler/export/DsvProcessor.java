@@ -124,7 +124,7 @@ public class DsvProcessor extends AbstractProcessor
     private void serialize( Path root, Map.Entry<PackageElement,Collection<ExecutableElement>> kv )
     {
         PackageElement packageElement = kv.getKey();
-        File file = new File( root.toFile(), packageElement.getSimpleName() + ".csv" );
+        File file = new File( root.toFile(), packageElement.getQualifiedName() + ".csv" );
 
         Either<DsvExportError,List<String>> parsingResult =
                 fieldExporter.exportHeaders( dsvConfiguration.getFieldDelimiter(), dsvConfiguration.getRawHeaders() );
