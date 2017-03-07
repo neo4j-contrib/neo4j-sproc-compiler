@@ -29,6 +29,24 @@ is not met:
 Inter-JAR naming conflict cannot be detected by an annotation processor.
 By definition, it can only inspect one compilation unit at a time.
 
+## DSV export
+
+The compiler can also export metadata to DSV (Delimiter-Separated Values) files.
+To make it work, you need to specify the following options (by passing `-A${CONFIGURATION_KEY}=${value}` to the Java compiler (where `${CONFIGURATION_KEY}` is one of the keys listed below):
+
+ - `GeneratedDocumentationPath`: mandatory - the folder path in which the files are going to be generated in. If not specified, the export won't be done.
+ - `Documentation.FieldDelimiter`: optional (default: ,) - the delimiter of values within a row
+ - `Documentation.ExportGrouping`: optional (default: SINGLE) - comma-separated values of grouping strategy. The data is exported to a single place (SINGLE), to a single place per enclosing package (PACKAGE), to a single place per enclosing class (CLASS). For now, "place" may mean one or two files, depending on `Documentation.ExportSplit`.
+ - `Documentation.ExportSplit`: optional (default: NONE) - whether to split data by kind (KIND, e.g. procedure vs. function) or not (NONE).
+ - `Documentation.ExportedHeaders`: optional (default: *) - delimiter-separated values which define custom ordering and filtering of the available headers. They are separated by the configured delimiter (see `Documentation.FieldDelimiter`). The available headers are (in default order):
+
+     - type: `'procedure'` or `'function'` for now
+     - name: procedure/function logical name
+     - description: optional procedure/function description
+     - execution mode: configured execution mode
+     - location: fully qualified method name defining the procedure/function
+     - deprecated by: optional replacement of the procedure/function
+ 
 ## Use the processor
 
 ### Maven
