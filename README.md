@@ -9,7 +9,7 @@ While most of the basic checks can be performed, you still need
 some unit tests to verify some runtime behaviours.
 
 
-# What does it do?
+## What does it do?
 
 Once the stored procedure compiler is added into your project classpath (see Maven/Gradle
 instructions below), it will trigger compilation failures if any of the following requirements
@@ -29,11 +29,11 @@ is not met:
 Inter-JAR naming conflict cannot be detected by an annotation processor.
 By definition, it can only inspect one compilation unit at a time.
 
-# Use the processor
+## Use the processor
 
-## Maven
+### Maven
 
-### SNAPSHOT repository
+#### SNAPSHOT repository
 
 > If you do not plan to test the development version, you can skip this section.
 
@@ -54,7 +54,7 @@ Add to `<repositories>` section:
    </repository>
 ```
 
-### Dependency
+#### Dependency
 
 Add the dependency simply as follows:
 
@@ -68,9 +68,9 @@ Add the dependency simply as follows:
 </dependency>
 ```
 
-## Gradle
+### Gradle
 
-### SNAPSHOT repository
+#### SNAPSHOT repository
 
 > If you do not plan to test the development version, you can skip this section.
 
@@ -80,7 +80,7 @@ Just add to your repositories:
 maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 ```
 
-### Dependency
+#### Dependency
 
 Add to your dependencies:
 
