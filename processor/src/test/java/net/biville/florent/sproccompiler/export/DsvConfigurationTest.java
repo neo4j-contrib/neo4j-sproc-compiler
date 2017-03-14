@@ -59,18 +59,6 @@ public class DsvConfigurationTest
     }
 
     @Test
-    public void parses_invalid_path_option() throws IOException
-    {
-        Map<String,String> options = new HashMap<>( 1 );
-        options.put( "GeneratedDocumentationPath", "/nope/no/way/" );
-
-        DsvConfiguration configuration = new DsvConfiguration( options );
-
-        assertThat( configuration.getRootPath() ).isEmpty();
-
-    }
-
-    @Test
     public void parses_field_delimiter()
     {
         Map<String,String> options = new HashMap<>( 1 );

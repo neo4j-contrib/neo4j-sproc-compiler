@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class DsvConfiguration
 {
 
-    private static final String DOCUMENTATION_ROOT_PATH = "GeneratedDocumentationPath";
+    public static final String DOCUMENTATION_ROOT_PATH = "GeneratedDocumentationPath";
     private static final String DOCUMENTATION_FIELD_DELIMITER = "Documentation.FieldDelimiter";
     private static final String DOCUMENTATION_EXPORTED_HEADERS = "Documentation.ExportedHeaders";
     private static final String DOCUMENTATION_EXPORT_GROUPING = "Documentation.ExportGrouping";
@@ -43,8 +43,7 @@ public class DsvConfiguration
 
     public DsvConfiguration( Map<String,String> actualOptions )
     {
-        rootPath = Optional.ofNullable( actualOptions.getOrDefault( DOCUMENTATION_ROOT_PATH, null ) ).map( Paths::get )
-                .filter( p -> p.toFile().exists() );
+        rootPath = Optional.ofNullable( actualOptions.getOrDefault( DOCUMENTATION_ROOT_PATH, null ) ).map( Paths::get );
         fieldDelimiter = actualOptions.getOrDefault( DOCUMENTATION_FIELD_DELIMITER, "," );
         rawHeaders = actualOptions.getOrDefault( DOCUMENTATION_EXPORTED_HEADERS, "*" );
         groupingStrategy = parseGroupingStrategy(

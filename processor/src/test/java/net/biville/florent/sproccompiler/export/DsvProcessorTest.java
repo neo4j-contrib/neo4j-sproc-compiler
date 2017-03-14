@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.stream.Collectors;
 import javax.annotation.processing.Processor;
 import javax.tools.JavaFileObject;
@@ -34,6 +35,7 @@ import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourcesSubjectFactory.javaSources;
 import static java.nio.file.Files.readAllLines;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DsvProcessorTest
@@ -117,6 +119,20 @@ public class DsvProcessorTest
                         "\"SCHEMA\",\"procedure\"" );
         assertThat( readContents( Paths.get( folder.getAbsolutePath(), "documentation-functions.csv" ) ) )
                 .isEqualTo( "\"execution mode\",\"type\"\n" + "\"\",\"function\"" );
+    }
+
+    @Test
+    public void warns_if_export_option_not_set()
+    {
+        Iterable<JavaFileObject> sources =
+                asList( JavaFileObjectUtils.INSTANCE.procedureSource( "valid/SimpleProcedures.java" ),
+                        JavaFileObjectUtils.INSTANCE.procedureSource( "valid/SimpleUserFunctions.java" ) );
+
+        assert_().about( javaSources() ).that( sources )
+                .processedWith( processor )
+                .compilesWithoutError()
+                .withWarningCount( 2 )
+                .withWarningContaining( "Skipping export, export path option -AGeneratedDocumentationPath not specified" );
     }
 
     private String readContents( Path path ) throws IOException

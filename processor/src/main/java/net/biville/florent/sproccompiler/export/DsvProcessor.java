@@ -21,9 +21,12 @@ import net.biville.florent.sproccompiler.messages.MessagePrinter;
 import net.biville.florent.sproccompiler.visitors.ExecutableElementVisitor;
 import net.biville.florent.sproccompiler.visitors.TypeElementVisitor;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
@@ -34,6 +37,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic;
 
 import org.neo4j.procedure.Procedure;
 import org.neo4j.procedure.UserFunction;
@@ -50,6 +54,7 @@ public class DsvProcessor extends AbstractProcessor
     private ExecutableElementVisitor methodVisitor;
     private DsvConfiguration configuration;
     private DsvSerializer serializer;
+    private Messager messager;
 
     @Override
     public Set<String> getSupportedAnnotationTypes()
@@ -75,7 +80,7 @@ public class DsvProcessor extends AbstractProcessor
         visitedProcedures.clear();
         visitedFunctions.clear();
 
-        Messager messager = processingEnv.getMessager();
+        messager = processingEnv.getMessager();
         methodVisitor = new ExecutableElementVisitor( messager );
         configuration = new DsvConfiguration( processingEnv.getOptions() );
         serializer = new DsvSerializer( processingEnv.getElementUtils(), new TypeElementVisitor( messager ),
@@ -85,20 +90,36 @@ public class DsvProcessor extends AbstractProcessor
     @Override
     public boolean process( Set<? extends TypeElement> annotations, RoundEnvironment roundEnv )
     {
-        configuration.getRootPath().ifPresent( ( root ) ->
+        Optional<Path> rootPath = configuration.getRootPath();
+        if ( !rootPath.isPresent() )
         {
             if ( roundEnv.processingOver() )
             {
-                serializer.serialize( root, configuration, visitedProcedures, visitedFunctions );
+                messager.printMessage( Diagnostic.Kind.WARNING,
+                        String.format( "Skipping export, export path option -A%s not specified",
+                                DsvConfiguration.DOCUMENTATION_ROOT_PATH ) );
             }
-            else
-            {
-                roundEnv.getElementsAnnotatedWith( Procedure.class ).forEach( this::visitProcedure );
-                roundEnv.getElementsAnnotatedWith( UserFunction.class ).forEach( this::visitFunction );
-            }
-        } );
+
+            return false;
+        }
+
+        processSources( roundEnv, rootPath.get() );
 
         return false;
+    }
+
+    private void processSources( RoundEnvironment roundEnv, Path root )
+    {
+        if ( roundEnv.processingOver() )
+        {
+            checkExportFolder( root );
+            serializer.serialize( root, configuration, visitedProcedures, visitedFunctions );
+        }
+        else
+        {
+            roundEnv.getElementsAnnotatedWith( Procedure.class ).forEach( this::visitProcedure );
+            roundEnv.getElementsAnnotatedWith( UserFunction.class ).forEach( this::visitFunction );
+        }
     }
 
     private void visitFunction( Element el )
@@ -109,6 +130,22 @@ public class DsvProcessor extends AbstractProcessor
     private void visitProcedure( Element el )
     {
         visitedProcedures.add( methodVisitor.visit( el ) );
+    }
+
+    private static void checkExportFolder( Path root )
+    {
+        File rootFolder = root.toFile();
+        String absolutePath = rootFolder.getAbsolutePath();
+        if ( !rootFolder.exists() && !rootFolder.mkdirs() )
+        {
+            throw new IllegalArgumentException(
+                    String.format( "Could not create export path <%s>!", absolutePath ) );
+        }
+        if ( !rootFolder.isDirectory() || !rootFolder.canWrite() )
+        {
+            throw new IllegalArgumentException(
+                    String.format( "Export path <%s> should be a writable directory", absolutePath ) );
+        }
     }
 
 
