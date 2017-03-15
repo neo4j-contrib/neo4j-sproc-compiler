@@ -73,8 +73,8 @@ public class DsvFieldExporter
         }
 
         return Either.left( new DsvExportError( null,
-                "%nExported comma-separated header contains invalid values: %s. %n" + "\tDelimiter should be: %s %n" +
-                        "\tValid values are '*' or '%s'", faultyHeaders, delimiter,
+                "%nExported delimiter-separated header contains invalid values: %s. %n" + "\tDelimiter should be: %s %n" +
+                        "\tValid values are '*' or any subset of '%s'", faultyHeaders, delimiter,
                 String.join( delimiter, allFields ) ) );
 
     }

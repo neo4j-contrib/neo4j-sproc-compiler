@@ -71,4 +71,11 @@ public class DsvExportError implements CompilationMessage
         result = 31 * result + (contents != null ? contents.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "DsvExportError{" +
+                "contents='" + contents + '\'' +
+                '}';
+    }
 }

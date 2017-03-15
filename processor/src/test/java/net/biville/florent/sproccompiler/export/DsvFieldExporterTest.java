@@ -85,9 +85,9 @@ public class DsvFieldExporterTest
         assertThat( headers ).isLeft().verifiesLeft( ( left ) ->
         {
             assertThat( left ).isEqualTo( new DsvExportError( null, "%n" +
-                    "Exported comma-separated header contains invalid values: [made-up-field, what-am-i-doing]. %n" +
+                    "Exported delimiter-separated header contains invalid values: [made-up-field, what-am-i-doing]. %n" +
                     "\tDelimiter should be: $ %n" +
-                    "\tValid values are '*' or 'type$name$description$execution mode$location$deprecated by'" ) );
+                    "\tValid values are '*' or any subset of 'type$name$description$execution mode$location$deprecated by'" ) );
         } );
     }
 }
