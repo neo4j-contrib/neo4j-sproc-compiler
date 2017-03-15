@@ -64,6 +64,7 @@ public class DsvFileWriter implements AutoCloseable
     {
         try
         {
+            writer.flush();
             writer.close();
         }
         catch ( IOException e )
