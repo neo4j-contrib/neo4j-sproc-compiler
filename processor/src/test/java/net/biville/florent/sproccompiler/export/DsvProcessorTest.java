@@ -68,17 +68,13 @@ public class DsvProcessorTest
                 .processedWith( processor ).compilesWithoutError();
 
         String namespace = "net.biville.florent.sproccompiler.procedures.valid";
-        String generatedCsv = readContents( Paths.get( folder.getAbsolutePath(), namespace + ".csv" ) );
-        assertThat( generatedCsv ).isEqualTo(
-                "" + "\"type\"|\"name\"|\"description\"|\"execution mode\"|\"location\"|\"deprecated by\"\n" +
-                        "\"procedure\"|\"" + namespace + ".doSomething(int foo)\"|\"\"|\"PERFORMS_WRITE\"|\"" +
-                        namespace + ".SimpleProcedures\"|\"doSomething2\"\n" + "\"procedure\"|\"" + namespace +
-                        ".doSomething2(long bar)\"|\"Much better than the former version\"|\"SCHEMA\"|\"" + namespace +
-                        ".SimpleProcedures\"|\"\"\n" + "\"procedure\"|\"" + namespace +
-                        ".doSomething3(LongWrapper bar)\"|\"Much better with records\"|\"SCHEMA\"|\"" + namespace +
-                        ".SimpleProcedures\"|\"\"\n" + "\"function\"|\"" + namespace +
-                        ".sum(int a,int b)\"|\"Performs super complex maths\"|\"\"|\"" + namespace +
-                        ".SimpleUserFunctions\"|\"\"" );
+        String generatedCsv = readContents(Paths.get(folder.getAbsolutePath(), namespace + ".csv"));
+        assertThat(generatedCsv).isEqualTo(
+                "\"type\"|\"qualified name\"|\"signature\"|\"description\"|\"execution mode\"|\"location\"|\"deprecated by\"\n" +
+                        "\"procedure\"|\"" + namespace + ".doSomething\"|\"doSomething(int foo)\"|\"\"|\"PERFORMS_WRITE\"|\"" + namespace + ".SimpleProcedures\"|\"doSomething2\"\n" +
+                        "\"procedure\"|\"" + namespace + ".doSomething2\"|\"doSomething2(long bar)\"|\"Much better than the former version\"|\"SCHEMA\"|\"" + namespace + ".SimpleProcedures\"|\"\"\n" +
+                        "\"procedure\"|\"" + namespace + ".doSomething3\"|\"doSomething3(LongWrapper bar)\"|\"Much better with records\"|\"SCHEMA\"|\"" + namespace + ".SimpleProcedures\"|\"\"\n" +
+                        "\"function\"|\"" + namespace + ".sum\"|\"sum(int a,int b)\"|\"Performs super complex maths\"|\"\"|\"" + namespace + ".SimpleUserFunctions\"|\"\"");
     }
 
     @Test

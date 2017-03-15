@@ -39,7 +39,7 @@ public class DsvFieldExporterTest
         assertThat( headers ).isRight().verifiesRight( ( right ) ->
         {
             assertThat( right )
-                    .containsExactly( "type", "name", "description", "execution mode", "location", "deprecated by" );
+                    .containsExactly( "type", "qualified name", "signature", "description", "execution mode", "location", "deprecated by" );
         } );
     }
 
@@ -87,7 +87,7 @@ public class DsvFieldExporterTest
             assertThat( left ).isEqualTo( new DsvExportError( null, "%n" +
                     "Exported delimiter-separated header contains invalid values: [made-up-field, what-am-i-doing]. %n" +
                     "\tDelimiter should be: $ %n" +
-                    "\tValid values are '*' or any subset of 'type$name$description$execution mode$location$deprecated by'" ) );
+                    "\tValid values are '*' or any subset of 'type$qualified name$signature$description$execution mode$location$deprecated by'" ) );
         } );
     }
 }

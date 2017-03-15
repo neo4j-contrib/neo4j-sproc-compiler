@@ -46,13 +46,14 @@ public class DsvFieldSerializers
 {
 
     private final Map<String,Function<ExecutableElement,Either<DsvExportError,String>>> headerSerializers =
-            new LinkedHashMap<>( 6 );
+            new LinkedHashMap<>( 7 );
 
     DsvFieldSerializers( Elements elementUtils )
     {
         FieldSerializers fieldSerializers = new FieldSerializers( elementUtils );
         headerSerializers.put( "type", fieldSerializers::type );
-        headerSerializers.put( "name", fieldSerializers::name );
+        headerSerializers.put( "qualified name", fieldSerializers::qualifiedName );
+        headerSerializers.put( "signature", fieldSerializers::signature );
         headerSerializers.put( "description", fieldSerializers::description );
         headerSerializers.put( "execution mode", fieldSerializers::executionMode );
         headerSerializers.put( "location", fieldSerializers::location );
@@ -97,9 +98,14 @@ public class DsvFieldSerializers
                     "Method %s is neither annotated with @UserFunction or @Procedure. Exiting now...", method ) );
         }
 
-        public Either<DsvExportError,String> name( ExecutableElement method )
+        public Either<DsvExportError,String> qualifiedName(ExecutableElement method )
         {
-            return Either.right( String.format( "%s(%s)", callableName( method ), parameters( method ) ) );
+            return Either.right( callableName( method ) );
+        }
+
+        public Either<DsvExportError,String> signature(ExecutableElement method )
+        {
+            return Either.right(String.format("%s(%s)", method.getSimpleName(), parameters(method)));
         }
 
         public Either<DsvExportError,String> description( ExecutableElement method )
