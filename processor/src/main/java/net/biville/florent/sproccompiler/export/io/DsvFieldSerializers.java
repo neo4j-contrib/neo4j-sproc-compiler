@@ -105,7 +105,7 @@ public class DsvFieldSerializers
 
         public Either<DsvExportError,String> signature(ExecutableElement method )
         {
-            return Either.right(String.format("%s(%s)", method.getSimpleName(), parameters(method)));
+            return Either.right(String.format("%s %s(%s)", returnType(method), method.getSimpleName(), parameters(method)));
         }
 
         public Either<DsvExportError,String> description( ExecutableElement method )
@@ -147,6 +147,10 @@ public class DsvFieldSerializers
                 return Either.right( function.deprecatedBy() );
             }
             return Either.right( method.getAnnotation( Procedure.class ).deprecatedBy() );
+        }
+
+        private String returnType(ExecutableElement method) {
+            return method.getReturnType().toString();
         }
 
         private String callableName( ExecutableElement method )

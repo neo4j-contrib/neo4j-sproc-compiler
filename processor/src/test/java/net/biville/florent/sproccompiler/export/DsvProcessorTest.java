@@ -69,10 +69,10 @@ public class DsvProcessorTest
         String generatedCsv = readContents(Paths.get(folder.getAbsolutePath(), namespace + ".csv"));
         assertThat(generatedCsv).isEqualTo(
                 "\"type\"|\"qualified name\"|\"signature\"|\"description\"|\"execution mode\"|\"location\"|\"deprecated by\"\n" +
-                        "\"procedure\"|\"" + namespace + ".doSomething\"|\"doSomething(int foo)\"|\"\"|\"PERFORMS_WRITE\"|\"" + namespace + ".SimpleProcedures\"|\"doSomething2\"\n" +
-                        "\"procedure\"|\"" + namespace + ".doSomething2\"|\"doSomething2(long bar)\"|\"Much better than the former version\"|\"SCHEMA\"|\"" + namespace + ".SimpleProcedures\"|\"\"\n" +
-                        "\"procedure\"|\"" + namespace + ".doSomething3\"|\"doSomething3(LongWrapper bar)\"|\"Much better with records\"|\"SCHEMA\"|\"" + namespace + ".SimpleProcedures\"|\"\"\n" +
-                        "\"function\"|\"" + namespace + ".sum\"|\"sum(int a,int b)\"|\"Performs super complex maths\"|\"\"|\"" + namespace + ".SimpleUserFunctions\"|\"\"");
+                        "\"procedure\"|\"" + namespace + ".doSomething\"|\"void doSomething(int foo)\"|\"\"|\"PERFORMS_WRITE\"|\"" + namespace + ".SimpleProcedures\"|\"doSomething2\"\n" +
+                        "\"procedure\"|\"" + namespace + ".doSomething2\"|\"void doSomething2(long bar)\"|\"Much better than the former version\"|\"SCHEMA\"|\"" + namespace + ".SimpleProcedures\"|\"\"\n" +
+                        "\"procedure\"|\"" + namespace + ".doSomething3\"|\"void doSomething3(LongWrapper bar)\"|\"Much better with records\"|\"SCHEMA\"|\"" + namespace + ".SimpleProcedures\"|\"\"\n" +
+                        "\"function\"|\"" + namespace + ".sum\"|\"long sum(int a,int b)\"|\"Performs super complex maths\"|\"\"|\"" + namespace + ".SimpleUserFunctions\"|\"\"");
     }
 
     @Test
@@ -91,10 +91,10 @@ public class DsvProcessorTest
         String generatedCsv = readContents(Paths.get(folder.getAbsolutePath(), namespace + ".csv"));
         assertThat(generatedCsv).isEqualTo(
                 "|\"type\"|\"qualified name\"|\"signature\"|\"description\"|\"execution mode\"|\"location\"|\"deprecated by\"\n" +
-                        "|\"procedure\"|\"" + namespace + ".doSomething\"|\"doSomething(int foo)\"|\"\"|\"PERFORMS_WRITE\"|\"" + namespace + ".SimpleProcedures\"|\"doSomething2\"\n" +
-                        "|\"procedure\"|\"" + namespace + ".doSomething2\"|\"doSomething2(long bar)\"|\"Much better than the former version\"|\"SCHEMA\"|\"" + namespace + ".SimpleProcedures\"|\"\"\n" +
-                        "|\"procedure\"|\"" + namespace + ".doSomething3\"|\"doSomething3(LongWrapper bar)\"|\"Much better with records\"|\"SCHEMA\"|\"" + namespace + ".SimpleProcedures\"|\"\"\n" +
-                        "|\"function\"|\"" + namespace + ".sum\"|\"sum(int a,int b)\"|\"Performs super complex maths\"|\"\"|\"" + namespace + ".SimpleUserFunctions\"|\"\"");
+                        "|\"procedure\"|\"" + namespace + ".doSomething\"|\"void doSomething(int foo)\"|\"\"|\"PERFORMS_WRITE\"|\"" + namespace + ".SimpleProcedures\"|\"doSomething2\"\n" +
+                        "|\"procedure\"|\"" + namespace + ".doSomething2\"|\"void doSomething2(long bar)\"|\"Much better than the former version\"|\"SCHEMA\"|\"" + namespace + ".SimpleProcedures\"|\"\"\n" +
+                        "|\"procedure\"|\"" + namespace + ".doSomething3\"|\"void doSomething3(LongWrapper bar)\"|\"Much better with records\"|\"SCHEMA\"|\"" + namespace + ".SimpleProcedures\"|\"\"\n" +
+                        "|\"function\"|\"" + namespace + ".sum\"|\"long sum(int a,int b)\"|\"Performs super complex maths\"|\"\"|\"" + namespace + ".SimpleUserFunctions\"|\"\"");
     }
 
     @Test
