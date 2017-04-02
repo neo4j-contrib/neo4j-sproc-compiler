@@ -49,13 +49,28 @@ public class DsvFileWriterTest
     {
         StringWriter writer = new StringWriter();
         try ( DsvFileWriter dsvFileWriter = new DsvFileWriter( Arrays.asList( "first header", "second header" ),
-                writer, "$", true ) )
+                writer, "$", true, true ) )
         {
             dsvFileWriter.write( Stream.of( "haha_this is", "so much_fun" ), this::parseRow,
                     ( error ) -> fail( "Unexpected export error: " + error ) );
             String result = writer.toString();
             assertThat( result ).isEqualTo(
                     "$\"first header\"$\"second header\"\n" + "$\"haha\"$\"this is\"\n" + "$\"so much\"$\"fun\"\n" );
+        }
+    }
+
+    @Test
+    public void writes_csv_records_with_custom_separator_prefixing_first_field_without_quoting_fields()
+    {
+        StringWriter writer = new StringWriter();
+        try ( DsvFileWriter dsvFileWriter = new DsvFileWriter( Arrays.asList( "first header", "second header" ),
+                writer, "$", true, false ) )
+        {
+            dsvFileWriter.write( Stream.of( "haha_this is", "so much_fun" ), this::parseRow,
+                    ( error ) -> fail( "Unexpected export error: " + error ) );
+            String result = writer.toString();
+            assertThat( result ).isEqualTo(
+                    "$first header$second header\n" + "$haha$this is\n" + "$so much$fun\n" );
         }
     }
 

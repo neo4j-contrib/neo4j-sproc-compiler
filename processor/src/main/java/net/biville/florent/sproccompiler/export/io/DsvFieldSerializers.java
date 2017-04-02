@@ -19,7 +19,17 @@ import net.biville.florent.sproccompiler.ProcedureProcessor;
 import net.biville.florent.sproccompiler.UserFunctionProcessor;
 import net.biville.florent.sproccompiler.export.Either;
 import net.biville.florent.sproccompiler.export.messages.DsvExportError;
+import org.neo4j.procedure.Description;
+import org.neo4j.procedure.PerformsWrites;
+import org.neo4j.procedure.Procedure;
+import org.neo4j.procedure.UserFunction;
 
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.SimpleTypeVisitor8;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,17 +37,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.SimpleTypeVisitor8;
-
-import org.neo4j.procedure.Description;
-import org.neo4j.procedure.PerformsWrites;
-import org.neo4j.procedure.Procedure;
-import org.neo4j.procedure.UserFunction;
 
 /**
  * All possible DSV header values: this declaration order is the default one

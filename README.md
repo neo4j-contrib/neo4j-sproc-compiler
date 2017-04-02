@@ -37,9 +37,10 @@ To make it work, you need to specify the following options (by passing `-A${CONF
  - `GeneratedDocumentationPath`: mandatory - the folder path in which the files are going to be generated in. If not specified, the export won't be done.
  - `Documentation.FieldDelimiter`: optional (default: ,) - the delimiter of values within a row
  - `Documentation.DelimitedFirstField`: optional (default: false) - the first column of each row (headers included) is prefixed with the configured separator
+ - `Documentation.QuotedFields`: optional (default: true) - whether column values are quoted or not
  - `Documentation.ExportGrouping`: optional (default: SINGLE) - comma-separated values of grouping strategy. The data is exported to a single place (SINGLE), to a single place per enclosing package (PACKAGE), to a single place per enclosing class (CLASS). For now, "place" may mean one or two files, depending on `Documentation.ExportSplit`.
  - `Documentation.ExportSplit`: optional (default: NONE) - whether to split data by kind (KIND, e.g. procedure vs. function) or not (NONE).
- - `Documentation.ExportedHeaders`: optional (default: *) - delimiter-separated values which define custom ordering and filtering of the available headers. They are separated by the configured delimiter (see `Documentation.FieldDelimiter`) and the first header must not be prefixed, even if `Documentation.DelimitedFirstField` is enabled. The available headers are (in default order):
+ - `Documentation.ExportedHeaders`: optional (default: *) - delimiter-separated values which define custom ordering and filtering of the available headers. They are not to be quoted (regardless of `Documentation.QuotedFields` setting), have to be separated by the configured delimiter (see `Documentation.FieldDelimiter`) and the first header must not be prefixed, even if `Documentation.DelimitedFirstField` is enabled. The available headers are (in default order):
 
      - type: `'procedure'` or `'function'` for now
      - name: procedure/function logical name

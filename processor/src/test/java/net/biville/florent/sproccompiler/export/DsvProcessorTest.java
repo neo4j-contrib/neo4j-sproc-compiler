@@ -98,6 +98,29 @@ public class DsvProcessorTest
     }
 
     @Test
+    public void dumps_procedure_definition_to_dsv_with_custom_delimiter_and_package_grouping_and_delimited_first_field_and_unquoted() throws IOException
+    {
+        Iterable<JavaFileObject> sources =
+                asList( JavaFileObjectUtils.INSTANCE.procedureSource( "valid/SimpleProcedures.java" ),
+                        JavaFileObjectUtils.INSTANCE.procedureSource( "valid/SimpleUserFunctions.java" ) );
+
+        assert_().about( javaSources() ).that( sources )
+                .withCompilerOptions( "-AGeneratedDocumentationPath=" + folder.getAbsolutePath(),
+                        "-ADocumentation.FieldDelimiter=|", "-ADocumentation.ExportGrouping=PACKAGE",
+                        "-ADocumentation.DelimitedFirstField=true", "-ADocumentation.QuotedFields=false" )
+                .processedWith( processor ).compilesWithoutError();
+
+        String namespace = "net.biville.florent.sproccompiler.procedures.valid";
+        String generatedCsv = readContents(Paths.get(folder.getAbsolutePath(), namespace + ".csv"));
+        assertThat(generatedCsv).isEqualTo(
+                "|type|qualified name|signature|description|execution mode|location|deprecated by\n" +
+                        "|procedure|" + namespace + ".doSomething|void doSomething(int foo)||PERFORMS_WRITE|" + namespace + ".SimpleProcedures|doSomething2\n" +
+                        "|procedure|" + namespace + ".doSomething2|void doSomething2(long bar)|Much better than the former version|SCHEMA|" + namespace + ".SimpleProcedures|\n" +
+                        "|procedure|" + namespace + ".doSomething3|void doSomething3(LongWrapper bar)|Much better with records|SCHEMA|" + namespace + ".SimpleProcedures|\n" +
+                        "|function|" + namespace + ".sum|long sum(int a,int b)|Performs super complex maths||" + namespace + ".SimpleUserFunctions|");
+    }
+
+    @Test
     public void dumps_only_exported_fields_with_default_delimiter_and_package_grouping() throws IOException
     {
         Iterable<JavaFileObject> sources =

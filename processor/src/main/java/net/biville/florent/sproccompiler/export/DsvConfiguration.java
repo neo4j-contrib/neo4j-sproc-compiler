@@ -34,6 +34,7 @@ public class DsvConfiguration
     public static final String DOCUMENTATION_ROOT_PATH = "GeneratedDocumentationPath";
     private static final String DOCUMENTATION_FIELD_DELIMITER = "Documentation.FieldDelimiter";
     private static final String DOCUMENTATION_DELIMITED_FIRST_FIELD = "Documentation.DelimitedFirstField";
+    private static final String DOCUMENTATION_QUOTED_FIELDS = "Documentation.QuotedFields";
     private static final String DOCUMENTATION_EXPORTED_HEADERS = "Documentation.ExportedHeaders";
     private static final String DOCUMENTATION_EXPORT_GROUPING = "Documentation.ExportGrouping";
     private static final String DOCUMENTATION_EXPORT_SPLIT = "Documentation.ExportSplit";
@@ -44,12 +45,14 @@ public class DsvConfiguration
     private final EnumSet<DsvGroupingStrategy> groupingStrategy;
     private final DsvSplitStrategy splitStrategy;
     private final boolean delimitedFirstField;
+    private final boolean quotedFields;
 
     public DsvConfiguration( Map<String,String> actualOptions )
     {
         rootPath = Optional.ofNullable( actualOptions.getOrDefault( DOCUMENTATION_ROOT_PATH, null ) ).map( Paths::get );
         fieldDelimiter = actualOptions.getOrDefault( DOCUMENTATION_FIELD_DELIMITER, "," );
         delimitedFirstField = parseBoolean(actualOptions.getOrDefault( DOCUMENTATION_DELIMITED_FIRST_FIELD, "false" ));
+        quotedFields = parseBoolean(actualOptions.getOrDefault( DOCUMENTATION_QUOTED_FIELDS, "true" ));
         rawHeaders = actualOptions.getOrDefault( DOCUMENTATION_EXPORTED_HEADERS, "*" );
         groupingStrategy = parseGroupingStrategy(
                 actualOptions.getOrDefault( DOCUMENTATION_EXPORT_GROUPING, "SINGLE" ).toUpperCase( Locale.ENGLISH ),
@@ -60,10 +63,11 @@ public class DsvConfiguration
 
     public static Set<String> getSupportedOptions()
     {
-        Set<String> options = new HashSet<>( 6 );
+        Set<String> options = new HashSet<>( 7 );
         options.add( DOCUMENTATION_ROOT_PATH );
         options.add( DOCUMENTATION_EXPORTED_HEADERS );
         options.add( DOCUMENTATION_FIELD_DELIMITER );
+        options.add( DOCUMENTATION_QUOTED_FIELDS );
         options.add( DOCUMENTATION_DELIMITED_FIRST_FIELD );
         options.add( DOCUMENTATION_EXPORT_GROUPING );
         options.add( DOCUMENTATION_EXPORT_SPLIT );
@@ -89,6 +93,10 @@ public class DsvConfiguration
 
     public boolean isFirstFieldDelimited() {
         return delimitedFirstField;
+    }
+
+    public boolean areFieldsQuoted() {
+        return quotedFields;
     }
 
     public String getRawHeaders()
