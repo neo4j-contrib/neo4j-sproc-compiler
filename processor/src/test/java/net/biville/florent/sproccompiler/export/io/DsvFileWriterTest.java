@@ -44,6 +44,21 @@ public class DsvFileWriterTest
         }
     }
 
+    @Test
+    public void writes_csv_records_with_custom_separator_prefixing_first_field()
+    {
+        StringWriter writer = new StringWriter();
+        try ( DsvFileWriter dsvFileWriter = new DsvFileWriter( Arrays.asList( "first header", "second header" ),
+                writer, "$", true ) )
+        {
+            dsvFileWriter.write( Stream.of( "haha_this is", "so much_fun" ), this::parseRow,
+                    ( error ) -> fail( "Unexpected export error: " + error ) );
+            String result = writer.toString();
+            assertThat( result ).isEqualTo(
+                    "$\"first header\"$\"second header\"\n" + "$\"haha\"$\"this is\"\n" + "$\"so much\"$\"fun\"\n" );
+        }
+    }
+
     private Stream<Either<DsvExportError,String>> parseRow( String input )
     {
         return Arrays.stream( input.split( "_" ) ).map( Either::right );

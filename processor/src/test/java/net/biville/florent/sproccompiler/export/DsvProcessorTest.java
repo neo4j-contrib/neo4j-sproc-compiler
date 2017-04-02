@@ -22,20 +22,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import javax.annotation.processing.Processor;
+import javax.tools.JavaFileObject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.stream.Collectors;
-import javax.annotation.processing.Processor;
-import javax.tools.JavaFileObject;
 
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourcesSubjectFactory.javaSources;
 import static java.nio.file.Files.readAllLines;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DsvProcessorTest
@@ -75,6 +73,28 @@ public class DsvProcessorTest
                         "\"procedure\"|\"" + namespace + ".doSomething2\"|\"doSomething2(long bar)\"|\"Much better than the former version\"|\"SCHEMA\"|\"" + namespace + ".SimpleProcedures\"|\"\"\n" +
                         "\"procedure\"|\"" + namespace + ".doSomething3\"|\"doSomething3(LongWrapper bar)\"|\"Much better with records\"|\"SCHEMA\"|\"" + namespace + ".SimpleProcedures\"|\"\"\n" +
                         "\"function\"|\"" + namespace + ".sum\"|\"sum(int a,int b)\"|\"Performs super complex maths\"|\"\"|\"" + namespace + ".SimpleUserFunctions\"|\"\"");
+    }
+
+    @Test
+    public void dumps_procedure_definition_to_dsv_with_custom_delimiter_and_package_grouping_and_delimited_first_field() throws IOException
+    {
+        Iterable<JavaFileObject> sources =
+                asList( JavaFileObjectUtils.INSTANCE.procedureSource( "valid/SimpleProcedures.java" ),
+                        JavaFileObjectUtils.INSTANCE.procedureSource( "valid/SimpleUserFunctions.java" ) );
+
+        assert_().about( javaSources() ).that( sources )
+                .withCompilerOptions( "-AGeneratedDocumentationPath=" + folder.getAbsolutePath(),
+                        "-ADocumentation.FieldDelimiter=|", "-ADocumentation.ExportGrouping=PACKAGE", "-ADocumentation.DelimitedFirstField=true" )
+                .processedWith( processor ).compilesWithoutError();
+
+        String namespace = "net.biville.florent.sproccompiler.procedures.valid";
+        String generatedCsv = readContents(Paths.get(folder.getAbsolutePath(), namespace + ".csv"));
+        assertThat(generatedCsv).isEqualTo(
+                "|\"type\"|\"qualified name\"|\"signature\"|\"description\"|\"execution mode\"|\"location\"|\"deprecated by\"\n" +
+                        "|\"procedure\"|\"" + namespace + ".doSomething\"|\"doSomething(int foo)\"|\"\"|\"PERFORMS_WRITE\"|\"" + namespace + ".SimpleProcedures\"|\"doSomething2\"\n" +
+                        "|\"procedure\"|\"" + namespace + ".doSomething2\"|\"doSomething2(long bar)\"|\"Much better than the former version\"|\"SCHEMA\"|\"" + namespace + ".SimpleProcedures\"|\"\"\n" +
+                        "|\"procedure\"|\"" + namespace + ".doSomething3\"|\"doSomething3(LongWrapper bar)\"|\"Much better with records\"|\"SCHEMA\"|\"" + namespace + ".SimpleProcedures\"|\"\"\n" +
+                        "|\"function\"|\"" + namespace + ".sum\"|\"sum(int a,int b)\"|\"Performs super complex maths\"|\"\"|\"" + namespace + ".SimpleUserFunctions\"|\"\"");
     }
 
     @Test

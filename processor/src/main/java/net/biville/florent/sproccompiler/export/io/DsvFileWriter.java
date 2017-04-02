@@ -33,17 +33,19 @@ public class DsvFileWriter implements AutoCloseable
     private final Collection<String> header;
     private final Writer writer;
     private final String separator;
+    private final boolean delimitFirstField;
 
     public DsvFileWriter( Collection<String> header, Writer writer )
     {
-        this( header, writer, "," );
+        this( header, writer, "," , false);
     }
 
-    public DsvFileWriter( Collection<String> header, Writer writer, String separator )
+    public DsvFileWriter( Collection<String> header, Writer writer, String separator, boolean delimitFirstField )
     {
         this.header = header;
         this.writer = writer;
         this.separator = separator;
+        this.delimitFirstField = delimitFirstField;
     }
 
     public <T> void write( Stream<T> records, Function<T,Stream<Either<DsvExportError,String>>> rowFunction,
@@ -75,7 +77,11 @@ public class DsvFileWriter implements AutoCloseable
 
     private String joinFields( Stream<String> fields )
     {
-        return fields.map( field -> "\"" + field.replace( "\"", "\"\"" ) + "\"" ).collect( joining( separator ) );
+        String result = fields.map(field -> "\"" + field.replace("\"", "\"\"") + "\"").collect(joining(separator));
+        if (delimitFirstField) {
+            return separator + result;
+        }
+        return result;
     }
 
     private void writeRow( String row )

@@ -110,7 +110,7 @@ public class DsvSerializer
             Collection<String> headers )
     {
         try ( FileWriter resource = new FileWriter( file );
-                DsvFileWriter writer = new DsvFileWriter( headers, resource, configuration.getFieldDelimiter() ) )
+                DsvFileWriter writer = new DsvFileWriter( headers, resource, configuration.getFieldDelimiter(), configuration.isFirstFieldDelimited() ) )
         {
             writer.write( methods.stream(), ( method ) -> fieldExporter.exportFields( method, headers ),
                     messagePrinter::print );
