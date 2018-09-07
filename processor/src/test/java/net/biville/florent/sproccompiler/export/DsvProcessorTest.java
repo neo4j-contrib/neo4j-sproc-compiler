@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 import static com.google.common.truth.Truth.assert_;
@@ -172,6 +173,50 @@ public class DsvProcessorTest
                 .compilesWithoutError()
                 .withWarningCount( 2 )
                 .withWarningContaining( "Skipping export, export path option -AGeneratedDocumentationPath not specified" );
+    }
+
+    @Test
+    public void orders_dumped_procedures_alphabetically() throws IOException
+    {
+        Iterable<JavaFileObject> sources =
+                Collections.singletonList( JavaFileObjectUtils.INSTANCE.procedureSource( "valid/OrderedProcedures.java" ) );
+
+        assert_().about( javaSources() ).that( sources )
+                .withCompilerOptions( "-AGeneratedDocumentationPath=" + folder.getAbsolutePath(),
+                        "-ADocumentation.FieldDelimiter=|",
+                        "-ADocumentation.ExportGrouping=PACKAGE",
+                        "-ADocumentation.ExportedHeaders=qualified name")
+                .processedWith( processor ).compilesWithoutError();
+
+        String namespace = "net.biville.florent.sproccompiler.procedures.valid";
+        String generatedCsv = readContents(Paths.get(folder.getAbsolutePath(), namespace + ".csv"));
+        assertThat(generatedCsv).isEqualTo(
+                "\"qualified name\"\n" +
+                        "\"proc.aName\"\n" +
+                        "\"proc.bName\"\n" +
+                        "\"proc.cName.foo\"");
+    }
+
+    @Test
+    public void orders_dumped_functions_alphabetically() throws IOException
+    {
+        Iterable<JavaFileObject> sources =
+                Collections.singletonList( JavaFileObjectUtils.INSTANCE.procedureSource( "valid/OrderedFunctions.java" ) );
+
+        assert_().about( javaSources() ).that( sources )
+                .withCompilerOptions( "-AGeneratedDocumentationPath=" + folder.getAbsolutePath(),
+                        "-ADocumentation.FieldDelimiter=|",
+                        "-ADocumentation.ExportGrouping=PACKAGE",
+                        "-ADocumentation.ExportedHeaders=qualified name")
+                .processedWith( processor ).compilesWithoutError();
+
+        String namespace = "net.biville.florent.sproccompiler.procedures.valid";
+        String generatedCsv = readContents(Paths.get(folder.getAbsolutePath(), namespace + ".csv"));
+        assertThat(generatedCsv).isEqualTo(
+                "\"qualified name\"\n" +
+                        "\"proc.add\"\n" +
+                        "\"proc.multiply\"\n" +
+                        "\"proc.sum\"");
     }
 
     private String readContents( Path path ) throws IOException
