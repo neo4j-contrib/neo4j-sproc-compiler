@@ -24,10 +24,12 @@ import net.biville.florent.sproccompiler.visitors.TypeElementVisitor;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -48,8 +50,8 @@ import static java.util.Arrays.asList;
 public class DsvProcessor extends AbstractProcessor
 {
 
-    private final Collection<ExecutableElement> visitedProcedures = new LinkedHashSet<>();
-    private final Collection<ExecutableElement> visitedFunctions = new LinkedHashSet<>();
+    private final Collection<ExecutableElement> visitedProcedures = new TreeSet<>( Comparator.comparing( o -> o.getSimpleName().toString() ) );
+    private final Collection<ExecutableElement> visitedFunctions = new TreeSet<>(Comparator.comparing( o -> o.getSimpleName().toString() ));
 
     private ExecutableElementVisitor methodVisitor;
     private DsvConfiguration configuration;
