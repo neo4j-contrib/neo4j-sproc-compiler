@@ -32,6 +32,7 @@ class ParameterTypeVisitor extends SimpleTypeVisitor8<Boolean,Void>
 
     public ParameterTypeVisitor( Types typeUtils, TypeMirrorUtils typeMirrors )
     {
+        super( Boolean.FALSE );
         allowedTypesValidator = new AllowedTypesValidator( typeMirrors, typeUtils );
     }
 

@@ -32,6 +32,7 @@ class RecordFieldTypeVisitor extends SimpleTypeVisitor8<Boolean,Void>
 
     public RecordFieldTypeVisitor( Types typeUtils, TypeMirrorUtils typeMirrors )
     {
+        super( Boolean.FALSE );
         allowedTypesValidator = new AllowedTypesValidator( typeMirrors, typeUtils );
     }
 

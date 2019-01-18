@@ -40,60 +40,70 @@ abstract class TypeValidationTestSuite
     @Test
     public void validates_supported_simple_types()
     {
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( String.class ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( Number.class ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( Long.class ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( TypeKind.LONG ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( Double.class ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( TypeKind.DOUBLE ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( Boolean.class ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( TypeKind.BOOLEAN ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( Path.class ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( Node.class ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( Relationship.class ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( Object.class ) ) ).isTrue();
+        TypeMirrorTestUtils typeMirrorTestUtils = typeMirrorTestUtils();
+
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( String.class ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( Number.class ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( Long.class ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( TypeKind.LONG ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( Double.class ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( TypeKind.DOUBLE ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( Boolean.class ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( TypeKind.BOOLEAN ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( Path.class ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( Node.class ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( Relationship.class ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( Object.class ) ) ).isTrue();
     }
 
     @Test
     public void validates_supported_generic_types()
     {
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( Map.class, String.class, Object.class ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( HashMap.class, String.class, Object.class ) ) )
+        TypeMirrorTestUtils typeMirrorTestUtils = typeMirrorTestUtils();
+
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( Map.class, String.class, Object.class ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( HashMap.class, String.class, Object.class ) ) )
                 .isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( LinkedHashMap.class, String.class, Object.class ) ) )
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( LinkedHashMap.class, String.class, Object.class ) ) )
                 .isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( List.class, String.class ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( LinkedList.class, Number.class ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( ArrayList.class, Long.class ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( List.class, Double.class ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( List.class, Boolean.class ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( List.class, Path.class ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( List.class, Node.class ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( List.class, Relationship.class ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( List.class, Object.class ) ) ).isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils()
-                .typeOf( List.class, typeMirrorTestUtils().typeOf( Map.class, String.class, Object.class ) ) ) )
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( List.class, String.class ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( LinkedList.class, Number.class ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( ArrayList.class, Long.class ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( List.class, Double.class ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( List.class, Boolean.class ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( List.class, Path.class ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( List.class, Node.class ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( List.class, Relationship.class ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( List.class, Object.class ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils
+                .typeOf( List.class, typeMirrorTestUtils.typeOf( Map.class, String.class, Object.class ) ) ) )
                 .isTrue();
-        assertThat( visitor().visit( typeMirrorTestUtils()
-                .typeOf( List.class, typeMirrorTestUtils().typeOf( LinkedList.class, Long.class ) ) ) ).isTrue();
+        assertThat( visitor().visit( typeMirrorTestUtils
+                .typeOf( List.class, typeMirrorTestUtils.typeOf( LinkedList.class, Long.class ) ) ) ).isTrue();
     }
 
     @Test
     public void rejects_unsupported_types()
     {
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( Thread.class ) ) ).isFalse();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( Map.class, String.class, Integer.class ) ) )
+        TypeMirrorTestUtils typeMirrorTestUtils = typeMirrorTestUtils();
+
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( Thread.class ) ) ).isFalse();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( Map.class, String.class, Integer.class ) ) )
                 .isFalse();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( Map.class, Integer.class, Object.class ) ) )
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( Map.class, Integer.class, Object.class ) ) )
                 .isFalse();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( Map.class, Integer.class, Integer.class ) ) )
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( Map.class, Integer.class, Integer.class ) ) )
                 .isFalse();
-        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( List.class, BigDecimal.class ) ) ).isFalse();
-        assertThat( visitor().visit( typeMirrorTestUtils()
-                .typeOf( List.class, typeMirrorTestUtils().typeOf( Map.class, String.class, Integer.class ) ) ) )
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( List.class, BigDecimal.class ) ) ).isFalse();
+        assertThat( visitor().visit( typeMirrorTestUtils
+                .typeOf( List.class, typeMirrorTestUtils.typeOf( Map.class, String.class, Integer.class ) ) ) )
                 .isFalse();
-        assertThat( visitor().visit( typeMirrorTestUtils()
-                .typeOf( List.class, typeMirrorTestUtils().typeOf( List.class, CharSequence.class ) ) ) ).isFalse();
+        assertThat( visitor().visit( typeMirrorTestUtils
+                .typeOf( List.class, typeMirrorTestUtils.typeOf( List.class, CharSequence.class ) ) ) ).isFalse();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( int[].class ) ) ).isFalse();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( int[][].class ) ) ).isFalse();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( long[].class ) ) ).isFalse();
+        assertThat( visitor().visit( typeMirrorTestUtils.typeOf( void.class ) ) ).isFalse();
     }
 
     protected abstract TypeVisitor<Boolean,Void> visitor();
