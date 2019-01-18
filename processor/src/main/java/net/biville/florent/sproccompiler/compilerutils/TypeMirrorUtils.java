@@ -60,6 +60,20 @@ public class TypeMirrorUtils
 
     public TypeMirror typeMirror( Class<?> type )
     {
+        if ( type == void.class )
+        {
+            return typeUtils.getNoType( TypeKind.VOID );
+        }
+        if ( type.isPrimitive() )
+        {
+            TypeKind primitiveKind = TypeKind.valueOf( type.getName().toUpperCase() );
+            return typeUtils.getPrimitiveType( primitiveKind );
+        }
+        if ( type.isArray() )
+        {
+            TypeMirror componentType = typeMirror( type.getComponentType() );
+            return typeUtils.getArrayType( componentType );
+        }
         return elementUtils.getTypeElement( type.getName() ).asType();
     }
 

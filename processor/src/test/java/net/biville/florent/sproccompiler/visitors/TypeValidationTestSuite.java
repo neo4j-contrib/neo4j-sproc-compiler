@@ -94,6 +94,9 @@ abstract class TypeValidationTestSuite
                 .isFalse();
         assertThat( visitor().visit( typeMirrorTestUtils()
                 .typeOf( List.class, typeMirrorTestUtils().typeOf( List.class, CharSequence.class ) ) ) ).isFalse();
+        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( int[].class ) ) ).isFalse();
+        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( long[].class ) ) ).isFalse();
+        assertThat( visitor().visit( typeMirrorTestUtils().typeOf( void.class ) ) ).isFalse();
     }
 
     protected abstract TypeVisitor<Boolean,Void> visitor();
