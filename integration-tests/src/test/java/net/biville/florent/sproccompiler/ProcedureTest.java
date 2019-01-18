@@ -16,6 +16,7 @@
 package net.biville.florent.sproccompiler;
 
 import net.biville.florent.sproccompiler.procedures.valid.Procedures;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -25,6 +26,8 @@ import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.harness.junit.Neo4jRule;
+
+import java.util.logging.LogManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,6 +40,12 @@ public class ProcedureTest
     @Rule
     public Neo4jRule graphDb = new Neo4jRule().withProcedure( PROCEDURES_CLASS );
     private String procedureNamespace = PROCEDURES_CLASS.getPackage().getName();
+
+    @BeforeClass
+    public static void prepareAll()
+    {
+        LogManager.getLogManager().reset();
+    }
 
     @Test
     public void calls_simplistic_procedure()
