@@ -25,18 +25,21 @@ import net.biville.florent.sproccompiler.export.elements.ConstantQualifiedNameab
 import net.biville.florent.sproccompiler.export.messages.DsvExportError;
 import net.biville.florent.sproccompiler.messages.MessagePrinter;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import javax.lang.model.element.ElementVisitor;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class DsvSerializer
 {
@@ -109,8 +112,8 @@ public class DsvSerializer
     private void serializeWithHeaders( File file, DsvConfiguration configuration, Collection<ExecutableElement> methods,
             Collection<String> headers )
     {
-        try ( FileWriter resource = new FileWriter( file );
-                DsvFileWriter writer = new DsvFileWriter( headers, resource, configuration.getFieldDelimiter(), configuration.isFirstFieldDelimited(), configuration.areFieldsQuoted() ) )
+        try (Writer resource = new OutputStreamWriter( new FileOutputStream( file ), StandardCharsets.UTF_8 );
+             DsvFileWriter writer = new DsvFileWriter( headers, resource, configuration.getFieldDelimiter(), configuration.isFirstFieldDelimited(), configuration.areFieldsQuoted() ) )
         {
             writer.write( methods.stream(), ( method ) -> fieldExporter.exportFields( method, headers ),
                     messagePrinter::print );
