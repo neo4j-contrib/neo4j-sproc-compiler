@@ -80,6 +80,7 @@ public class ProcedureProcessorTest
 
         compilation.withErrorContaining( "Record definition error: field BadRecord#age must be public" ).in( record )
                 .onLine( 23 );
+
     }
 
     @Test

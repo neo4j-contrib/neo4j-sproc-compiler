@@ -123,4 +123,9 @@ public class UserFunctions
         return "42";
     }
 
+    @UserFunction
+    public byte[] genericInput06( @Name( "foo" ) String input ) {
+        return input.getBytes();
+    }
+
 }

@@ -12,12 +12,12 @@
 
     <properties>
         <encoding>UTF-8</encoding>
-        <java.version>1.8</java.version>
+        <java.version>8</java.version>
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <neo4j.version>3.1.0</neo4j.version>
+        <neo4j.version>3.5.6</neo4j.version>
     </properties>
 
     <modules>
@@ -110,7 +110,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.9.1</version>
+                    <version>3.0.1</version>
                     <executions>
                         <execution>
                             <id>attach-javadocs</id>
