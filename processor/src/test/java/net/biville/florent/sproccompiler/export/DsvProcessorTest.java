@@ -70,7 +70,7 @@ public class DsvProcessorTest
         String generatedCsv = readContents(Paths.get(folder.getAbsolutePath(), namespace + ".csv"));
         assertThat(generatedCsv).isEqualTo(
                 "\"type\"|\"qualified name\"|\"signature\"|\"description\"|\"execution mode\"|\"location\"|\"deprecated by\"\n" +
-                        "\"procedure\"|\"" + namespace + ".doSomething\"|\"void doSomething(int foo)\"|\"\"|\"PERFORMS_WRITE\"|\"" + namespace + ".SimpleProcedures\"|\"doSomething2\"\n" +
+                        "\"procedure\"|\"" + namespace + ".doSomething\"|\"void doSomething(int foo)\"|\"\"|\"DEFAULT\"|\"" + namespace + ".SimpleProcedures\"|\"doSomething2\"\n" +
                         "\"procedure\"|\"" + namespace + ".doSomething2\"|\"void doSomething2(long bar)\"|\"Much better than the former version\"|\"SCHEMA\"|\"" + namespace + ".SimpleProcedures\"|\"\"\n" +
                         "\"procedure\"|\"" + namespace + ".doSomething3\"|\"void doSomething3(LongWrapper bar)\"|\"Much better with records\"|\"SCHEMA\"|\"" + namespace + ".SimpleProcedures\"|\"\"\n" +
                         "\"function\"|\"" + namespace + ".sum\"|\"long sum(int a,int b)\"|\"Performs super complex maths\"|\"\"|\"" + namespace + ".SimpleUserFunctions\"|\"\"");
@@ -92,7 +92,7 @@ public class DsvProcessorTest
         String generatedCsv = readContents(Paths.get(folder.getAbsolutePath(), namespace + ".csv"));
         assertThat(generatedCsv).isEqualTo(
                 "|\"type\"|\"qualified name\"|\"signature\"|\"description\"|\"execution mode\"|\"location\"|\"deprecated by\"\n" +
-                        "|\"procedure\"|\"" + namespace + ".doSomething\"|\"void doSomething(int foo)\"|\"\"|\"PERFORMS_WRITE\"|\"" + namespace + ".SimpleProcedures\"|\"doSomething2\"\n" +
+                        "|\"procedure\"|\"" + namespace + ".doSomething\"|\"void doSomething(int foo)\"|\"\"|\"DEFAULT\"|\"" + namespace + ".SimpleProcedures\"|\"doSomething2\"\n" +
                         "|\"procedure\"|\"" + namespace + ".doSomething2\"|\"void doSomething2(long bar)\"|\"Much better than the former version\"|\"SCHEMA\"|\"" + namespace + ".SimpleProcedures\"|\"\"\n" +
                         "|\"procedure\"|\"" + namespace + ".doSomething3\"|\"void doSomething3(LongWrapper bar)\"|\"Much better with records\"|\"SCHEMA\"|\"" + namespace + ".SimpleProcedures\"|\"\"\n" +
                         "|\"function\"|\"" + namespace + ".sum\"|\"long sum(int a,int b)\"|\"Performs super complex maths\"|\"\"|\"" + namespace + ".SimpleUserFunctions\"|\"\"");
@@ -115,7 +115,7 @@ public class DsvProcessorTest
         String generatedCsv = readContents(Paths.get(folder.getAbsolutePath(), namespace + ".csv"));
         assertThat(generatedCsv).isEqualTo(
                 "|type|qualified name|signature|description|execution mode|location|deprecated by\n" +
-                        "|procedure|" + namespace + ".doSomething|void doSomething(int foo)||PERFORMS_WRITE|" + namespace + ".SimpleProcedures|doSomething2\n" +
+                        "|procedure|" + namespace + ".doSomething|void doSomething(int foo)||DEFAULT|" + namespace + ".SimpleProcedures|doSomething2\n" +
                         "|procedure|" + namespace + ".doSomething2|void doSomething2(long bar)|Much better than the former version|SCHEMA|" + namespace + ".SimpleProcedures|\n" +
                         "|procedure|" + namespace + ".doSomething3|void doSomething3(LongWrapper bar)|Much better with records|SCHEMA|" + namespace + ".SimpleProcedures|\n" +
                         "|function|" + namespace + ".sum|long sum(int a,int b)|Performs super complex maths||" + namespace + ".SimpleUserFunctions|");
@@ -136,7 +136,7 @@ public class DsvProcessorTest
         String namespace = "net.biville.florent.sproccompiler.procedures.valid";
         String generatedCsv = readContents( Paths.get( folder.getAbsolutePath(), namespace + ".csv" ) );
         assertThat( generatedCsv ).isEqualTo(
-                "" + "\"execution mode\",\"type\"\n" + "\"PERFORMS_WRITE\",\"procedure\"\n" +
+                "" + "\"execution mode\",\"type\"\n" + "\"DEFAULT\",\"procedure\"\n" +
                         "\"SCHEMA\",\"procedure\"\n" + "\"SCHEMA\",\"procedure\"\n" + "\"\",\"function\"" );
     }
 
@@ -155,7 +155,7 @@ public class DsvProcessorTest
                 .compilesWithoutError();
 
         assertThat( readContents( Paths.get( folder.getAbsolutePath(), "documentation-procedures.csv" ) ) ).isEqualTo(
-                "\"execution mode\",\"type\"\n" + "\"PERFORMS_WRITE\",\"procedure\"\n" + "\"SCHEMA\",\"procedure\"\n" +
+                "\"execution mode\",\"type\"\n" + "\"DEFAULT\",\"procedure\"\n" + "\"SCHEMA\",\"procedure\"\n" +
                         "\"SCHEMA\",\"procedure\"" );
         assertThat( readContents( Paths.get( folder.getAbsolutePath(), "documentation-functions.csv" ) ) )
                 .isEqualTo( "\"execution mode\",\"type\"\n" + "\"\",\"function\"" );

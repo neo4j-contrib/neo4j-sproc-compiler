@@ -20,7 +20,6 @@ import net.biville.florent.sproccompiler.UserFunctionProcessor;
 import net.biville.florent.sproccompiler.export.Either;
 import net.biville.florent.sproccompiler.export.messages.DsvExportError;
 import org.neo4j.procedure.Description;
-import org.neo4j.procedure.PerformsWrites;
 import org.neo4j.procedure.Procedure;
 import org.neo4j.procedure.UserFunction;
 
@@ -119,11 +118,6 @@ public class DsvFieldSerializers
 
         public Either<DsvExportError,String> executionMode( ExecutableElement method )
         {
-            PerformsWrites performsWrites = method.getAnnotation( PerformsWrites.class );
-            if ( performsWrites != null )
-            {
-                return Either.right( "PERFORMS_WRITE" );
-            }
             Procedure procedure = method.getAnnotation( Procedure.class );
             if ( procedure != null )
             {

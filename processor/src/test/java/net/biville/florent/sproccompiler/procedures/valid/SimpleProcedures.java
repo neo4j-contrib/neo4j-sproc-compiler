@@ -18,14 +18,12 @@ package net.biville.florent.sproccompiler.procedures.valid;
 import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Mode;
 import org.neo4j.procedure.Name;
-import org.neo4j.procedure.PerformsWrites;
 import org.neo4j.procedure.Procedure;
 
 public class SimpleProcedures
 {
 
     @Procedure( deprecatedBy = "doSomething2" )
-    @PerformsWrites
     public void doSomething( @Name( "foo" ) int foo )
     {
 

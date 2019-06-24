@@ -50,7 +50,7 @@ public class TypeMirrorUtils
         return asList( bool, boxed( bool ), longType, boxed( longType ), doubleType, boxed( doubleType ),
                 typeMirror( String.class ), typeMirror( Number.class ), typeMirror( Object.class ),
                 typeMirror( Map.class ), typeMirror( List.class ), typeMirror( Node.class ),
-                typeMirror( Relationship.class ), typeMirror( Path.class ) );
+                typeMirror( Relationship.class ), typeMirror( Path.class ), typeMirror( byte[].class) );
     }
 
     public PrimitiveType primitive( TypeKind kind )
