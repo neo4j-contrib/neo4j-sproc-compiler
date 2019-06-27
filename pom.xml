@@ -49,7 +49,7 @@
                 <artifactId>license-maven-plugin</artifactId>
                 <version>3.0</version>
                 <configuration>
-                    <header>LICENSE_HEADER</header>
+                    <header>${maven.multiModuleProjectDirectory}/LICENSE_HEADER</header>
                     <includes>
                         <include>**/src/main/java/**</include>
                         <include>**/src/main/resources/**</include>

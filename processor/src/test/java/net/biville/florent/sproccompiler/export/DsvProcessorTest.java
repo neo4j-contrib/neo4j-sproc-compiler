@@ -171,7 +171,6 @@ public class DsvProcessorTest
         assert_().about( javaSources() ).that( sources )
                 .processedWith( processor )
                 .compilesWithoutError()
-                .withWarningCount( 2 )
                 .withWarningContaining( "Skipping export, export path option -AGeneratedDocumentationPath not specified" );
     }
 
